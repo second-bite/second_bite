@@ -19,9 +19,9 @@ datasource db {
  * Consumer-Specific
  */
 model Consumer {
-  id                  Int                     @id @default(autoincrement())
-  email               String                  @unique 
+  consumer_id         Int                     @id @default(autoincrement())
   username            String                  @unique
+  email               String                  @unique 
   password            String
   primary_address_id  Int?                    
   addresses           Address[]
@@ -33,9 +33,9 @@ model Consumer {
 
 model PastRestaurants {
   consumer_id         Int 
-  consumer            Consumer                @relation(fields: [consumer_id], references: [id])
+  consumer            Consumer                @relation(fields: [consumer_id], references: [consumer_id])
   restaurant_id       Int
-  restaurant          Restaurant              @relation(fields: [restaurant_id], references: [id])
+  restaurant          Restaurant              @relation(fields: [restaurant_id], references: [restauraunt_id])
   assigned_at         DateTime                @default(now())
 
   @@id([consumer_id, restaurant_id])
@@ -43,9 +43,9 @@ model PastRestaurants {
 
 model PinnedRestaurants {
   consumer_id         Int 
-  consumer            Consumer                @relation(fields: [consumer_id], references: [id])
+  consumer            Consumer                @relation(fields: [consumer_id], references: [consumer_id])
   restaurant_id       Int
-  restaurant          Restaurant              @relation(fields: [restaurant_id], references: [id])
+  restaurant          Restaurant              @relation(fields: [restaurant_id], references: [restauraunt_id])
   assigned_at         DateTime                @default(now())
 
   @@id([consumer_id, restaurant_id])
@@ -57,9 +57,9 @@ model PinnedRestaurants {
  * Owner-Specific
  */
 model Owner {
-  id                  Int                     @id @default(autoincrement())
-  email               String                  @unique 
+  owner_id            Int                     @id @default(autoincrement())
   username            String                  @unique
+  email               String                  @unique 
   password            String
   restaurants         Restaurant[]
 }
@@ -80,21 +80,21 @@ enum Categories {
 }
 
 model Rating {
-  id                Int                       @id @default(autoincrement())
+  rating_id         Int                       @id @default(autoincrement())
   num_stars         Int
   msg               String
   user_id           Int
   create_date       DateTime                  @default(now())
   restaurant_id     Int  
-  restaurant        Restaurant                @relation(fields: [restaurant_id], references:[id])
+  restaurant        Restaurant                @relation(fields: [restaurant_id], references:[restauraunt_id])
 }
 
 model Restaurant {
-  id                Int                     @id @default(autoincrement())
+  restauraunt_id    Int                     @id @default(autoincrement())
   name              String
   descr             String
   address_id        Int                     @unique
-  address           Address                 @relation(fields: [address_id], references: [id])
+  address           Address                 @relation(fields: [address_id], references: [address_id])
   categories        Categories[]
   img_url           String
   img_alt           String
@@ -102,7 +102,7 @@ model Restaurant {
   ratings           Rating[]
   closing_time      String[]                // Each entry represents a day of the week (Mon-Su)
   owner_id          Int
-  owner             Owner                   @relation(fields: [owner_id], references: [id])
+  owner             Owner                   @relation(fields: [owner_id], references: [owner_id])
   pinned_by_users   PinnedRestaurants[]
   visited_by_users  PastRestaurants[]
 
@@ -119,22 +119,22 @@ model Restaurant {
  */
 model Address {
   // Core Address Info
-  street_address  String                      // Street # + Street Name
-  city            String
-  state           String
-  postal_code     String                      // String to preserve leading 0s
-  country         String
+  street_address    String                      // Street # + Street Name
+  city              String
+  state             String
+  postal_code       String                      // String to preserve leading 0s
+  country           String
 
-  id              Int                         @id @default(autoincrement())
-  consumer_id     Int? 
-  consumer        Consumer?                   @relation(fields:[consumer_id], references: [id])
-  restaurant      Restaurant?                 
+  address_id        Int                         @id @default(autoincrement())
+  consumer_id       Int? 
+  consumer          Consumer?                   @relation(fields:[consumer_id], references: [consumer_id])
+  restaurant        Restaurant?                 
 }
 
 model Feedback {
-  id            Int                           @id @default(autoincrement())
-  num_stars     Int
-  msg           String
-  user_id       Int
-  create_date   DateTime                      @default(now())
+  feedback_id       Int                           @id @default(autoincrement())
+  num_stars         Int
+  msg               String
+  user_id           Int
+  create_date       DateTime                      @default(now())
 }
