@@ -6,10 +6,135 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  // output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+
+/**
+ * Consumer-Specific
+ */
+model Consumer {
+  consumer_id         Int                     @id @default(autoincrement())
+  username            String                  @unique
+  email               String                  @unique 
+  password            String
+  primary_address_id  Int?                    
+  addresses           Address[]
+  past_restaurants    PastRestaurants[]
+  pinned_restaurants  PinnedRestaurants[]
+  friends             Consumer[]              @relation("friends")
+  friends_relation    Consumer[]              @relation("friends")
+}
+
+model PastRestaurants {
+  consumer_id         Int 
+  consumer            Consumer                @relation(fields: [consumer_id], references: [consumer_id])
+  restaurant_id       Int
+  restaurant          Restaurant              @relation(fields: [restaurant_id], references: [restauraunt_id])
+  assigned_at         DateTime                @default(now())
+
+  @@id([consumer_id, restaurant_id])
+}
+
+model PinnedRestaurants {
+  consumer_id         Int 
+  consumer            Consumer                @relation(fields: [consumer_id], references: [consumer_id])
+  restaurant_id       Int
+  restaurant          Restaurant              @relation(fields: [restaurant_id], references: [restauraunt_id])
+  assigned_at         DateTime                @default(now())
+
+  @@id([consumer_id, restaurant_id])
+}
+
+
+
+/**
+ * Owner-Specific
+ */
+model Owner {
+  owner_id            Int                     @id @default(autoincrement())
+  username            String                  @unique
+  email               String                  @unique 
+  password            String
+  restaurants         Restaurant[]
+}
+
+
+
+/**
+ * Restaurant-Specific
+ */
+enum Categories {
+  Chinese
+  Indian
+  Vietnamese
+  Mexican
+  Healthy
+  Mediterranean
+  // ... TODO: Add more
+}
+
+model Rating {
+  rating_id         Int                       @id @default(autoincrement())
+  num_stars         Int
+  msg               String
+  user_id           Int
+  create_date       DateTime                  @default(now())
+  restaurant_id     Int  
+  restaurant        Restaurant                @relation(fields: [restaurant_id], references:[restauraunt_id])
+}
+
+model Restaurant {
+  restauraunt_id    Int                     @id @default(autoincrement())
+  name              String
+  descr             String
+  address_id        Int                     @unique
+  address           Address                 @relation(fields: [address_id], references: [address_id])
+  categories        Categories[]
+  img_url           String
+  img_alt           String
+  avg_cost          Decimal                 // Avg cost of the surplus (not typical prices)
+  ratings           Rating[]
+  closing_time      String[]                // Each entry represents a day of the week (Mon-Su)
+  owner_id          Int
+  owner             Owner                   @relation(fields: [owner_id], references: [owner_id])
+  pinned_by_users   PinnedRestaurants[]
+  visited_by_users  PastRestaurants[]
+
+  // Analytics
+  page_visits       Int                     @default(0)
+  revenue           Decimal                 @default(0)
+  num_orders        Int                     @default(0)
+}
+
+
+
+/**
+ * Other
+ */
+model Address {
+  // Core Address Info
+  street_address    String                      // Street # + Street Name
+  city              String
+  state             String
+  postal_code       String                      // String to preserve leading 0s
+  country           String
+
+  address_id        Int                         @id @default(autoincrement())
+  consumer_id       Int? 
+  consumer          Consumer?                   @relation(fields:[consumer_id], references: [consumer_id])
+  restaurant        Restaurant?                 
+}
+
+model Feedback {
+  feedback_id       Int                           @id @default(autoincrement())
+  num_stars         Int
+  msg               String
+  user_id           Int
+  create_date       DateTime                      @default(now())
 }
