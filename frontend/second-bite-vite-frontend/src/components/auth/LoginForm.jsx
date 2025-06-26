@@ -37,4 +37,5 @@ LoginForm.propTypes = {
     auth_form_title: PropTypes.string.isRequired
 }
 
+
 export default LoginForm

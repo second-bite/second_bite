@@ -4,28 +4,32 @@ import LoginForm from './LoginForm'
 
 const AuthForm = () => {
     const [auth_form_title, setAuthFormTitle] = useState(`Sign Up`)
-    const [is_signup, setIsSignUp] = useState(true);
+    const form_enum = {
+        sign_up: 'sign_up',
+        log_in: 'log_in',
+    }
+    const [form_status, setFormStatus] = useState(form_enum.sign_up)
 
-    // TODO: useEffect auth_form_title based on is_sign_up
     useEffect(() => {
-        if(is_signup) setAuthFormTitle('Sign Up')
-        else setAuthFormTitle('Log In')
-    }, [is_signup])
+        console.log(form_enum.sign_up)
+        if(form_status === form_enum.sign_up) setAuthFormTitle('Sign Up')
+        else if(form_status === form_enum.log_in) setAuthFormTitle('Log In')
+    }, [form_status])
 
     const handleSignUpToggle = () => {
-        if(!is_signup) setIsSignUp(true);
+        if(!(form_status === form_enum.sign_up)) setFormStatus(form_enum.sign_up)
     }
     const handleLogInToggle = () => {
-        if(is_signup) setIsSignUp(false);
+        if(!(form_status === form_enum.log_in)) setFormStatus(form_enum.log_in)
     }
     const signup_auth_btn_style = {
-        "color": (is_signup) ? "white" : "black",
-        "background-color": (is_signup) ? "black" : "transparent"
+        "color": (form_status === form_enum.sign_up) ? "white" : "black",
+        "background-color":  (form_status === form_enum.sign_up) ? "black" : "transparent"
     }
 
     const login_auth_btn_style = {
-        "color": (is_signup) ? "black" : "white",
-        "background-color": (is_signup) ? "transparent" : "black"        
+        "color": (form_status === form_enum.log_in) ?  "white" : "black",
+        "background-color": (form_status === form_enum.log_in) ?  "black" : "transparent"       
     }
 
     return (
@@ -36,10 +40,11 @@ const AuthForm = () => {
                     <button style={signup_auth_btn_style} id="signup_auth_btn" className="auth_toggle_btn" onClick={handleSignUpToggle}>Sign Up</button>
                     <button style={login_auth_btn_style} id="login_auth_btn" className="auth_toggle_btn" onClick={handleLogInToggle}>Log In</button>
                 </section>
-                {is_signup ? <SignUpForm auth_form_title={auth_form_title}/> : <LoginForm auth_form_title={auth_form_title}/>}
+                {(form_status === form_enum.sign_up) ? <SignUpForm auth_form_title={auth_form_title}/> : <LoginForm auth_form_title={auth_form_title}/>}
             </section>
         </section>
     )
 }
+
 
 export default AuthForm
