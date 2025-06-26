@@ -64,7 +64,7 @@ const SignUpForm = ({auth_form_title}) => {
                         </section>
                         <section className="location_auth_entry">
                             <p className="location_auth_text">State:</p>
-                            <select name="signup_state">
+                            <select name="signup_state" className="auth_input">
                                 <option value="none">{state_msg || 'Select a State:'}</option>
                                 {states.map((state) => (
                                     <option key={state.abbreviation} value={state.abbreviation}>
@@ -75,9 +75,9 @@ const SignUpForm = ({auth_form_title}) => {
                         </section>
                         <section className="location_auth_entry" id="location_auth_country">
                             <p className="location_auth_text">Country:</p>
-                            <select name="signup_country">
+                            <select name="signup_country" className="auth_input">
                                 <option value="none">{country_msg || 'Select a Country:'}</option>
-                                <option value="US">US</option>
+                                <option value="US">United States</option>
                             </select>
                         </section>
                     </section>

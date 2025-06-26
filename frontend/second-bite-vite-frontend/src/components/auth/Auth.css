@@ -9,7 +9,7 @@
 
 .auth_container {
     display: flex;
-    background-color: white;
+    background-color: var(--auth-container-bg-color);
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -80,6 +80,10 @@
 .auth_input::placeholder {
   color: red;
   opacity: 1; /* ensure full opacity across browsers */
+}
+
+select.auth_input {
+    width: 100%;
 }
 
 input[type="text"].auth_input {
