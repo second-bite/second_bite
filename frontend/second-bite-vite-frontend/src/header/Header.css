@@ -1,0 +1,7 @@
+header.auth_header {
+    background-color: #006989;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
