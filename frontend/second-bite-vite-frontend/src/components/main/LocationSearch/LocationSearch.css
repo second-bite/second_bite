@@ -1,0 +1,100 @@
+.consumer_location {
+    height: 7vh;
+    background-color: var(--secondary-header-bolor);
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.location_img {
+    height: 3rem;
+}
+
+.starting_address {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 2%;
+}
+
+.address_search {
+    display: flex;
+    flex-direction: column;
+    margin-right: 2%;
+}
+
+/* Search Ribbon */
+.address_search_form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+}
+
+input[type="text"].address_search_text {
+    border-radius: 5%;
+    height: 40%;
+    width: 30vw;
+}
+
+#clear_address_search {
+    transform: translate(-150%, 0%);
+}
+
+#submit_address_search {
+    transform: translate(-50%, 0%);
+}
+
+.address_search_btn, .address_search_btn:hover, .address_search_btn:active {
+    all: unset;
+    color: gray;
+    font-size: 20px;
+}
+
+.special_address_dropdown {
+    cursor: pointer
+}
+
+/* Search Results Pop-Up */
+.search_results_popup {
+    z-index: 1;
+    color: black;
+    background-color: #E8E8E8;
+    box-shadow: 4px 4px 10px rgb(0, 0, 0, 0.5);
+    padding-bottom: 10px;
+}
+
+.search_results_title {
+    margin-bottom: 0;
+    padding-left: 10px;
+    font-weight: bold;
+}
+
+.special_search_saved_addresses, .special_search_recent_addresses, .regular_search_results {
+    display: flex;
+    flex-direction: column;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.special_search_saved_address, .special_search_recent_address, .regular_search_address {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid black;
+}
+.special_search_saved_address:not(:last-child), .special_search_recent_address:not(:last-child), .regular_search_address:not(:last-child) {
+    border-bottom: 1px solid black;
+}
+
+.special_search_saved_address p, .special_search_recent_address p, .regular_search_address p {
+    margin: 0;
+}
+
+.search_street_address_field {
+    font-weight: 500;
+}
+
+.search_other_address_field {
+    color: dimgray;
+}

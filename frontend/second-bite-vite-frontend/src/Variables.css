@@ -1,6 +1,9 @@
 :root {
+    --header-font-size: clamp(10px, 2vw, 20px);
     --header-text-color: white;
     --header-color: #66101F;
+    --secondary-header-bolor: #2E4053;
     --body-bg-color: whitesmoke;
     --auth-container-bg-color: white;
 }
+

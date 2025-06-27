@@ -1,0 +1,43 @@
+.filter_n_sort {
+    display: grid;
+    grid-template-columns: 7.25fr 2.75fr;
+    align-items: center;
+}
+
+.filter_n_sort > .filters {
+    min-width: 0;
+}
+
+.filters {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    margin: 10px 0 0 10px;
+    padding-bottom: 10px;
+    gap: 10px;
+}
+
+.cuisine_filter {
+    flex: 1 1 7vw;      /* → minimum 7vw, but will grow and shrink */
+    flex-shrink: 0;
+    color: black;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: gainsboro;
+    border-radius: 35%;
+    white-space: nowrap;
+    box-shadow: 4px 4px 10px rgb(0, 0, 0, 0.2);
+}
+
+.cuisine_filter_text {
+    text-align: center;
+    font-weight: 500;
+}
+
+.sort {
+    justify-self: center;
+}
+
+.sort_dropdown {
+    width: 25vw;
+}

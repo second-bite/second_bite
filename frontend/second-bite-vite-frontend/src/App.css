@@ -3,6 +3,11 @@
 @import 'header/Header.css';
 @import 'components/auth/Auth.css';
 
+/* Main Page */
+@import 'components/main/LocationSearch/LocationSearch.css';
+@import 'components/main/FilterSort/FilterSort.css';
+@import 'components/main/RestaurantTiles/RestaurantTiles.css';
+
 .App {
   height: 100vh;
   width: 100vw;

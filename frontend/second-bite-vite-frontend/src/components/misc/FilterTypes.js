@@ -1,0 +1,35 @@
+const cuisine_filters = [
+  "Asian",
+  "Bakery",
+  "Bar Food",
+  "BBQ",
+  "Breakfast",
+  "Burgers",
+  "Cafe",
+  "Chinese",
+  "Desserts",
+  "Fast Food",
+  "French",
+  "Greek",
+  "Healthy",
+  "Indian",
+  "Italian",
+  "Japanese",
+  "Korean",
+  "Latin American",
+  "Mediterranean",
+  "Mexican",
+  "Middle Eastern",
+  "Pizza",
+  "Salads",
+  "Sandwiches",
+  "Seafood",
+  "Sushi",
+  "Thai",
+  "Vegan",
+  "Vegetarian",
+  "Vietnamese"
+];
+
+
+export default cuisine_filters
