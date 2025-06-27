@@ -1,0 +1,78 @@
+.restaurant_tiles {
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    align-items: center;
+    margin: 1vh 1.5vw 0 1.5vw;
+    gap: 20px;
+    width: auto;
+}
+
+.restaurant_tile {
+    background-color: gainsboro;
+    border-radius: 5%;
+    box-shadow: 4px 4px 10px rgb(0, 0, 0, 0.3);
+}
+
+.restaurant_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 10vh;
+    position: relative;
+}
+
+p.restaurant_favorite {
+    margin: 0;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    color: gainsboro;
+    font-size: clamp(25px, 5vw, 40px);
+}
+
+.restaurant_rating {
+    position: absolute;
+    right: 2vw;
+    top: 10%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    padding: 0 5px;
+    height: 30px;
+    font-size: clamp(14px, 3vw, 18px);
+    border: 2px solid #181818;
+}
+
+.restaurant_rating_no {
+    font-weight: 550;
+}
+
+.restaurant_tile_separator {
+    margin-left: 4vw;
+    margin-right: 4vw;
+    height: 1vh;
+    border-bottom: 1px solid black;
+}
+
+.restaurant_info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left: 4vw;
+    margin-right: 4vw;
+}
+
+.restaurant_info_title {
+    font-weight: 550;
+}
+
+.core_restaurant_info {
+    padding: 5px 0;
+}
+.core_restaurant_info p {
+    margin: 0;
+}

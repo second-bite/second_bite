@@ -1,7 +1,89 @@
-header.auth_header {
-    background-color: var(--header-color);
-    color: var(--header-text-color);
+/* All Headers */
+header {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
+
+    font-size: var(--header-font-size);
+    background-color: var(--header-color);
+    color: var(--header-text-color);
 }
+
+/* Auth Header */
+header.auth_header {
+
+}
+
+/* Primary Header */
+header.primary_header {
+    position: relative;
+}
+
+.account {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    right: clamp(7px, 3vw, 40px);
+}
+
+.page_nav {
+    align-self: flex-end;
+    font-size: clamp(8px, 8vh, 80px);
+    padding-bottom: 1vh;
+    cursor: pointer;
+}
+
+@keyframes fade_in {
+    from {opacity: 0; }
+    to {opacity: 1; }
+}
+
+#page_nav_popup {
+    position: absolute;
+    top: 60%;
+    right: 0%;
+    z-index: 5;
+    color: #222223;
+    font-weight: 500;
+    background-color: whitesmoke;
+    padding: 2%;
+    box-shadow: 6px 6px 12px rgb(0, 0, 0, 0.5);
+    border-radius: 5%;
+    animation: fade_in 0.5s ease-in-out;
+}
+
+.page_nav_option {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.page_nav_option:hover, .page_nav_option:active {
+    cursor: pointer;
+    color: black;
+    font-weight: 600;
+    background-color: #e4d6d7;
+    border: 2px solid black;
+    border-radius: 3%;
+    box-shadow: 6px 6px 12px rgb(133, 90, 92, 0.5);
+    padding-left: 2%;
+}
+
+.avatar_img {
+    background-color: white;
+    border-radius: 50%;
+}
+.page_nav_option_img {
+    height: 2.5rem;
+    background-color: transparent;
+}
+
+/* TODO: Maybe discard? */
+/* .account_dropdown {
+    margin-left: 2px;
+    font-size: clamp(6px, 4vh, 50px);
+    text-shadow: 6px 6px 12px rgb(0, 0, 0, 0.5);
+} */
