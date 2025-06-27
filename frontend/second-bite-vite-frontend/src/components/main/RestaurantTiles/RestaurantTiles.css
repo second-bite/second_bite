@@ -3,8 +3,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     align-items: center;
-    padding: 1rem;
-    gap: 10px;
+    margin: 1vh 1.5vw 0 1.5vw;
+    gap: 20px;
     width: auto;
 }
 
@@ -45,10 +45,6 @@ p.restaurant_favorite {
     height: 30px;
     font-size: clamp(14px, 3vw, 18px);
     border: 2px solid #181818;
-}
-
-.restaurant_rating_star {
-
 }
 
 .restaurant_rating_no {

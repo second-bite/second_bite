@@ -5,7 +5,7 @@
 
 /* Main Page */
 @import 'components/main/LocationSearch/LocationSearch.css';
-@import 'components/main/FilterSort/FilterSort.css';
+@import 'components/main/FilterSort/Specifiers.css';
 @import 'components/main/RestaurantTiles/RestaurantTiles.css';
 
 .App {

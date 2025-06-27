@@ -1,18 +1,9 @@
-.filter_n_sort {
-    display: grid;
-    grid-template-columns: 7.25fr 2.75fr;
-    align-items: center;
-}
-
-.filter_n_sort > .filters {
-    min-width: 0;
-}
-
+/* Tile Cuisine Filters */
 .filters {
     display: flex;
     flex-direction: row;
     overflow-x: auto;
-    margin: 10px 0 0 10px;
+    margin: 10px 2vw 0 2vw;
     padding-bottom: 10px;
     gap: 10px;
 }
@@ -34,10 +25,39 @@
     font-weight: 500;
 }
 
+
+.search_n_sort {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 2vw;
+    gap: 20px;
+}
+
+/* Search */
+.search_form {
+    position: relative;
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+}
+
+.restaurant_search_icon {
+    position: absolute;
+    left: 10px;
+}
+
+.restaurant_search_input {
+    height: 3vh;
+    width: 35vw;
+    padding-left: 30px;
+}
+
+/* Sort */
 .sort {
     justify-self: center;
 }
 
 .sort_dropdown {
-    width: 25vw;
+    width: 10vw;
 }
