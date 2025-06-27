@@ -1,26 +1,23 @@
 # Credit: https://github.com/marketplace/actions/count-lines-of-code-cloc
 name: Count Lines of Code
 
-# Controls when the action will run. Triggers the workflow on push or pull request 
-# events but only for the main branch
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  cloc:
-    # The type of runner that the job will run on
+  analyze-code:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # Runs djdefi/cloc-action
-    - name: Count Lines of Code (cloc)
-      uses: djdefi/cloc-action@6
+      - name: Run CLOC action
+        uses: djdefi/cloc-action@v1 # Use the chosen CLOC action
+        with:
+          args: "--md --report-file=cloc_report.md" # Customize CLOC arguments
+          
+      - name: Upload CLOC report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloc-report
+          path: cloc_report.md
