@@ -9,7 +9,7 @@
 }
 
 .cuisine_filter {
-    flex: 1 1 7vw;      /* → minimum 7vw, but will grow and shrink */
+    flex: 1 1 7vw;     
     flex-shrink: 0;
     color: black;
     padding-left: 10px;
@@ -29,8 +29,9 @@
 .search_n_sort {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    margin-left: 2vw;
+    margin: 0 2vw 0 2vw;
     gap: 20px;
 }
 
@@ -55,9 +56,13 @@
 
 /* Sort */
 .sort {
-    justify-self: center;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
 }
 
 .sort_dropdown {
-    width: 10vw;
+    all: unset;
+    font-size: 30px;
+    transform: translate(0%, -5%)
 }

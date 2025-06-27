@@ -1,13 +1,22 @@
-import React, {useRef} from "react";
+import React, {useState, useRef} from "react";
 import cuisine_filters from '../../misc/FilterTypes'
 
 const Specifiers = () => {
     const search_ref = useRef()
     const sort_dropdown_ref = useRef()
 
-    const handleSort = () => {
-        const sort_type = sort_dropdown_ref.current.elements.value
-        // TODO: Add sorting functionality
+    const sort_types_enum = {
+        none: "Best Match",
+        price: "Price",
+        rating: "Rating",
+        distance: "Distance",
+    }
+
+    const [sort_type, setSortType] = useState(sort_types_enum.price)
+    const [is_sort_dropdown, setIsSortDropdown] = useState(false)
+
+    const handleSortDropdown = () => {
+        setIsSortDropdown((prev_is_sort_dropdown) => !prev_is_sort_dropdown);
     }
 
     return (
@@ -29,12 +38,18 @@ const Specifiers = () => {
                     </form>
                 </section>
                 <section className="sort">
-                    <select className="sort_dropdown" ref={sort_dropdown_ref} onChange={handleSort}>
-                        <option value="none">Sort by:</option>
-                        <option value="price">Price</option>
-                        <option value="distance">Distance</option>
-                        <option value="rating">Rating</option>
-                    </select>
+                    <p><span style={{"font-weight": "550"}}>Sort By</span> | {sort_type}</p>
+                    <p className="sort_dropdown" onClick={handleSortDropdown}>⌄</p>
+                    {
+                        is_sort_dropdown && 
+                            <section className="sort_dropdown_popup">
+                                {
+                                    sort_types_enum.map((sort_type) => (
+                                        <p className="sort_dropdown_popup_option">{sort_types_enum}</p>
+                                    ))
+                                }
+                            </section>
+                    }
                 </section>
             </section>
         </section>

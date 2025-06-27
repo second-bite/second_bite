@@ -19,7 +19,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
-    height: 10vh;
+    height: clamp(150px, 10vh, 300px);
     position: relative;
 }
 
@@ -34,7 +34,7 @@ p.restaurant_favorite {
 
 .restaurant_rating {
     position: absolute;
-    right: 2vw;
+    right: 3%;
     top: 10%;
     display: flex;
     flex-direction: row;
@@ -52,8 +52,8 @@ p.restaurant_favorite {
 }
 
 .restaurant_tile_separator {
-    margin-left: 4vw;
-    margin-right: 4vw;
+    margin-left: 7%;
+    margin-right: 7%;
     height: 1vh;
     border-bottom: 1px solid black;
 }
@@ -62,8 +62,8 @@ p.restaurant_favorite {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin-left: 4vw;
-    margin-right: 4vw;
+    margin-left: 7%;
+    margin-right: 7%;
 }
 
 .restaurant_info_title {
