@@ -11,7 +11,6 @@ import AccountInfoPage from './pages/AccountInfoPage'
 export const AppContext = createContext()
 
 function App() {
-  // const [count, setCount] = useState(0)
   const [is_feedback_modal, setIsFeedbackModal] = useState(false)
 
   return (

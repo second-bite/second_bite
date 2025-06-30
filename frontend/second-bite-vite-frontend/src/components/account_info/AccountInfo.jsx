@@ -1,8 +1,11 @@
 import React, { useState, useRef } from "react"
+import { useNavigate } from 'react-router-dom'
 import states from "../misc/States"
 
 
 const AccountInfo = () => {
+    const navigate = useNavigate()
+
     const [username_msg, setUsernameMsg] = useState('')
     const [password_msg, setPasswordMsg] = useState('')
     const [confirm_password_msg, setConfirmPasswordMsg] = useState('')
@@ -14,10 +17,15 @@ const AccountInfo = () => {
     const form_ref = useRef();
     // TODO: Pre-populate with existing account info
 
+    // Handlers
+    const handleAccountReturn = () => {
+        navigate('/main')
+    }
+
     return (
         <section className="account_info">
             <form className="account_info_form">
-                <button className="account_back_btn">←</button>
+                <button className="account_return_btn" onClick={handleAccountReturn}>←</button>
                 <h2 id="account_info_title">Edit Personal info</h2>
 
 

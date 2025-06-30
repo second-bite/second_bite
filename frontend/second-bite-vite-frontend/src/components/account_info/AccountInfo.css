@@ -19,7 +19,7 @@
     width: 100%;
 }
 
-.account_back_btn {
+.account_return_btn {
     all: unset;
     cursor: pointer;
     font-size: 36px;
@@ -46,7 +46,7 @@
 }
 
 .account_input {
-    width: 100%;
+    /* width: 100%; */
     background-color: whitesmoke;
 }
 
@@ -67,11 +67,20 @@ input[type="text"].auth_input {
 }
 
 .account_submit_btns {
+    display: flex;
+    flex-direction: row;
     align-self: flex-end;
+    gap: 5px;
+}
+
+.account_clear_btn {
+    background-color: lightgray;
+    margin-top: 10px;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .account_submit_btn {
-    background-color: lightgray;
-    border: 2px sokid black;
+    background-color: rgb(238, 135, 135);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.1);
     margin-top: 10px;
 }
