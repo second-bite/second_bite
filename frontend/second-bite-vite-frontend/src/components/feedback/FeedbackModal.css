@@ -1,0 +1,41 @@
+#feedback_modal {
+    background-color: whitesmoke;
+    width: clamp(275px, 40vw, 400px);
+}
+
+.feedback_form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 3%;
+}
+
+.close_feedback_btn {
+    all:unset;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: clamp(5px, 3vw, 15px);
+    font-size: 25px;
+}
+
+.feedback_star {
+    all: unset;
+    cursor: pointer;
+    font-size: clamp(28px, 5vw, 50px);
+}
+
+input[type="text"].feedback_text {
+    border-color: gray;
+    border-radius: 20px;
+    width: 80%;
+    min-height: clamp(150px, 10vh, 250px);
+}
+
+.feedback_submit_btn {
+    color: white;
+    background-color: steelblue;
+    font-weight: 550;
+    margin-top: 10px;
+}

@@ -1,0 +1,77 @@
+@media (min-height: 900px) {
+    .account_info {
+        margin-top: 40px;
+    }
+    input[type="text"].account_input {
+        height: 1.5rem;
+        border-radius: 10px;
+    }
+    .location_account_entry select {
+        height: 1.75rem;
+        border-radius: 10px;
+    }
+}
+
+.account_info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.account_back_btn {
+    all: unset;
+    cursor: pointer;
+    font-size: 36px;
+    font-weight: 500;
+}
+
+#account_info_title {
+    align-self: flex-start;
+}
+
+.account_info_form {
+    width: clamp(325px, 40vw, 1500px);
+}
+
+.account_entries {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.account_entry { 
+    width: 100%;
+}
+
+.account_input {
+    width: 100%;
+    background-color: whitesmoke;
+}
+
+.account_input::placeholder {
+  color: red;
+  opacity: 1; 
+}
+
+input[type="text"].auth_input {
+    background-color: whitesmoke;
+}
+
+.location_account_entries{
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 1rem;
+    width: 100%;
+}
+
+.account_submit_btns {
+    align-self: flex-end;
+}
+
+.account_submit_btn {
+    background-color: lightgray;
+    border: 2px sokid black;
+    margin-top: 10px;
+}

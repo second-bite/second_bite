@@ -1,9 +1,13 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useContext} from 'react'
+
+import { AppContext } from '../App'
 
 const PrimaryHeader = () => {
     const [is_popup_visible, setIsPopupVisible] = useState(false)
+    const {setIsFeedbackModal} = useContext(AppContext)
 
     const handlePageNavClick = () => setIsPopupVisible((prev_is_popup_visible) => !prev_is_popup_visible)
+    const handleFeedbackClick = () => setIsFeedbackModal(true)
 
     return (
         <header className="primary_header">
@@ -24,7 +28,7 @@ const PrimaryHeader = () => {
                             <img src='/vite.svg' alt="" className="page_nav_option_img" />
                             <p className="page_nav_option_text">Past Restaurants</p>
                         </section>
-                        <section className="page_nav_option">
+                        <section className="page_nav_option" onClick={handleFeedbackClick}>
                             <img src='/vite.svg' alt="" className="page_nav_option_img" />
                             <p className="page_nav_option_text">Feedback</p>
                         </section>
