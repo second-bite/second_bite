@@ -54,6 +54,15 @@
     align-items: center;
 }
 
+.account_type_toggle {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin-top: 10px;
+    padding-left: 35px;
+    font-weight: 500;
+}
+
 .auth_entries {
     display: flex;
     flex-direction: column;

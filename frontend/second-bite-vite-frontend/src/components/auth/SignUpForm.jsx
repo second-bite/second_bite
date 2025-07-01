@@ -30,6 +30,11 @@ const SignUpForm = ({auth_form_title}) => {
     return (
         <section className="signup">
             <form className="signup_form" ref={form_ref} onSubmit={handleSignUp}>
+                <section className="account_type_toggle">
+                    <p>Consumer</p>
+                    <input id="account_type_toggle_btn" type="checkbox" defaultChecked className="toggle" />
+                    <p>Business Owner</p>
+                </section>
                 <section className="auth_entries">
                     {/* Username, Password, Re-Enter Password */}
                     <section className="auth_entry">
