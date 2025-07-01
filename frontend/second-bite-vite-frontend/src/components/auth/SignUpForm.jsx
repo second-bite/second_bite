@@ -9,7 +9,7 @@ const SignUpForm = ({auth_form_title}) => {
     const [username_msg, setUsernameMsg] = useState('')
     const [password_msg, setPasswordMsg] = useState('')
     const [confirm_password_msg, setConfirmPasswordMsg] = useState('')
-    const [street_addeess_msg, setStreetAddressMsg] = useState('');
+    const [street_address_msg, setStreetAddressMsg] = useState('');
     const [city_msg, setCityMsg] = useState('');
     const [state_msg, setStateMsg] = useState('');
     const [country_msg, setCountryMsg] = useState('');
@@ -24,7 +24,7 @@ const SignUpForm = ({auth_form_title}) => {
         if (!form_ref.current.elements.signup_city.value) await setCityMsg('Please enter city.');
         if (form_ref.current.elements.signup_state.value === 'none') await setStateMsg('Please select a state.');
         if (form_ref.current.elements.signup_country.value === 'none') await setCountryMsg('Please select a country.');
-        if(username_msg || password_msg || confirm_password_msg || street_addeess_msg || city_msg || state_msg || country_msg) return;
+        if(username_msg || password_msg || confirm_password_msg || street_address_msg || city_msg || state_msg || country_msg) return;
     }
 
     return (
@@ -49,8 +49,8 @@ const SignUpForm = ({auth_form_title}) => {
                     {/* Location */}
                     <section className="location_auth_entries">
                         <section className="location_auth_entry">
-                            <p className="location_auth_text">Street No.:</p>
-                            <input type="text" name="signup_street_adress" className="auth_input" placeholder={street_addeess_msg} />
+                            <p className="location_auth_text">Street Address:</p>
+                            <input type="text" name="signup_street_address" className="auth_input" placeholder={street_address_msg} />
                         </section>
                         <section className="location_auth_entry">
                             <p className="location_auth_text">City:</p>

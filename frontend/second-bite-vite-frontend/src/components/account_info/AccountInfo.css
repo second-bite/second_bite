@@ -38,7 +38,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
 }
 
 .account_entry { 
@@ -46,7 +46,7 @@
 }
 
 .account_input {
-    /* width: 100%; */
+    width: 100%;
     background-color: whitesmoke;
 }
 
@@ -63,6 +63,7 @@ input[type="text"].auth_input {
     display: grid;
     grid-template-columns: auto auto;
     column-gap: 1rem;
+    row-gap: 20px;
     width: 100%;
 }
 

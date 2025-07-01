@@ -44,7 +44,7 @@ header.primary_header {
     position: absolute;
     top: 60%;
     right: 0%;
-    z-index: 5;
+    z-index: 1;
     color: #222223;
     font-weight: 500;
     background-color: whitesmoke;

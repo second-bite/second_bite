@@ -35,7 +35,7 @@ const AuthForm = () => {
     return (
         <section className="auth">
             <section className="auth_container">
-                <h2 className="auth_h2">{auth_form_title}</h2>
+                <h2 className="text-2xl font-bold mt-6 mb-4" id="auth_h2">{auth_form_title}</h2>
                 <section className="auth_toggle_btns">
                     <button style={signup_auth_btn_style} id="signup_auth_btn" className="auth_toggle_btn" onClick={handleSignUpToggle}>Sign Up</button>
                     <button style={login_auth_btn_style} id="login_auth_btn" className="auth_toggle_btn" onClick={handleLogInToggle}>Log In</button>
