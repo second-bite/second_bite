@@ -4,16 +4,37 @@ import { Bars3Icon } from '@heroicons/react/24/solid'
 import { useNavigate } from 'react-router-dom'
 
 import { AppContext } from '../context/AppContext'
+import { AuthContext } from '../context/AuthContext'
 
 const PrimaryHeader = () => {
     const navigate = useNavigate()
 
-    const {is_feedback_modal, setIsFeedbackModal} = useContext(AppContext)
+    const {base_url, is_feedback_modal, setIsFeedbackModal} = useContext(AppContext)
+    const {setIsLoading} = useContext(AuthContext)
 
     const handleFeedbackClick = () => {setIsFeedbackModal(true)}
 
     const handleAccountInfoClick = () => {
         navigate('/account')
+    }
+    const handleSignOut = async () => {
+        try {
+            setIsLoading(true)
+            const response = await fetch(base_url + '/auth/logout', {
+                method: 'POST',
+                credentials: 'include',
+            })
+            const res_json = await response.json()
+            if(!response.ok) {
+                throw new Error(`Status Code: ${response.status}. ErrMsg: ${res_json.message}`)
+            }
+            console.log(res_json)
+            navigate('/auth')
+        } catch (e) {
+            // TODO: Meaningfully handle this error
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -69,6 +90,7 @@ const PrimaryHeader = () => {
                     {({ active }) => (
                         <a
                         href="#"
+                        onClick={handleSignOut}
                         className={`block px-4 py-2 text-sm ${
                             active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                         }`}
