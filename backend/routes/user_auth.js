@@ -1,5 +1,5 @@
 const express = require('express')
-const router = express.Router()
+const auth_routes = express.Router()
 const prisma = require('./prisma_client')
 const argon2 = require('argon2')
 
@@ -12,12 +12,18 @@ const user_types = {
     owner: {
         type: 'owner',
         required: ['username', 'password', 'street_address', 'city', 'postal_code', 'state', 'country']
+    },
+}
+const user_types_check = {
+    ...user_types,
+    all: { // Used for auth
+        type: 'all',
     }
 }
 
 // Register a new account
 // NOTE: Consumer or Business Owner View (depending on params)
-router.post(`/register/:user_type_param`, async (req, res, next) => {
+auth_routes.post(`/register/:user_type_param`, async (req, res, next) => {
     const { user_type_param } = req.params
     try{
         const user_type = user_types[user_type_param]
@@ -83,11 +89,13 @@ router.post(`/register/:user_type_param`, async (req, res, next) => {
 
 // User log in
 // NOTE: Consumer or Business Owner View (depending on params)
-router.post('/login/:user_type_param', async (req, res, next) => {
+auth_routes.post('/login/:user_type_param', async (req, res, next) => {
     const { user_type_param } = req.params;
-    const { username, password } = req.body
     try{
         const user_type = user_types[user_type_param]
+
+        if (!req.body) return next({status: 400, message: `Missing request body for account register`})
+        const { username, password } = req.body
 
         // Check that username and password have been entered
         if(!username || !password) {
@@ -119,9 +127,31 @@ router.post('/login/:user_type_param', async (req, res, next) => {
 
 
 
-// TODO: Add check if a user is logged in
-// Check if user is logged in
-router.get('/check_session', async (req, res, next) => {
+// Check if user is logged in (endpoint and internal check)
+const check_auth = (user_type) => {
+    return function (req, res, next) {
+            // Check valid user_type entry
+            if(!user_type || !('type' in user_type) || !user_types_check[user_type.type]) {
+                return next({status: 500, message: 'Invalid user_type passed into check_auth'})
+            }
+            
+            // Check if user is logged into correct role
+            if(!req.session.user_id) {
+                return res.status(401).json( { message: "Not logged in" })
+            }
+            if((user_type.type !== user_types_check.all.type) && (user_type.type !== req.session.user_type)) {
+                return res.status(403).json( { message: "Forbidden (wrong role)" })
+            }
+        else {
+            next()
+        }
+    }
+}
+
+
+
+
+auth_routes.get('/check_session', async (req, res, next) => {
     if(!req.session.user_id) { 
         return res.status(401).json( { message: "Not logged in" })
     }
@@ -141,7 +171,7 @@ router.get('/check_session', async (req, res, next) => {
 
 // User log out
 // NOTE: Consumer or Business Owner View (depending on params)
-router.post('/logout', (req, res, next) => {
+auth_routes.post('/logout', (req, res, next) => {
     req.session.destroy((err) => {
         if(err) {
             return next({status: 500, message: 'Failed to log out'})
@@ -154,5 +184,5 @@ router.post('/logout', (req, res, next) => {
 })
 
 
-module.exports = router;
+module.exports = {user_types_check, check_auth, auth_routes};
 

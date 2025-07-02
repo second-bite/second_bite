@@ -1,11 +1,13 @@
 const express = require('express')
 const session = require('express-session')
+const cors = require('cors')
 const app = express()
 const PORT = 3000
 
 app.use(express.json())
+app.use(cors())
 
-const auth_routes = require('./routes/user_auth')
+const { auth_routes } = require('./routes/user_auth')
 
 app.use(session({
     secret: 'second-bite',
