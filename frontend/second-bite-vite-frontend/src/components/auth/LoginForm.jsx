@@ -1,22 +1,73 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useContext} from 'react'
 import PropTypes from 'prop-types'
+
+import { AppContext } from '../../App'
+import { useNavigate } from 'react-router'
 
 const LoginForm = ({auth_form_title}) => {
     const form_ref = useRef()
+    const navigate = useNavigate()
+
+    const {base_url} = useContext(AppContext)
+
+    // State Vars
+    const [is_account_type_toggled, setIsAccountTypeToggled] = useState(false)
+    const [server_error_msg, setServerErrorMsg] = useState('')
+
+    // Required Field Error Msgs
     const [username_msg, setUsernameMsg] = useState('')
     const [password_msg, setPasswordMsg] = useState('')
 
     const handleLogIn = async (event) => {
         event.preventDefault()
 
-        if(!form_ref.current.elements.login_username.value) await setUsernameMsg('Please enter username.')
-        if(!form_ref.current.elements.login_password.value) await setPasswordMsg('Please enter password.')
+        // Ensure all required fields are filled
+        const form = form_ref.current.elements
+        if(!form.login_username.value) await setUsernameMsg('Please enter username.')
+        if(!form.login_password.value) await setPasswordMsg('Please enter password.')
         if(username_msg || password_msg) return;
+
+        try {
+            const login_body = {
+                username: form.login_username.value,
+                password: form.login_password.value,
+            }
+            const account_type = is_account_type_toggled ? 'owner' : 'consumer'
+            const response  = await fetch(base_url + `/auth/login/` + account_type, {
+                method: 'POST',
+                body: JSON.stringify(login_body),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            if(response.status === 400 || response.status === 401) {
+                const err_msg = await response.json().message
+                await setServerErrorMsg(`Error Status: ${response.status}. Error: ${err_msg}`)
+            } else {
+                await setServerErrorMsg('')
+            }
+            if(!response.ok) throw new Error(`Failed to log into account. Status: ${response.status}`);
+
+            // Sucess! Direct to main page
+            navigate('/main')
+        } catch (e) {
+            console.error('Error: ', e);
+        }
     }
+    const handleAccountTypeToggle = (event) => {
+        setIsAccountTypeToggled(event.target.checked);
+    }
+    
 
     return (
         <section className="login">
             <form className="login_form" ref={form_ref} onSubmit={handleLogIn}>
+                <section className="account_type_toggle">
+                    <p>Consumer</p>
+                    <input id="account_type_toggle_btn" type="checkbox" checked={is_account_type_toggled} onChange={handleAccountTypeToggle} className="toggle" />
+                    <p>Business Owner</p>
+                </section>
+                {
+                    server_error_msg && <p className="auth_server_error_msg">{server_error_msg}</p>
+                }
                 <section className="auth_entries">
                     <section className="auth_entry">
                         <p className="auth_text">Username:</p>
