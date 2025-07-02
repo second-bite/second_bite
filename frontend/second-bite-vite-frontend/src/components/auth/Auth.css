@@ -7,6 +7,12 @@
     align-items: center;
 }
 
+.auth_server_error_msg {
+    margin-top: 5px;
+    font-size: clamp(1rem, 1vw, 2rem);
+    color: red;
+}
+
 .auth_container {
     display: flex;
     background-color: var(--auth-container-bg-color);

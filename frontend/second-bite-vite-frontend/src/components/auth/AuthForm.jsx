@@ -11,7 +11,6 @@ const AuthForm = () => {
     const [form_status, setFormStatus] = useState(form_enum.sign_up)
 
     useEffect(() => {
-        console.log(form_enum.sign_up)
         if(form_status === form_enum.sign_up) setAuthFormTitle('Sign Up')
         else if(form_status === form_enum.log_in) setAuthFormTitle('Log In')
     }, [form_status])
@@ -40,7 +39,7 @@ const AuthForm = () => {
                     <button style={signup_auth_btn_style} id="signup_auth_btn" className="auth_toggle_btn" onClick={handleSignUpToggle}>Sign Up</button>
                     <button style={login_auth_btn_style} id="login_auth_btn" className="auth_toggle_btn" onClick={handleLogInToggle}>Log In</button>
                 </section>
-                {(form_status === form_enum.sign_up) ? <SignUpForm auth_form_title={auth_form_title}/> : <LoginForm auth_form_title={auth_form_title}/>}
+                {(form_status === form_enum.sign_up) ? <SignUpForm auth_form_title={auth_form_title} form_enum={form_enum} setFormStatus={setFormStatus}/> : <LoginForm auth_form_title={auth_form_title}/>}
             </section>
         </section>
     )

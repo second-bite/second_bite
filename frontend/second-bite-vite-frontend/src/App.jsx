@@ -15,11 +15,12 @@ import AddRestaurantModal from './components/modals/AddRestaurantModal'
 export const AppContext = createContext()
 
 function App() {
+  const [base_url, setBaseURL] = useState(import.meta.env.VITE_BASE_URL)
   const [is_feedback_modal, setIsFeedbackModal] = useState(false)
   const [is_add_restaurant_modal, setIsAddRestaurantModal] = useState(false)
 
   return (
-    <AppContext.Provider value={{is_feedback_modal, setIsFeedbackModal, is_add_restaurant_modal, setIsAddRestaurantModal}}>
+    <AppContext.Provider value={{base_url, is_feedback_modal, setIsFeedbackModal, is_add_restaurant_modal, setIsAddRestaurantModal}}>
       <div className="App">
         <Router>
           <Routes>
