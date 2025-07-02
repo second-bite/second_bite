@@ -8,6 +8,12 @@
 @import 'components/main/FilterSort/Specifiers.css';
 @import 'components/main/RestaurantTiles/RestaurantTiles.css';
 
+/* Feedback Modal */
+@import 'components/feedback/FeedbackModal.css';
+
+/* Account Info */
+@import 'components/account_info/AccountInfo.css';
+
 .App {
   height: 100vh;
   width: 100vw;
@@ -21,4 +27,34 @@ body {
 
 main {
   flex: 1;
+}
+
+.modal {
+  position: fixed;
+  /* justify-content: center;
+  align-items: center; */
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+
+.modal_content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1%;
+  border: 2px solid black;
+  border-radius: 18px;
+  box-shadow: 3px 3px 15px rgba(0,0,0,0.5);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  overflow-y: auto;
+
+  /* background-color: white; */
+  background-color: white;
+  color: black;
 }

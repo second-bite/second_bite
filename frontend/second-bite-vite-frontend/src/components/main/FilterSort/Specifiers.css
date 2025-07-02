@@ -1,39 +1,3 @@
-/* Tile Cuisine Filters */
-.filters {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    margin: 10px 2vw 0 2vw;
-    padding-bottom: 10px;
-    gap: 10px;
-}
-
-.cuisine_filter {
-    flex: 1 1 7vw;      /* → minimum 7vw, but will grow and shrink */
-    flex-shrink: 0;
-    color: black;
-    padding-left: 10px;
-    padding-right: 10px;
-    background-color: gainsboro;
-    border-radius: 35%;
-    white-space: nowrap;
-    box-shadow: 4px 4px 10px rgb(0, 0, 0, 0.2);
-}
-
-.cuisine_filter_text {
-    text-align: center;
-    font-weight: 500;
-}
-
-
-.search_n_sort {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-left: 2vw;
-    gap: 20px;
-}
-
 /* Search */
 .search_form {
     position: relative;
@@ -48,16 +12,81 @@
 }
 
 .restaurant_search_input {
+    all: unset;
+    background-color: lightgray;
     height: 3vh;
-    width: 35vw;
-    padding-left: 30px;
+    width: 50vw;
+    padding: 5px 0 5px 30px;
+    border-radius: 16px;
+}
+
+
+
+
+.filter_n_sort {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 2vw 0 2vw;
+    gap: clamp(40px, 40%, 400px);
+}
+
+/* Tile Cuisine Filters */
+.filters {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 10px;
+}
+
+.cuisine_filter {
+    flex: 1 1 7vw;     
+    flex-shrink: 0;
+    color: black;
+    background-color: #f1f1f2;
+    border-radius: 16px;
+    white-space: nowrap;
+    box-shadow: 4px 4px 10px rgb(0, 0, 0, 0.2);
+}
+
+.cuisine_filter_text {
+    all: unset;
+    padding: 2px 2px;
+    text-align: center;
+    font-weight: 500;
+    color: #2e2f32;
 }
 
 /* Sort */
 .sort {
-    justify-self: center;
+    width: clamp(100px, 30%, 400px);
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    position: relative;
 }
 
 .sort_dropdown {
-    width: 10vw;
+    all: unset;
+    cursor: pointer;
+    font-size: 30px;
+    transform: translate(0%, -5%);
+}
+
+.sort_dropdown_popup {
+    z-index: 1;
+    position: absolute;
+    top: 50px;
+    background-color: white;
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.4);
+    padding: 0 1vw 0 1vw;
+}
+
+.sort_dropdown_popup_option {
+    padding: 2px;
+}
+
+.sort_dropdown_popup_option:hover {
+    background-color: #a5ccf9;
 }

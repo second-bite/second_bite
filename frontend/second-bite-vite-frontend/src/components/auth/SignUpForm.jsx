@@ -9,8 +9,7 @@ const SignUpForm = ({auth_form_title}) => {
     const [username_msg, setUsernameMsg] = useState('')
     const [password_msg, setPasswordMsg] = useState('')
     const [confirm_password_msg, setConfirmPasswordMsg] = useState('')
-    const [street_no_msg, setStreetNoMsg] = useState('');
-    const [street_name_msg, setStreetNameMsg] = useState('');
+    const [street_addeess_msg, setStreetAddressMsg] = useState('');
     const [city_msg, setCityMsg] = useState('');
     const [state_msg, setStateMsg] = useState('');
     const [country_msg, setCountryMsg] = useState('');
@@ -21,12 +20,11 @@ const SignUpForm = ({auth_form_title}) => {
         if(!form_ref.current.elements.signup_username.value) await setUsernameMsg('Please enter username.')
         if(!form_ref.current.elements.signup_password.value) await setPasswordMsg('Please enter password.')
         if(!form_ref.current.elements.signup_confirm_password.value) await setConfirmPasswordMsg('Please enter re-enter password.')
-        if (!form_ref.current.elements.signup_street_no.value) await setStreetNoMsg('Please enter street number.');
-        if (!form_ref.current.elements.signup_street_name.value) await setStreetNameMsg('Please enter street name.');
+        if (!form_ref.current.elements.signup_street_address.value) await setStreetAddressMsg('Please enter street address.');
         if (!form_ref.current.elements.signup_city.value) await setCityMsg('Please enter city.');
         if (form_ref.current.elements.signup_state.value === 'none') await setStateMsg('Please select a state.');
         if (form_ref.current.elements.signup_country.value === 'none') await setCountryMsg('Please select a country.');
-        if(username_msg || password_msg || confirm_password_msg || street_no_msg || street_name_msg || city_msg || state_msg || country_msg) return;
+        if(username_msg || password_msg || confirm_password_msg || street_addeess_msg || city_msg || state_msg || country_msg) return;
     }
 
     return (
@@ -52,11 +50,7 @@ const SignUpForm = ({auth_form_title}) => {
                     <section className="location_auth_entries">
                         <section className="location_auth_entry">
                             <p className="location_auth_text">Street No.:</p>
-                            <input type="text" name="signup_street_no" className="auth_input" placeholder={street_no_msg} />
-                        </section>
-                        <section className="location_auth_entry">
-                            <p className="location_auth_text">Street Name:</p>
-                            <input type="text" name="signup_street_name" className="auth_input" placeholder={street_name_msg} />
+                            <input type="text" name="signup_street_adress" className="auth_input" placeholder={street_addeess_msg} />
                         </section>
                         <section className="location_auth_entry">
                             <p className="location_auth_text">City:</p>
@@ -73,7 +67,7 @@ const SignUpForm = ({auth_form_title}) => {
                                 ))}
                             </select>
                         </section>
-                        <section className="location_auth_entry" id="location_auth_country">
+                        <section className="location_auth_entry">
                             <p className="location_auth_text">Country:</p>
                             <select name="signup_country" className="auth_input">
                                 <option value="none">{country_msg || 'Select a Country:'}</option>
