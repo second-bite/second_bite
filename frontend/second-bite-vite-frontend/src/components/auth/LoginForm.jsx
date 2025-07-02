@@ -1,14 +1,17 @@
 import React, {useState, useRef, useContext} from 'react'
 import PropTypes from 'prop-types'
 
-import { AppContext } from '../../context/AppContext'
 import { useNavigate } from 'react-router'
+
+import { AppContext } from '../../context/AppContext'
+import { AuthContext } from '../../context/AuthContext'
 
 const LoginForm = ({auth_form_title}) => {
     const form_ref = useRef()
     const navigate = useNavigate()
 
     const {base_url} = useContext(AppContext)
+    const {setIsLoading, setAuthStatus, AUTH_STATUS} = useContext(AuthContext)
 
     // State Vars
     const [is_account_type_toggled, setIsAccountTypeToggled] = useState(false)
@@ -20,6 +23,7 @@ const LoginForm = ({auth_form_title}) => {
 
     const handleLogIn = async (event) => {
         event.preventDefault()
+        await setIsLoading(true)
 
         // Ensure all required fields are filled
         const form = form_ref.current.elements
@@ -36,7 +40,8 @@ const LoginForm = ({auth_form_title}) => {
             const response  = await fetch(base_url + `/auth/login/` + account_type, {
                 method: 'POST',
                 body: JSON.stringify(login_body),
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
             })
             if(response.status === 400 || response.status === 401) {
                 const err_msg = await response.json().message
@@ -47,9 +52,12 @@ const LoginForm = ({auth_form_title}) => {
             if(!response.ok) throw new Error(`Failed to log into account. Status: ${response.status}`);
 
             // Sucess! Direct to main page
+            await setAuthStatus(is_account_type_toggled ? AUTH_STATUS.OWNER_AUTH : AUTH_STATUS.CONSUMER_AUTH)
             navigate('/main')
         } catch (e) {
             console.error('Error: ', e);
+        } finally {
+            await setIsLoading(false)
         }
     }
     const handleAccountTypeToggle = (event) => {
