@@ -26,7 +26,6 @@ const SignUpForm = ({auth_form_title, form_enum, setFormStatus}) => {
         event.preventDefault()
 
         // Ensure all required fields are filled
-        // TODO: Fix the props object or prop passing error
         const form = form_ref.current.elements;
         if(!form.signup_username.value) await setUsernameMsg('Please enter username.')
         if(!form.signup_password.value) await setPasswordMsg('Please enter password.')
@@ -36,7 +35,7 @@ const SignUpForm = ({auth_form_title, form_enum, setFormStatus}) => {
         if (!form.signup_postal_code.value) await setPostalCodeMsg('Please enter postal code.');
         if (form.signup_state.value === 'none') await setStateMsg('Please select a state.');
         if (form.signup_country.value === 'none') await setCountryMsg('Please select a country.');
-        if(username_msg || password_msg || confirm_password_msg || street_address_msg || city_msg || postal_code_msg || state_msg || country_msg) return;
+        if (!form.signup_username.value || !form.signup_password.value || !form.signup_confirm_password.value || !form.signup_street_address.value || !form.signup_city.value || !form.signup_postal_code.value || form.signup_state.value === 'none' || form.signup_country.value === 'none') return // Done like this to prevent issues with async
 
 
 

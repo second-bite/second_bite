@@ -25,7 +25,7 @@ const LoginForm = ({auth_form_title}) => {
         const form = form_ref.current.elements
         if(!form.login_username.value) await setUsernameMsg('Please enter username.')
         if(!form.login_password.value) await setPasswordMsg('Please enter password.')
-        if(username_msg || password_msg) return;
+        if(!form.login_username.value || !form.login_password.value) return; // Done like this to prevent issues with async
 
         try {
             const login_body = {
