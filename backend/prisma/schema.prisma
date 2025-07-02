@@ -16,7 +16,7 @@ datasource db {
 
 
 /**
- * Consumer-Specific
+ * Consumer-Specific // TODO: Integrate extra fields back in
  */
 model Consumer {
   consumer_id         Int                     @id @unique @default(autoincrement())
@@ -30,6 +30,7 @@ model Consumer {
   // friends_relation    Consumer[]              @relation("friends")
 }
 
+// TODO: Integrate this model back in
 // model PastRestaurants {
 //   consumer_id         Int 
 //   consumer            Consumer                @relation(fields: [consumer_id], references: [consumer_id])
@@ -53,7 +54,7 @@ model Consumer {
 
 
 /**
- * Owner-Specific
+ * Owner-Specific // TODO: Integrate extra fields back in
  */
 model Owner {
   owner_id            Int                     @id @default(autoincrement())
@@ -65,7 +66,7 @@ model Owner {
 }
 
 
-
+// TODO: Integrate this modal back in
 /**
  * Restaurant-Specific
  */
@@ -115,7 +116,7 @@ model Owner {
 
 
 /**
- * Other
+ * Other // TODO: Integrate extra fields back in
  */
 model Address {
   // Core Address Info
@@ -133,6 +134,7 @@ model Address {
   // restaurant        Restaurant?                 
 }
 
+// TODO: Integrate this model back in
 // model Feedback {
 //   feedback_id       Int                           @id @default(autoincrement())
 //   num_stars         Int

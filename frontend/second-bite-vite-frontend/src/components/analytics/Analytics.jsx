@@ -13,13 +13,13 @@ const Analytics = () => {
     const graph_ref = useRef()
 
     const graph_enum = {
-        orders: "Orders",
-        revenue: "Revenue",
-        page_visits: "Page Visits"
+        ORDERS: "Orders",
+        REVENUE: "Revenue",
+        PAGE_VISITS: "Page Visits"
     }
 
     const [selected_restaurant, setSelectedRestaurant] = useState('Mezze Cafe')
-    const [selected_graph, setSelectedGraph] = useState(graph_enum.orders)
+    const [selected_graph, setSelectedGraph] = useState(graph_enum.ORDERS)
 
     // Handlers
     const handleRestaurantSelect = (selection) => {

@@ -4,7 +4,7 @@ import states from "../misc/States"
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import { AppContext } from "../../App"
+import { AppContext } from "../../context/AppContext"
 
 const OwnerInfo = () => {
     const navigate = useNavigate()

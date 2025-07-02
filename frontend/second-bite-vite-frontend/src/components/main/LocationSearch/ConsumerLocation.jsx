@@ -8,32 +8,32 @@ const ConsumerLocation = () => {
     const form_ref = useRef()
 
     const search_popup_status_enum = {
-        none: 'none',
-        regular_search: 'regular_search',
-        special_search: 'special_search',
+        NONE: 'none',
+        REGULAR_SEARCH: 'regular_search',
+        SPECIAL_SEARCH: 'special_search',
     }
-    const [search_popup_status, setSearchPopupStatus] = useState(search_popup_status_enum.none)
+    const [search_popup_status, setSearchPopupStatus] = useState(search_popup_status_enum.NONE)
     const [search_query, setSearchQuery] = useState('');
 
     // Handlers
     const handleSpecialSearch = async () => {
         await setSearchQuery('')
-        if(search_popup_status === search_popup_status_enum.none || search_popup_status === search_popup_status_enum.regular_search) {
-            await setSearchPopupStatus(search_popup_status_enum.special_search)
+        if(search_popup_status === search_popup_status_enum.NONE || search_popup_status === search_popup_status_enum.REGULAR_SEARCH) {
+            await setSearchPopupStatus(search_popup_status_enum.SPECIAL_SEARCH)
         }
-        else await setSearchPopupStatus(search_popup_status_enum.none)
+        else await setSearchPopupStatus(search_popup_status_enum.NONE)
     }
     const handleSearchQueryChange = (event) => {
         // 
-        if(search_query && !event.target.value) setSearchPopupStatus(search_popup_status_enum.none)
-        else if (search_popup_status !== search_popup_status_enum.regular_search) {
-            setSearchPopupStatus(search_popup_status_enum.regular_search)
+        if(search_query && !event.target.value) setSearchPopupStatus(search_popup_status_enum.NONE)
+        else if (search_popup_status !== search_popup_status_enum.REGULAR_SEARCH) {
+            setSearchPopupStatus(search_popup_status_enum.REGULAR_SEARCH)
         }
         // TODO: Add actual dynamic search results as search changes
     }
     const handleSearchClear = async () => {
         await setSearchQuery('')
-        await setSearchPopupStatus(search_popup_status_enum.none)
+        await setSearchPopupStatus(search_popup_status_enum.NONE)
     }
 
     return (
@@ -50,10 +50,10 @@ const ConsumerLocation = () => {
                     <p className='special_address_dropdown' onClick={(event) => handleSpecialSearch(event)}>▼</p>
                 </form>
                 {
-                    (search_popup_status !== search_popup_status_enum.none) &&
+                    (search_popup_status !== search_popup_status_enum.NONE) &&
                         <section className="search_results_popup">
                             {
-                                (search_popup_status === search_popup_status_enum.regular_search) ?
+                                (search_popup_status === search_popup_status_enum.REGULAR_SEARCH) ?
                                 <RegularSearchResults /> : <SpecialSearchResults />
                             }
                         </section>

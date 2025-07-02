@@ -6,13 +6,13 @@ const Specifiers = () => {
     const sort_dropdown_ref = useRef()
 
     const sort_types_enum = {
-        none: "Best Match",
-        price: "Price",
-        rating: "Rating",
-        distance: "Distance",
+        NONE: "Best Match",
+        PRICE: "Price",
+        RATING: "Rating",
+        DISTANCE: "Distance",
     }
 
-    const [sort_type, setSortType] = useState(sort_types_enum.price)
+    const [sort_type, setSortType] = useState(sort_types_enum.PRICE)
     const [is_sort_dropdown, setIsSortDropdown] = useState(false)
 
     const sort_dropdown_symbol_style = (is_sort_dropdown) ? {"transform": "translate(0%, -5%)"} : {"transform": "translate(0%, -5%)"}

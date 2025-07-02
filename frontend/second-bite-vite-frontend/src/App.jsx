@@ -1,8 +1,11 @@
-import { useState, createContext } from 'react'
+import React from 'react'
 import {BrowserRouter as Router, Routes, Route, useNavigate} from 'react-router-dom'
 import './App.css'
 
+// Contexts
+import { AppProvider } from './context/AppContext'
 
+// Pages
 import AuthPage from './pages/AuthPage'
 import MainPage from './pages/MainPage'
 import FeedbackModal from './components/modals/FeedbackModal'
@@ -11,16 +14,10 @@ import AnalyticsPage from './pages/AnalyticsPage'
 import OwnerInfoPage from './pages/OwnerInfoPage'
 import AddRestaurantModal from './components/modals/AddRestaurantModal'
 
-
-export const AppContext = createContext()
-
 function App() {
-  const [base_url, setBaseURL] = useState(import.meta.env.VITE_BASE_URL)
-  const [is_feedback_modal, setIsFeedbackModal] = useState(false)
-  const [is_add_restaurant_modal, setIsAddRestaurantModal] = useState(false)
 
   return (
-    <AppContext.Provider value={{base_url, is_feedback_modal, setIsFeedbackModal, is_add_restaurant_modal, setIsAddRestaurantModal}}>
+    <AppProvider>
       <div className="App">
         <Router>
           <Routes>
@@ -34,7 +31,7 @@ function App() {
         <FeedbackModal />
         <AddRestaurantModal />
       </div>
-    </AppContext.Provider>
+    </AppProvider>
   )
 }
 

@@ -1,7 +1,7 @@
 import React, {useState, useRef, useContext} from 'react'
 import PropTypes from 'prop-types'
 
-import { AppContext } from '../../App'
+import { AppContext } from '../../context/AppContext'
 import { useNavigate } from 'react-router'
 
 const LoginForm = ({auth_form_title}) => {

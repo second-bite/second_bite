@@ -1,7 +1,7 @@
 import React, {useState, useRef, useContext} from 'react'
 import PropTypes from 'prop-types'
 import states from '../misc/States'
-import { AppContext } from '../../App'
+import { AppContext } from '../../context/AppContext'
 
 const SignUpForm = ({auth_form_title, form_enum, setFormStatus}) => {
     const form_ref = useRef()

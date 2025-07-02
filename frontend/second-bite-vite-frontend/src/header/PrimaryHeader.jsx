@@ -3,7 +3,7 @@ import { Menu } from '@headlessui/react'
 import { Bars3Icon } from '@heroicons/react/24/solid'
 import { useNavigate } from 'react-router-dom'
 
-import { AppContext } from '../App'
+import { AppContext } from '../context/AppContext'
 
 const PrimaryHeader = () => {
     const navigate = useNavigate()
