@@ -164,16 +164,18 @@ const AddRestaurantModal = () => {
         }
         const response  = await fetch(base_url + `/restaurant`, {
             method: 'POST',
+            credentials: 'include',
             body: JSON.stringify(body),
             headers: { 'Content-Type': 'application/json' }
         })
         if(response.status === 400) {
-            const { err_msg } = await response.json()
-            await setServerErrorMsg(err_msg)
+            const { message } = await response.json()
+            await setServerErrorMsg(message)
         } else {
             await setServerErrorMsg('')
         }
-        if(!response.ok) throw new Error(`Failed to add restaurant. Status: ${response.status}`);
+        const { message } = await response.json()
+        if(!response.ok) throw new Error(`Failed to add restaurant. Status: ${response.status}. ErrMsg: ${message}`);
 
         setIsAddRestaurantModal(false)
 
