@@ -40,7 +40,7 @@ const OwnerInfo = () => {
     return (
         <section className="account_info">
             <form className="account_info_form">
-                <button className="account_return_btn" onClick={handleAccountReturn}>←</button>
+                <button type="button" className="account_return_btn" onClick={handleAccountReturn}>←</button>
                 <h2 className="text-2xl font-bold mt-6 mb-4" id="account_info_title">Edit Personal info</h2>
 
 

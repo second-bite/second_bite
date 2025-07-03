@@ -77,6 +77,11 @@
     gap: 15px;
 }
 
+.auth_entry {
+    display: flex;
+    flex-direction: column;
+}
+
 .location_auth_entries, .auth_password{
     display: grid;
     grid-template-columns: auto auto;

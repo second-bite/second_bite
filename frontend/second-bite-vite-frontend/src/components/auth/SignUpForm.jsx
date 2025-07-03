@@ -25,9 +25,19 @@ const SignUpForm = ({auth_form_title, FORM_TYPE, setFormStatus}) => {
     
     const handleSignUp = async (event) => {
         event.preventDefault()
+        const form = form_ref.current.elements;
+
+        // Clear required field error messages
+        setUsernameMsg('');
+        setPasswordMsg('');
+        setConfirmPasswordMsg('');
+        setStreetAddressMsg('');
+        setCityMsg('');
+        setPostalCodeMsg('');
+        setStateMsg('');
+        setCountryMsg('');
 
         // Ensure all required fields are filled
-        const form = form_ref.current.elements;
         if(!form.signup_username.value) await setUsernameMsg('Please enter username.')
         if(!form.signup_password.value) await setPasswordMsg('Please enter password.')
         if(!form.signup_confirm_password.value) await setConfirmPasswordMsg('Please enter re-enter password.')

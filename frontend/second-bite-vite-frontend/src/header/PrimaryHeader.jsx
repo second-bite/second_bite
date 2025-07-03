@@ -22,6 +22,9 @@ const PrimaryHeader = () => {
             navigate('/account')
         }
     }
+    const handleAnalyticsClick = () => {
+        navigate('/analytics')
+    }
     const handleSignOut = async () => {
         try {
             setIsLoading(true)
@@ -100,6 +103,7 @@ const PrimaryHeader = () => {
                             {({ active }) => (
                                 <a
                                 href="#"
+                                onClick={handleAnalyticsClick}
                                 className={`block px-4 py-2 text-sm ${
                                     active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                                 }`}
