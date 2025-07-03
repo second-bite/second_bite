@@ -10,12 +10,17 @@ const PrimaryHeader = () => {
     const navigate = useNavigate()
 
     const {base_url, is_feedback_modal, setIsFeedbackModal} = useContext(AppContext)
-    const {setIsLoading} = useContext(AuthContext)
+    const {setIsLoading, auth_status, AUTH_STATUS} = useContext(AuthContext)
 
     const handleFeedbackClick = () => {setIsFeedbackModal(true)}
 
     const handleAccountInfoClick = () => {
-        navigate('/account')
+        if(auth_status === AUTH_STATUS.OWNER_AUTH) {
+            navigate('/owner')
+        }
+        else if(auth_status === AUTH_STATUS.CONSUMER_AUTH) {
+            navigate('/account')
+        }
     }
     const handleSignOut = async () => {
         try {
@@ -62,30 +67,49 @@ const PrimaryHeader = () => {
                         </a>
                     )}
                     </Menu.Item>
-                    <Menu.Item>
-                    {({ active }) => (
-                        <a
-                        href="#"
-                        className={`block px-4 py-2 text-sm ${
-                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                        }`}
-                        >
-                        Favorited
-                        </a>
-                    )}
-                    </Menu.Item>
-                    <Menu.Item>
-                    {({ active }) => (
-                        <a
-                        href="#"
-                        className={`block px-4 py-2 text-sm ${
-                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                        }`}
-                        >
-                        Shopped
-                        </a>
-                    )}
-                    </Menu.Item>
+                    {
+                        (auth_status === AUTH_STATUS.CONSUMER_AUTH) ? (
+                            <>
+                                <Menu.Item>
+                                {({ active }) => (
+                                    <a
+                                    href="#"
+                                    className={`block px-4 py-2 text-sm ${
+                                        active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                                    }`}
+                                    >
+                                    Favorited
+                                    </a>
+                                )}
+                                </Menu.Item>
+                                <Menu.Item>
+                                {({ active }) => (
+                                    <a
+                                    href="#"
+                                    className={`block px-4 py-2 text-sm ${
+                                        active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                                    }`}
+                                    >
+                                    Shopped
+                                    </a>
+                                )}
+                                </Menu.Item>
+                            </>
+                        ) : (auth_status === AUTH_STATUS.OWNER_AUTH) ? (
+                            <Menu.Item>
+                            {({ active }) => (
+                                <a
+                                href="#"
+                                className={`block px-4 py-2 text-sm ${
+                                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                                }`}
+                                >
+                                Analytics
+                                </a>
+                            )}
+                            </Menu.Item>
+                        ) : null
+                    }
                     <Menu.Item>
                     {({ active }) => (
                         <a

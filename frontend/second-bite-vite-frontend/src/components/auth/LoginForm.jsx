@@ -1,4 +1,4 @@
-import React, {useState, useRef, useContext} from 'react'
+import React, {useState, useRef, useContext, useEffect} from 'react'
 import PropTypes from 'prop-types'
 
 import { useNavigate } from 'react-router'
@@ -11,7 +11,7 @@ const LoginForm = ({auth_form_title}) => {
     const navigate = useNavigate()
 
     const {base_url} = useContext(AppContext)
-    const {setIsLoading, setAuthStatus, AUTH_STATUS} = useContext(AuthContext)
+    const {setIsLoading, auth_status, setAuthStatus, AUTH_STATUS} = useContext(AuthContext)
 
     // State Vars
     const [is_account_type_toggled, setIsAccountTypeToggled] = useState(false)
@@ -20,6 +20,15 @@ const LoginForm = ({auth_form_title}) => {
     // Required Field Error Msgs
     const [username_msg, setUsernameMsg] = useState('')
     const [password_msg, setPasswordMsg] = useState('')
+
+    useEffect(() => {
+        if (auth_status === AUTH_STATUS.CONSUMER_AUTH) {
+            navigate('/main');
+        }
+        else if (auth_status === AUTH_STATUS.OWNER_AUTH) {
+            navigate('/analytics');
+        }
+    }, [auth_status]);
 
     const handleLogIn = async (event) => {
         event.preventDefault()
@@ -51,9 +60,8 @@ const LoginForm = ({auth_form_title}) => {
             }
             if(!response.ok) throw new Error(`Failed to log into account. Status: ${response.status}`);
 
-            // Sucess! Direct to main page
+            // Sucess! Direct to main page (with useEffect)
             await setAuthStatus(is_account_type_toggled ? AUTH_STATUS.OWNER_AUTH : AUTH_STATUS.CONSUMER_AUTH)
-            navigate('/main')
         } catch (e) {
             console.error('Error: ', e);
         } finally {
