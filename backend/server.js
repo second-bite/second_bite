@@ -13,6 +13,7 @@ app.use(cors({
 }));
 
 const { auth_routes } = require('./routes/user_auth')
+const restaurant_routes = require('./routes/restaurant')
 
 app.use(session({
     secret: 'second-bite',
@@ -22,6 +23,7 @@ app.use(session({
 }))
 
 app.use('/auth', auth_routes)
+app.use('/restaurant', restaurant_routes)
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

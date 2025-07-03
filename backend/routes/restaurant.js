@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const prisma = require('./prisma')
+const prisma = require('./prisma_client')
 
 const {user_types_check, check_auth} = require('./user_auth')
 
@@ -8,21 +8,23 @@ const {user_types_check, check_auth} = require('./user_auth')
  * Fundamental Operations
  */
 
+// TODO:
 // Get list of all restaurants (w/ desired filters, etc - used for Main Search Page)
 // NOTE: Consumer View
-router.get('/restaurant', (req, res) => {
-    const {...} = req.query
-})
+// router.get('/', (req, res) => {
+//     const {...} = req.query
+// })
 
+// TODO: 
 // Get a specific restaurant by its ID (for restaurant pop-up modals)
 // NOTE: Consumer View
-router.get('/restaurant/:id', (req, res) => {
-    const {restaurant_id} = req.params
-})
+// router.get('/:id', (req, res) => {
+//     const {restaurant_id} = req.params
+// })
 
 // Create new restaurant entry
 // NOTE: Business Owner View
-router.post('/restaurant', check_auth(user_types_check.owner),  async (req, res, next) => {
+router.post('/', check_auth(user_types_check.owner),  async (req, res, next) => {
     try {
         const owner_id = req.session.user_id
         if (!req.body) return next({status: 400, message: `Missing request body for account register`})
@@ -63,32 +65,38 @@ router.post('/restaurant', check_auth(user_types_check.owner),  async (req, res,
             data: data,            
         })
 
-        const { restaurant_id_, address_id_, owner_id_, ...public_response} = restaurant
+        const { restaurant_id: restaurant_id_, address_id: address_id_, owner_id: owner_id_, ...public_response} = restaurant
         res.status(201).json( public_response )
     } catch (err) {
         return next(err)
     }
 })
 
+// TODO:
 // Edit existing restaurant entry
 // NOTE: Business Owner View 
-router.put('/restaurant/:id', (req, res) => {
-    const {restaurant_id} = req.params
-    const {...} = req.body
-})
+// router.put('/:id', (req, res) => {
+//     const {restaurant_id} = req.params
+//     const {...} = req.body
+// })
 
+// TODO:
 // Delete existing restaurant entry
 // NOTE: Business Owner View
-router.delete('/restaurant/:id', (req, res) => {
-    const {restaurant_id} = req.params
-})
+// router.delete('/:id', (req, res) => {
+//     const {restaurant_id} = req.params
+// })
 
+// TODO:
 /**
  * Ratings/Reviews
  */
 // Rate restaurant
 // NOTE: Consumer View
-router.post('/restaurant/rating/:id') {
-    const {restaurant_id} = req.params
-    const {...} = req.body
-}
+// router.post('/rating/:id') {
+//     const {restaurant_id} = req.params
+//     const {...} = req.body
+// }
+
+
+module.exports = router
