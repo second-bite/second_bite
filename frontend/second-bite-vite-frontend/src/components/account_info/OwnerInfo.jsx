@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react"
+import React, { useState, useRef, useContext, useEffect } from "react"
 import { useNavigate } from 'react-router-dom'
 import states from "../misc/States"
 
@@ -36,6 +36,10 @@ const OwnerInfo = () => {
     const handleDeleteRestaurant = () => {
         
     }
+
+    useEffect(() => {
+
+    }, [])
 
     return (
         <section className="account_info">

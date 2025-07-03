@@ -137,11 +137,11 @@ const AddRestaurantModal = () => {
     }
 
     // Address validation
-    // const is_valid_address = address_validation(form.street_address.value, form.city.value, form.state.value, form.postal_code.value)
-    // if(!is_valid_address) {
-    //     setAddressErrMsg('Entered invalid address')
-    //     return
-    // }
+    const is_valid_address = address_validation(form.street_address.value, form.city.value, form.state.value, form.postal_code.value)
+    if(!is_valid_address) {
+        setAddressErrMsg('Entered invalid address')
+        return
+    }
 
     // TODO: Add API call
     try {
