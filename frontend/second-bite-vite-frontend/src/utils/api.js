@@ -18,3 +18,13 @@ export const address_validation = async (street_address, city, state, postal_cod
         return false
     }
 }
+
+export const time_validation = (time) => {
+    const regex_check = /^(?:1[0-2]|0?[1-9]):[0-5][0-9]\s?(?:AM|PM)$/i;
+    return regex_check.test(time.trim().toUpperCase().replace(/\s/g, ''))
+}
+
+export const money_validation = (money) => {
+    const regex_check = /^\$?(([1-9]\d{0,2}(,\d{3})*)|0)?\.\d{1,2}$/
+    return regex_check.test(money.trim())
+}

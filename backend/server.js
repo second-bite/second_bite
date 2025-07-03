@@ -5,7 +5,12 @@ const app = express()
 const PORT = 3000
 
 app.use(express.json())
-app.use(cors())
+
+const allowed_cors_origins = ['http://localhost:5173', 'http://localhost:3000']
+app.use(cors({
+  origin: allowed_cors_origins,
+  credentials: true
+}));
 
 const { auth_routes } = require('./routes/user_auth')
 
@@ -13,7 +18,7 @@ app.use(session({
     secret: 'second-bite',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 }
+    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60, sameSite: 'none' }
 }))
 
 app.use('/auth', auth_routes)

@@ -62,56 +62,78 @@ model Owner {
   // email               String                  @unique 
   password            String
   address             Address?                @relation("owner_address")
-  // restaurants         Restaurant[]
+  restaurants         Restaurant[]
 }
 
 
-// TODO: Integrate this modal back in
 /**
  * Restaurant-Specific
  */
-// enum Categories {
-//   Chinese
-//   Indian
-//   Vietnamese
-//   Mexican
-//   Healthy
-//   Mediterranean
-//   // ... TODO: Add more
-// }
+enum Categories {
+  Asian
+  Bakery
+  BarFood
+  BBQ
+  Breakfast
+  Burgers
+  Cafe
+  Chinese
+  Desserts
+  FastFood
+  French
+  Greek
+  Healthy
+  Indian
+  Italian
+  Japanese
+  Korean
+  LatinAmerican
+  Mediterranean
+  Mexican
+  MiddleEastern
+  Pizza
+  Salads
+  Sandwiches
+  Seafood
+  Sushi
+  Thai
+  Vegan
+  Vegetarian
+  Vietnamese
+}
 
-// model Rating {
-//   rating_id         Int                       @id @default(autoincrement())
-//   num_stars         Int
-//   msg               String
-//   user_id           Int
-//   create_date       DateTime                  @default(now())
-//   restaurant_id     Int  
-//   restaurant        Restaurant                @relation(fields: [restaurant_id], references:[restauraunt_id])
-// }
+model Rating {
+  rating_id         Int                       @id @default(autoincrement())
+  num_stars         Int
+  msg               String
+  user_id           Int
+  create_date       DateTime                  @default(now())
+  restaurant_id     Int  
+  restaurant        Restaurant                @relation(fields: [restaurant_id], references:[restaurant_id])
+}
 
-// model Restaurant {
-//   restauraunt_id    Int                     @id @default(autoincrement())
-//   name              String
-//   descr             String
-//   address_id        Int                     @unique
-//   address           Address                 @relation(fields: [address_id], references: [address_id])
-//   categories        Categories[]
-//   img_url           String
-//   img_alt           String
-//   avg_cost          Decimal                 // Avg cost of the surplus (not typical prices)
-//   ratings           Rating[]
-//   closing_time      String[]                // Each entry represents a day of the week (Mon-Su)
-//   owner_id          Int
-//   owner             Owner                   @relation(fields: [owner_id], references: [owner_id])
-//   pinned_by_users   PinnedRestaurants[]
-//   visited_by_users  PastRestaurants[]
+model Restaurant {
+  restaurant_id    Int                      @id @default(autoincrement())
+  name              String
+  descr             String
+  address_id        Int                     @unique
+  address           Address?                @relation("restaurant_address")
+  categories        Categories[]
+  img_url           String
+  img_alt           String
+  avg_cost          Decimal                 // Avg cost of the surplus (not typical prices)
+  ratings           Rating[]
+  pickup_time       String[]                // Each entry represents a day of the week (Mon-Su)
+  owner_id          Int
+  owner             Owner                   @relation(fields: [owner_id], references: [owner_id])
+  // pinned_by_users   PinnedRestaurants[]
+  // visited_by_users  PastRestaurants[]
 
-//   // Analytics
-//   page_visits       Int                     @default(0)
-//   revenue           Decimal                 @default(0)
-//   num_orders        Int                     @default(0)
-// }
+  // Analytics
+  // page_visits       Int                     @default(0)
+  // revenue           Decimal                 @default(0)
+  // num_orders        Int                     @default(0)
+}
 
 
 
@@ -131,7 +153,8 @@ model Address {
   consumer          Consumer?                   @relation("consumer_address", fields:[consumer_id], references: [consumer_id])
   owner_id          Int?                        @unique
   owner             Owner?                      @relation("owner_address", fields:[owner_id], references: [owner_id])
-  // restaurant        Restaurant?                 
+  restaurant_id     Int?                        @unique
+  restaurant        Restaurant?                 @relation("restaurant_address", fields:[restaurant_id], references: [restaurant_id])
 }
 
 // TODO: Integrate this model back in

@@ -1,20 +1,31 @@
 import React, { useContext, useRef, useState } from 'react'
 import { AppContext } from '../../context/AppContext'
 
+
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 
 import Select from 'react-select';
 import { cuisine_filters_react_select } from '../misc/FilterTypes'
 import states from '../misc/States'
+import { time_validation, address_validation, money_validation } from '../../utils/api';
+
 
 const AddRestaurantModal = () => {
   const form_ref = useRef();
-  const { is_add_restaurant_modal, setIsAddRestaurantModal } = useContext(AppContext)
+  const { base_url, is_add_restaurant_modal, setIsAddRestaurantModal } = useContext(AppContext)
+
+  const [ selected_categories, setSelectedCategories ] = useState([])
+  const [ input_img_url, setInputImgURL ] = useState('')
+
+  const [ time_err_msg, setTimeErrMsg ] = useState('')
+  const [ avg_cost_err_msg, setAvgCostErrMsg ] = useState('')
+  const [ address_err_msg, setAddressErrMsg ] = useState('')
+  const [ server_err_msg, setServerErrorMsg ] = useState('')
 
   const [name_msg, setNameMsg] = useState('')
   const [cost_msg, setCostMsg] = useState('')
-  const [about_msg, setAboutMsg] = useState('')
+  const [descr_msg, setDescrMsg] = useState('')
   const [mon_msg, setMonMsg] = useState('')
   const [tue_msg, setTueMsg] = useState('')
   const [wed_msg, setWedMsg] = useState('')
@@ -40,28 +51,44 @@ const AddRestaurantModal = () => {
   }
   const weekday_msgs = { mon_msg, tue_msg, wed_msg, thu_msg, fri_msg, sat_msg, sun_msg }
 
+  // Take user image file input & convert to usable <img> link
+  function previewImage(event) {
+        const [file] = event.target.files;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                setInputImgURL(reader.result)
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+  // Handlers
   const handleAddRestaurantClose = () => {
     setIsAddRestaurantModal(false)
+
+    // TODO: clear out all the fields
   }
   const handleAddRestaurantClickOff = (event) => {
     if (event.target === event.currentTarget) handleAddRestaurantClose();
   }
-
   const handleAddRestaurantSubmit = async (event) => {
     event.preventDefault();
     const form = form_ref.current.elements;
 
     // Clear all error messages
-    setNameMsg(''); setCostMsg(''); setAboutMsg('');
+    setNameMsg(''); setCostMsg(''); setDescrMsg('');
     setMonMsg(''); setTueMsg(''); setWedMsg('');
     setThuMsg(''); setFriMsg(''); setSatMsg(''); setSunMsg('');
     setStreetMsg(''); setCityMsg(''); setStateMsg('');
     setPostalMsg(''); setCountryMsg('');
+    setTimeErrMsg(''); setAvgCostErrMsg('');
+    setAddressErrMsg(''); setServerErrorMsg('')
 
     // Ensure all required fields are filled
-    if (!form.username.value) await setNameMsg('Please enter restaurant name.')
+    if (!form.name.value) await setNameMsg('Please enter restaurant name.')
     if (!form.avg_cost.value) await setCostMsg('Please enter average surplus cost.')
-    if (!form.about.value) await setAboutMsg('Please write something about the restaurant.')
+    if (!form.descr.value) await setDescrMsg('Please write something about the restaurant.')
     if (!form.mon_time.value) await setMonMsg('Please enter Monday closing time.')
     if (!form.tue_time.value) await setTueMsg('Please enter Tuesday closing time.')
     if (!form.wed_time.value) await setWedMsg('Please enter Wednesday closing time.')
@@ -75,9 +102,9 @@ const AddRestaurantModal = () => {
     if (!form.postal_code.value) await setPostalMsg('Please enter ZIP/postal code.')
     if (form.country.value === 'none') await setCountryMsg('Please select a country.')
     if (
-      !form.username.value ||
+      !form.name.value ||
       !form.avg_cost.value ||
-      !form.about.value ||
+      !form.descr.value ||
       !form.mon_time.value ||
       !form.tue_time.value ||
       !form.wed_time.value ||
@@ -91,6 +118,69 @@ const AddRestaurantModal = () => {
       !form.postal_code.value ||
       form.country.value === 'none'
     ) return
+
+    // Time validation
+    let are_times_valid = true
+    for(const day of weekdays) {
+        if(!time_validation(form[`${day}_time`].value)) are_times_valid = false
+    }
+    if(!are_times_valid) {
+        setTimeErrMsg('Entered an invalid time')
+        return
+    }
+
+    // Cost validation
+    const is_valid_cost = money_validation(form.avg_cost.value)
+    if(!is_valid_cost) {
+        setAvgCostErrMsg('Entered an invalid avg. cost')
+        return
+    }
+
+    // Address validation
+    // const is_valid_address = address_validation(form.street_address.value, form.city.value, form.state.value, form.postal_code.value)
+    // if(!is_valid_address) {
+    //     setAddressErrMsg('Entered invalid address')
+    //     return
+    // }
+
+    // TODO: Add API call
+    try {
+        
+        const body = {
+            name: form.name.value,
+            descr: form.descr.value,
+            address: {
+                street_address: form.street_address.value,
+                city: form.city.value,
+                postal_code: form.postal_code.value,
+                state: form.state.value,
+                country: form.country.value,
+            },
+            categories: selected_categories.map((category) => category.value),
+            img_url: input_img_url,
+            img_alt: `${form.name.value} Banner`,
+            avg_cost: form.avg_cost.value,
+            pickup_time: [form.mon_time.value, form.tue_time.value, form.wed_time.value, form.thu_time.value, form.fri_time.value, form.sat_time.value, form.sun_time.value],
+        }
+        const response  = await fetch(base_url + `/restaurant`, {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: { 'Content-Type': 'application/json' }
+        })
+        if(response.status === 400) {
+            const { err_msg } = await response.json()
+            await setServerErrorMsg(err_msg)
+        } else {
+            await setServerErrorMsg('')
+        }
+        if(!response.ok) throw new Error(`Failed to add restaurant. Status: ${response.status}`);
+
+        setIsAddRestaurantModal(false)
+
+        setInputImgURL('')
+    } catch (err) {
+        console.error('Error: ', err);
+    }
   }
 
   return (
@@ -108,14 +198,14 @@ const AddRestaurantModal = () => {
 
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-4">
-                  <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">
+                  <label htmlFor="name" className="block text-sm/6 font-medium text-gray-900">
                     Restaurant Name
                   </label>
                   <div className="mt-2">
                     <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                       <input
-                        id="username"
-                        name="username"
+                        id="name"
+                        name="name"
                         type="text"
                         placeholder={name_msg}
                         className="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
@@ -129,6 +219,9 @@ const AddRestaurantModal = () => {
                     Average Surplus Cost
                   </label>
                   <p className="mt-1 text-sm/6 text-gray-600">Use the form XX.XX</p>
+                    {
+                        avg_cost_err_msg ? <p className="mt-1 text-sm/6 text-red-600">{avg_cost_err_msg}</p> : null
+                    }
                   <div className="mt-2">
                     <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                       <div className="shrink-0 text-base text-gray-500 select-none sm:text-sm/6">$</div>
@@ -144,15 +237,22 @@ const AddRestaurantModal = () => {
                 </div>
 
                 <div className="col-span-full">
-                  <label htmlFor="about" className="block text-sm/6 font-medium text-gray-900">
+                <label htmlFor="categories" className="block text-sm/6 font-medium text-gray-900">
+                    Categories
+                </label>
+                    <Select options={cuisine_filters_react_select} isMulti closeMenuOnSelect={false} hideSelectedOptions={false} placeholder="Choose cuisines..." value={selected_categories} onChange={setSelectedCategories}/>
+                </div>
+
+                <div className="col-span-full">
+                  <label htmlFor="descr" className="block text-sm/6 font-medium text-gray-900">
                     About
                   </label>
                   <div className="mt-2">
                     <textarea
-                      id="about"
-                      name="about"
+                      id="descr"
+                      name="descr"
                       rows={3}
-                      placeholder={about_msg || ''}
+                      placeholder={descr_msg || ''}
                       className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     />
                   </div>
@@ -160,12 +260,40 @@ const AddRestaurantModal = () => {
                     Write a few sentences about the restaurant, including type of cuisine, expected surplus meals, etc.
                   </p>
                 </div>
+
+                <div className="col-span-full">
+                <label htmlFor="cover-photo" className="block text-sm/6 font-medium text-gray-900">
+                    Cover photo
+                </label>
+                <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                    <div className="text-center">
+                    <PhotoIcon aria-hidden="true" className="mx-auto size-12 text-gray-300" />
+                    <div className="mt-4 flex text-sm/6 text-gray-600">
+                        <label
+                        htmlFor="file-upload"
+                        className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-indigo-500"
+                        >
+                        <span>Upload a file</span>
+                        <input id="file-upload" name="file-upload" type="file" accept="image/*" className="sr-only" onChange={previewImage} />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                    </div>
+                    {
+                        input_img_url && <img id="image_preview" src={input_img_url} alt="Image Preview"></img>
+                    }
+                    <p className="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                </div>
+                </div>
               </div>
             </div>
 
             <div className="border-b border-gray-900/10 pb-12">
               <h2 className="text-base/7 font-semibold text-gray-900">Pickup Times</h2>
               <p className="mt-1 text-sm/6 text-gray-600">Please enter your restaurant's preferred pickup times (in the form XX:XXPM)</p>
+              {
+                time_err_msg ? <p className="mt-1 text-sm/6 text-red-600">{time_err_msg}</p> : null
+              }
               {
                 weekdays.map((day) => (
                   <div key={day} className="sm:col-span-1 sm:col-start-1">
@@ -189,6 +317,9 @@ const AddRestaurantModal = () => {
             <div className="border-b border-gray-900/10 pb-12">
               <h2 className="text-base/7 font-semibold text-gray-900">Restaurant Address Information</h2>
               <p className="mt-1 text-sm/6 text-gray-600">Use a permanent address where you can receive mail.</p>
+              {
+                address_err_msg ? <p className="mt-1 text-sm/6 text-red-600">{address_err_msg}</p> : null
+              }
 
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="col-span-full">
@@ -289,5 +420,6 @@ const AddRestaurantModal = () => {
     </section>
   )
 }
+
 
 export default AddRestaurantModal
