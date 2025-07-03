@@ -83,7 +83,7 @@ const LoginForm = ({auth_form_title}) => {
                     </section>
                     <section className="auth_entry">
                         <p className="auth_text">Password:</p>
-                        <input type="text" name="login_password" className="auth_input" placeholder={password_msg} />
+                        <input type="password" name="login_password" className="auth_input" placeholder={password_msg} />
                     </section>
                 </section>
                 <button type="submit" className="auth_submit_btn">{auth_form_title}</button>

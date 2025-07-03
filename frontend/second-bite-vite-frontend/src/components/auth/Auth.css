@@ -98,7 +98,7 @@ select.auth_input {
     width: 100%;
 }
 
-input[type="text"].auth_input {
+input[type="text"].auth_input, input[type="password"].auth_input {
     background-color: whitesmoke;
 }
 

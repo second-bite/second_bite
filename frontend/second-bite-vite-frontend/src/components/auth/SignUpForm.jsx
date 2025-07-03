@@ -2,8 +2,9 @@ import React, {useState, useRef, useContext} from 'react'
 import PropTypes from 'prop-types'
 import states from '../misc/States'
 import { AppContext } from '../../context/AppContext'
+import { address_validation } from '../../utils/api'
 
-const SignUpForm = ({auth_form_title, form_enum, setFormStatus}) => {
+const SignUpForm = ({auth_form_title, FORM_TYPE, setFormStatus}) => {
     const form_ref = useRef()
 
     const {base_url} = useContext(AppContext)
@@ -47,7 +48,12 @@ const SignUpForm = ({auth_form_title, form_enum, setFormStatus}) => {
             return
         }
 
-        // TODO: Add address validation
+        // Address validation
+        const is_valid_address = await address_validation(form.signup_street_address.value, form.signup_city.value, form.signup_state.value, form.signup_postal_code.value)
+        if(!is_valid_address) {
+            setServerErrorMsg('Entered invalid address')
+            return
+        }
 
         try {
             const account_type = is_account_type_toggled ? 'owner' : 'consumer'
@@ -66,7 +72,7 @@ const SignUpForm = ({auth_form_title, form_enum, setFormStatus}) => {
                 headers: { 'Content-Type': 'application/json' }
             })
             if(response.status === 400) {
-                const err_msg = await response.json().message
+                const { err_msg } = await response.json()
                 await setServerErrorMsg(err_msg)
             } else {
                 await setServerErrorMsg('')
@@ -74,7 +80,7 @@ const SignUpForm = ({auth_form_title, form_enum, setFormStatus}) => {
             if(!response.ok) throw new Error(`Failed to register account. Status: ${response.status}`);
 
             // Success! Direct to Sign in
-            setFormStatus(form_enum.log_in)
+            setFormStatus(FORM_TYPE.LOG_IN)
         } catch (e) {
             console.error('Error: ', e);
         }
@@ -103,11 +109,11 @@ const SignUpForm = ({auth_form_title, form_enum, setFormStatus}) => {
                     <section className="auth_password">
                         <section className="auth_entry">
                             <p className="auth_text">Password:</p>
-                            <input type="text" name="signup_password" className="auth_input" placeholder={password_msg} />
+                            <input type="password" name="signup_password" className="auth_input" placeholder={password_msg} />
                         </section>
                         <section className="auth_entry">
                             <p className="auth_text">Confirm Password:</p>
-                            <input type="text" name="signup_confirm_password" className="auth_input" placeholder={confirm_password_msg} />
+                            <input type="password" name="signup_confirm_password" className="auth_input" placeholder={confirm_password_msg} />
                         </section>
                     </section>
                     {/* Location */}
@@ -152,7 +158,7 @@ const SignUpForm = ({auth_form_title, form_enum, setFormStatus}) => {
 
 SignUpForm.propTypes = {
     auth_form_title: PropTypes.string.isRequired,
-    form_enum: PropTypes.object.isRequired,
+    FORM_TYPE: PropTypes.object.isRequired,
     setFormStatus: PropTypes.func.isRequired
 }
 
