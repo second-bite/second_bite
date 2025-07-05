@@ -20,6 +20,7 @@ const OwnerInfo = () => {
     const [state, setState] = useState('')
     const [country, setCountry] = useState('')
     const [owned_restaurants, setOwnedRestaurants] = useState([]) // Array of owned restaurants
+    const [server_error_msg, setServerErrorMsg] = useState('')
 
     // Missing fields error messages
     const [username_msg, setUsernameMsg] = useState('')
@@ -34,7 +35,6 @@ const OwnerInfo = () => {
     const [selected_restaurant, setSelectedRestaurant] = useState({})
 
     const form_ref = useRef();
-    // TODO: Pre-populate with existing account info
 
     const getOwnerInfo = async () => {
         // Fetch owner info from DB
@@ -85,16 +85,88 @@ const OwnerInfo = () => {
             setSelectedRestaurant({})
         }
     }
-    const handleAccountInfoSave = () => {
+    const handleCancel = async () => {
+        await getOwnerInfo()
+    }
+    const handleAccountInfoSave = async (event) => {
         event.preventDefault()
+
+        const form = form_ref.current.elements;
+
+        // Clear required field error messages
+        setUsernameMsg('');
+        setPasswordMsg('');
+        setConfirmPasswordMsg('');
+        setStreetAddressMsg('');
+        setCityMsg('');
+        setPostalCodeMsg('');
+        setStateMsg('');
+        setCountryMsg('');
+
+        // Ensure all required fields are filled
+        if(!form.owner_edit_username.value) setUsernameMsg('Please enter username.')
+        if(!form.owner_edit_password.value) setPasswordMsg('Please enter password.')
+        if(!form.owner_edit_confirm_password.value) setConfirmPasswordMsg('Please enter re-enter password.')
+        if (!form.owner_edit_street_address.value) setStreetAddressMsg('Please enter street address.');
+        if (!form.owner_edit_city.value) setCityMsg('Please enter city.');
+        if (!form.owner_edit_postal_code.value) setPostalCodeMsg('Please enter postal code.');
+        if (form.owner_edit_state.value === 'none') setStateMsg('Please select a state.');
+        if (form.owner_edit_country.value === 'none') setCountryMsg('Please select a country.');
+        if (!form.owner_edit_username.value || !form.owner_edit_password.value || !form.owner_edit_confirm_password.value || !form.owner_edit_street_address.value || !form.owner_edit_city.value || !form.owner_edit_postal_code.value || form.owner_edit_state.value === 'none' || form.owner_edit_country.value === 'none') return // Done like this to prevent issues with async
+
+        // Check passwords match
+        if(!(form.owner_edit_password.value === form.owner_edit_confirm_password.value)) {
+            form.owner_edit_password.value = ''
+            form.owner_edit_confirm_password.value = ''
+            setServerErrorMsg('Passwords must match.')
+            return
+        }
+
+        // Address validation
+        // const is_valid_address = await address_validation(form.owner_edit_street_address.value, form.owner_edit_city.value, form.owner_edit_state.value, form.owner_edit_postal_code.value)
+        // if(!is_valid_address) {
+        //     setServerErrorMsg('Entered invalid address')
+        //     return
+        // }
+
+        try {
+            const register_body = {
+                username: form.owner_edit_username.value,
+                password: form.owner_edit_password.value,
+                street_address: form.owner_edit_street_address.value,
+                city: form.owner_edit_city.value,
+                postal_code: form.owner_edit_postal_code.value,
+                state: form.owner_edit_state.value,
+                country: form.owner_edit_country.value,
+            }
+            const response  = await fetch(base_url + `/owner`, {
+                method: 'PUT',
+                body: JSON.stringify(register_body),
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+            })
+            if(response.status === 400) {
+                const { message } = await response.json()
+                setServerErrorMsg(message)
+            } else {
+                setServerErrorMsg('')
+            }
+            if(!response.ok) throw new Error(`Failed to register account. Status: ${response.status}`);
+
+            await getOwnerInfo()
+        } catch (e) {
+            console.error('Error: ', e);
+        }
     }
 
     return (
         <section className="account_info">
-            <form className="account_info_form" onSubmit={handleAccountInfoSave}>
+            <form className="account_info_form" ref={form_ref} onSubmit={handleAccountInfoSave}>
                 <button type="button" className="account_return_btn" onClick={handleAccountReturn}>←</button>
                 <h2 className="text-2xl font-bold mt-6 mb-4" id="account_info_title">Edit Personal info</h2>
-
+                {
+                    server_error_msg && <p className="owner_edit_server_error_msg">{server_error_msg}</p>
+                }
 
                 <section className="account_entries">
                     {/* Username, Password, Re-Enter Password */}
@@ -189,7 +261,7 @@ const OwnerInfo = () => {
                     </section>  
 
                     <section className="account_submit_btns">
-                        <button type="button" className="account_clear_btn">Cancel</button>
+                        <button type="button" className="account_clear_btn" onClick={handleCancel}>Cancel</button>
                         <button type="submit" className="account_submit_btn">Save Profile</button>
                     </section>
                 </section>
