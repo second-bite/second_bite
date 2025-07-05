@@ -2,6 +2,7 @@ const express = require('express')
 const session = require('express-session')
 const cookie_parser = require('cookie-parser')
 const cors = require('cors')
+require('dotenv').config()
 const app = express()
 const PORT = 3000
 
