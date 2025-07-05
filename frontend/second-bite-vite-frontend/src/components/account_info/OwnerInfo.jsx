@@ -123,11 +123,11 @@ const OwnerInfo = () => {
         }
 
         // Address validation
-        // const is_valid_address = await address_validation(form.owner_edit_street_address.value, form.owner_edit_city.value, form.owner_edit_state.value, form.owner_edit_postal_code.value)
-        // if(!is_valid_address) {
-        //     setServerErrorMsg('Entered invalid address')
-        //     return
-        // }
+        const is_valid_address = await address_validation(form.owner_edit_street_address.value, form.owner_edit_city.value, form.owner_edit_state.value, form.owner_edit_postal_code.value)
+        if(!is_valid_address) {
+            setServerErrorMsg('Entered invalid address')
+            return
+        }
 
         try {
             const register_body = {
