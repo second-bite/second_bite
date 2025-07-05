@@ -70,36 +70,36 @@ model Owner {
  * Restaurant-Specific
  */
 enum Categories {
-  Asian
-  Bakery
-  BarFood
-  BBQ
-  Breakfast
-  Burgers
-  Cafe
-  Chinese
-  Desserts
-  FastFood
-  French
-  Greek
-  Healthy
-  Indian
-  Italian
-  Japanese
-  Korean
-  LatinAmerican
-  Mediterranean
-  Mexican
-  MiddleEastern
-  Pizza
-  Salads
-  Sandwiches
-  Seafood
-  Sushi
-  Thai
-  Vegan
-  Vegetarian
-  Vietnamese
+  asian
+  bakery
+  barfood
+  bbq
+  breakfast
+  burgers
+  cafe
+  chinese
+  desserts
+  fastfood
+  french
+  greek
+  healthy
+  indian
+  italian
+  japanese
+  korean
+  latinamerican
+  mediterranean
+  mexican
+  middleeastern
+  pizza
+  salads
+  sandwiches
+  seafood
+  sushi
+  thai
+  vegan
+  vegetarian
+  vietnamese
 }
 
 model Rating {
@@ -116,7 +116,6 @@ model Restaurant {
   restaurant_id    Int                      @id @default(autoincrement())
   name              String
   descr             String
-  address_id        Int                     @unique
   address           Address?                @relation("restaurant_address")
   categories        Categories[]
   img_url           String

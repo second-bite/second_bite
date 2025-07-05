@@ -129,6 +129,7 @@ auth_routes.post('/login/:user_type_param', async (req, res, next) => {
 
 // Check if user is logged in (endpoint and internal check)
 const check_auth = (user_type) => {
+    console.log('called check_auth')
     return function (req, res, next) {
             // Check valid user_type entry
             if(!user_type || !('type' in user_type) || !user_types_check[user_type.type]) {
@@ -137,7 +138,7 @@ const check_auth = (user_type) => {
             
             // Check if user is logged into correct role
             if(!req.session.user_id) {
-                return res.status(401).json( { message: "Not logged in" })
+                return res.status(401).json( { message: `Not logged in. ${req.session.user_id}, ${req.session.user_type}, ${req.session.username}` })
             }
             if((user_type.type !== user_types_check.all.type) && (user_type.type !== req.session.user_type)) {
                 return res.status(403).json( { message: "Forbidden (wrong role)" })
@@ -179,10 +180,10 @@ auth_routes.post('/logout', (req, res, next) => {
 
         // Clear session cookie
         res.clearCookie('connect.sid')
-        res.status(200).json({ message: "Logout successful! "})
+        res.status(200).json({ message: "Logout successful! ", cookie: req.cookies})
     })
 })
 
 
-module.exports = {user_types_check, check_auth, auth_routes};
+module.exports = {user_types, user_types_check, check_auth, auth_routes};
 
