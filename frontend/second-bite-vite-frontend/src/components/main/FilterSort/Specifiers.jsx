@@ -1,9 +1,11 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useContext} from "react";
 import { cuisine_filters } from '../../misc/FilterTypes'
+import { AppContext } from "../../../context/AppContext";
 
 const Specifiers = () => {
     const search_ref = useRef()
     const sort_dropdown_ref = useRef()
+    const { restaurants, setRestaurants } = useContext(AppContext)
 
     const SORT_TYPE = {
         NONE: "Best Match",
@@ -17,8 +19,27 @@ const Specifiers = () => {
 
     const sort_dropdown_symbol_style = (is_sort_dropdown) ? {"transform": "translate(0%, -5%)"} : {"transform": "translate(0%, -5%)"}
 
+    // Handlers
+    const handleFilter = () => {
+        // TODO: 
+    }
     const handleSortDropdown = () => {
         setIsSortDropdown((prev_is_sort_dropdown) => !prev_is_sort_dropdown);
+    }
+    const handleSort = (sort_type) => {
+        switch(sort_type) {
+            case SORT_TYPE.DISTANCE:
+                // TODO:
+                break
+            case SORT_TYPE.PRICE:
+                // TODO:
+                break
+            case SORT_TYPE.RATING:
+                // TODO:
+                break
+            default:
+                break
+        }
     }
 
     return (
@@ -27,7 +48,7 @@ const Specifiers = () => {
                 {
                     cuisine_filters.map((filter) => (                        
                         <section className="cuisine_filter">
-                            <p className="cuisine_filter_text">{filter}</p>
+                            <p className="cuisine_filter_text" onClick={() => handleFilter(filter)}>{filter}</p>
                         </section>
                     ))
                 }
@@ -47,7 +68,7 @@ const Specifiers = () => {
                             <section className="sort_dropdown_popup">
                                 {
                                     Object.entries(SORT_TYPE).map(([key, value]) => (
-                                        <p className="sort_dropdown_popup_option">{value}</p>
+                                        <p className="sort_dropdown_popup_option" onClick={() => handleSort(value)}>{value}</p>
                                     ))
                                 }
                             </section>
