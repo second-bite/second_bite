@@ -43,7 +43,7 @@ const Specifiers = () => {
                     setRestaurants(price_sorted_restaurants)
                     setSortType(SORT_TYPE.DISTANCE)
                 }
-                setSortType(SORT_TYPE.NONE)
+                else setSortType(SORT_TYPE.NONE)
                 break
             case SORT_TYPE.PRICE: // descr
                 const price_sorted_restaurants = restaurants.slice().sort((a, b) => b.avg_cost - a.avg_cost)
