@@ -41,6 +41,7 @@
 }
 
 .cuisine_filter {
+    cursor: pointer;
     flex: 1 1 7vw;     
     flex-shrink: 0;
     /* color: black; */
