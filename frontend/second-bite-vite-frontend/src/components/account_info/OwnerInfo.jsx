@@ -40,7 +40,7 @@ const OwnerInfo = () => {
         // Fetch owner info from DB
         const response = await fetch(base_url + '/owner', {
             method: 'GET',
-            credentials: 'include'
+            credentials: 'include',
         })
         const res_json = await response.json()
         if(!response.ok) {

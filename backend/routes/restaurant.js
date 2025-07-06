@@ -12,7 +12,7 @@ const {user_types_check, check_auth} = require('./user_auth')
 // Get list of all restaurants (w/ desired filters, etc - used for Main Search Page)
 // NOTE: Consumer View
 router.get('/', check_auth(user_types_check.consumer), async (req, res, next) => {
-    const {search_query, categories, street_address, city, postal_code, state, country} = req.query
+    const {search_query/*, categories*/, street_address, city, postal_code, state, country} = req.query
 
     // If an address field is provided, all must be provided
     const is_address_provided = [street_address, city, postal_code, state, country].some(elem => elem)
@@ -21,7 +21,7 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
     
     let filters = {}
     try {
-        filters.include = { address: true, categories: true, ratings: true }
+        filters.include = { address: true, ratings: true }
         filters.take = 25 // Ideally helps reduce exhaustion & allows request batching of Google Maps Distance Matrix API
         
 
@@ -29,15 +29,15 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
         if(categories || search_query) {
             filters.where = {}
         }
-        if(categories) {
-            filters.where.categories = {}
-            categories = categories.split(',')
-            if(categories.length === 1) {
-                filters.where.categories.has = categories[0]
-            } else {
-                filters.where.categories.hasSome = categories
-            }
-        }
+        // if(categories) {
+        //     filters.where.categories = {}
+        //     categories = categories.split(',')
+        //     if(categories.length === 1) {
+        //         filters.where.categories.has = categories[0]
+        //     } else {
+        //         filters.where.categories.hasSome = categories
+        //     }
+        // }
         if(search_query?.trim()) {
             filters.where.name = {
                 contains: search_query,
