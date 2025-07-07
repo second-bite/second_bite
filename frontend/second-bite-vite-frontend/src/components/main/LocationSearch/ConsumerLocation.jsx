@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import RegularSearchResults from './RegularSearchResults'
 import SpecialSearchResults from './SpecialSearchResults'
 
-const ConsumerLocation = () => {
+const ConsumerLocation = ({setSearchedAddress}) => {
     const form_ref = useRef()
 
     const SEARCH_POPUP_STATUS = {
@@ -16,23 +16,24 @@ const ConsumerLocation = () => {
     const [search_query, setSearchQuery] = useState('')
 
     // Handlers
-    const handleSpecialSearch = async () => {
-        await setSearchQuery('')
+    const handleSpecialSearch = () => {
+        setSearchQuery('')
         if(search_popup_status === SEARCH_POPUP_STATUS.NONE || search_popup_status === SEARCH_POPUP_STATUS.REGULAR_SEARCH) {
-            await setSearchPopupStatus(SEARCH_POPUP_STATUS.SPECIAL_SEARCH)
+            setSearchPopupStatus(SEARCH_POPUP_STATUS.SPECIAL_SEARCH)
         }
-        else await setSearchPopupStatus(SEARCH_POPUP_STATUS.NONE)
+        else setSearchPopupStatus(SEARCH_POPUP_STATUS.NONE)
     }
     const handleSearchQueryChange = (event) => {
-        setSearchQuery(event.target.value)
-        if(search_query && !event.target.value) setSearchPopupStatus(SEARCH_POPUP_STATUS.NONE)
+        const search_query_val = event.target.value
+        setSearchQuery(search_query_val)
+        if(search_query && !search_query_val) setSearchPopupStatus(SEARCH_POPUP_STATUS.NONE)
         else if (search_popup_status !== SEARCH_POPUP_STATUS.REGULAR_SEARCH) {
             setSearchPopupStatus(SEARCH_POPUP_STATUS.REGULAR_SEARCH)
         }
     }
-    const handleSearchClear = async () => {
-        await setSearchQuery('')
-        await setSearchPopupStatus(SEARCH_POPUP_STATUS.NONE)
+    const handleSearchClear = () => {
+        setSearchQuery('')
+        setSearchPopupStatus(SEARCH_POPUP_STATUS.NONE)
     }
 
     return (
@@ -53,7 +54,7 @@ const ConsumerLocation = () => {
                         <section className="search_results_popup">
                             {
                                 (search_popup_status === SEARCH_POPUP_STATUS.REGULAR_SEARCH) ?
-                                <RegularSearchResults search_query={search_query} setSearchQuery={setSearchQuery}/> : <SpecialSearchResults />
+                                <RegularSearchResults search_query={search_query} setSearchedAddress={setSearchedAddress} handleSearchClear={handleSearchClear}/> : <SpecialSearchResults />
                             }
                         </section>
                 }
@@ -63,7 +64,7 @@ const ConsumerLocation = () => {
 }
 
 ConsumerLocation.propTypes = {
-
+    setSearchedAddress: PropTypes.func.isRequired,
 }
 
 

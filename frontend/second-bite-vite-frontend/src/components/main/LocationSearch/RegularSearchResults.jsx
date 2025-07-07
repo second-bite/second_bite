@@ -32,7 +32,7 @@ import PropTypes from 'prop-types'
 //   }
 // ];
 
-const RegularSearchResults = ({ search_query, setSearchQuery }) => {
+const RegularSearchResults = ({ search_query, setSearchedAddress, handleSearchClear }) => {
     const [search_results, setSearchResults] = useState([])
 
     useEffect(() => {
@@ -58,12 +58,17 @@ const RegularSearchResults = ({ search_query, setSearchQuery }) => {
         }
     }, [search_query])
 
-    // TODO: Add default (if no search results yielded)
+    // Handlers
+    const handleSelectSearchAddress = (address) => {
+        setSearchedAddress(address)
+        handleSearchClear()
+    }
+
     return (
         <section className="regular_search_results">
             {
                 search_results.map((address) => (
-                    <section className="regular_search_address">
+                    <section className="regular_search_address" onClick={() => handleSelectSearchAddress(address)}>
                         <p className="search_street_address_field">{address.number} {address.street}</p>
                         <p className="search_other_address_field">{address.city}, {address.state}, {address.postalCode}</p>
                     </section>
@@ -75,7 +80,8 @@ const RegularSearchResults = ({ search_query, setSearchQuery }) => {
 
 RegularSearchResults.propTypes = {
     search_query: PropTypes.string.isRequired,
-    setSearchQuery: PropTypes.func.isRequired,
+    setSearchedAddress: PropTypes.func.isRequired,
+    handleSearchClear: PropTypes.func.isRequired,
 }
 
 
