@@ -6,6 +6,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 // Rechart Imports
 import { PieChart, Pie, Sector, Cell, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { log_error } from "../../utils/utils"
 
 
 const Analytics = () => {
@@ -26,12 +27,14 @@ const Analytics = () => {
         // TODO: Add validation
         setSelectedRestaurant(selection)
     }
-    const handleGraphSelect = (selection) => {
+    const handleGraphSelect = async (selection) => {
         try {
-            if(!Object.values(GRAPH_TYPE).includes(selection)) throw new Error('Invalid graph type selected')
+            const err = new Error(`Invalid graph type selected.`)
+            err.status = 500
+            if(!Object.values(GRAPH_TYPE).includes(selection)) throw err
             setSelectedGraph(selection)
-        } catch (e) {
-            console.log('Error', e)
+        } catch (err) {
+            await log_error(err)
         }
     }
 

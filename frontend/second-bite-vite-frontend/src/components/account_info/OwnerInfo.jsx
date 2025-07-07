@@ -5,6 +5,7 @@ import states from "../misc/States"
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { AppContext } from "../../context/AppContext"
+import { log_error } from "../../utils/utils"
 
 const OwnerInfo = () => {
     const navigate = useNavigate()
@@ -38,13 +39,18 @@ const OwnerInfo = () => {
 
     const getOwnerInfo = async () => {
         // Fetch owner info from DB
-        const response = await fetch(base_url + '/owner', {
-            method: 'GET',
-            credentials: 'include',
-        })
-        const res_json = await response.json()
-        if(!response.ok) {
-            console.error(res_json)
+        try {
+            const response = await fetch(base_url + '/owner', {
+                method: 'GET',
+                credentials: 'include',
+            })
+            const res_json = await response.json()
+            
+            const err = new Error(`Status: ${response.status}. Error: ${res_json.message}`)
+            err.status = response.status
+            if(!response.ok) throw err
+        } catch (err) {
+            await log_error(err)
         }
         // Set state variables
         setUsername(res_json.username)
@@ -80,7 +86,6 @@ const OwnerInfo = () => {
                 credentials: 'include',
             })
             const res_json = await response.json()
-            console.log(res_json)
             await getOwnerInfo()
             setSelectedRestaurant({})
         }
@@ -151,11 +156,13 @@ const OwnerInfo = () => {
             } else {
                 setServerErrorMsg('')
             }
-            if(!response.ok) throw new Error(`Failed to register account. Status: ${response.status}`);
+            const err = new Error(`Failed to register account. Status: ${response.status}`)
+            err.status = response.status
+            if(!response.ok) throw err
 
             await getOwnerInfo()
-        } catch (e) {
-            console.error('Error: ', e);
+        } catch (err) {
+            await log_error(err)
         }
     }
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import { useNavigate } from 'react-router'
 
+import { log_error } from '../../utils/utils'
 import { AppContext } from '../../context/AppContext'
 import { AuthContext } from '../../context/AuthContext'
 
@@ -58,12 +59,14 @@ const LoginForm = ({auth_form_title}) => {
             } else {
                 await setServerErrorMsg('')
             }
-            if(!response.ok) throw new Error(`Failed to log into account. Status: ${response.status}`);
+            const err = new Error(`Failed to log into account. Status: ${response.status}`)
+            err.status = response.status
+            if(!response.ok) throw err
 
             // Sucess! Direct to main page (with useEffect)
             await setAuthStatus(is_account_type_toggled ? AUTH_STATUS.OWNER_AUTH : AUTH_STATUS.CONSUMER_AUTH)
-        } catch (e) {
-            console.error('Error: ', e);
+        } catch (err) {
+            await log_error(err)
         } finally {
             await setIsLoading(false)
         }

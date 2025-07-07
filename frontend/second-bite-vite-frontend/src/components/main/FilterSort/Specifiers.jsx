@@ -1,7 +1,9 @@
 import React, {useState, useRef, useContext, useEffect} from "react"
 import { cuisine_filters_react_select } from '../../misc/FilterTypes'
 import { AppContext } from "../../../context/AppContext"
+import { log_error } from "../../../utils/utils"
 import PropTypes from 'prop-types'
+
 
 const Specifiers = ({search_query, setSearchQuery, searched_address}) => {
     const search_ref = useRef()
@@ -48,7 +50,9 @@ const Specifiers = ({search_query, setSearchQuery, searched_address}) => {
                 'Content-Type': 'application/json',
             },
         })
-        if(!response.ok) throw new Error(`Status: ${response.status}. Failed to initially fetch restaurants`)
+        const err = new Error(`Status: ${response.status}. Failed to initially fetch restaurants`)
+        err.status = response.status
+        if(!response.ok) throw err
         const restaurant_data = await response.json()
         setRestaurants(restaurant_data)
     }
@@ -64,7 +68,7 @@ const Specifiers = ({search_query, setSearchQuery, searched_address}) => {
             setSearchQuery(search_query)
             await fetchRestaurants()
         } catch (err) {
-            console.error('Error: ', err)
+            await log_error(err)
         }
     }
     const handleSortDropdown = () => {

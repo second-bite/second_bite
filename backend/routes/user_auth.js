@@ -129,7 +129,6 @@ auth_routes.post('/login/:user_type_param', async (req, res, next) => {
 
 // Check if user is logged in (endpoint and internal check)
 const check_auth = (user_type) => {
-    console.log('called check_auth')
     return function (req, res, next) {
             // Check valid user_type entry
             if(!user_type || !('type' in user_type) || !user_types_check[user_type.type]) {
@@ -164,7 +163,6 @@ auth_routes.get('/check_session', async (req, res, next) => {
         })
         res.status(200).json({ id: req.session.user_id, username: user.username, user_type: req.session.user_type })
     } catch (err) {
-        console.error(err);
         next({status: 500, message: "Error fetching user session data", error_source: 'backend', error_route: '/auth/check_session'})
     }
 })

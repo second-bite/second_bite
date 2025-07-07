@@ -1,6 +1,8 @@
 import React, {useState, useContext, createContext, useEffect} from "react"
 import { AppContext } from "./AppContext"
 
+import { log_error } from '../utils/utils'
+
 export const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
@@ -33,7 +35,9 @@ export const AuthProvider = ({ children }) => {
                 })
                 if(!response.ok) {
                     const err_msg = await response.json().message
-                    throw new Error(`Status Code: ${response.status}. ErrMsg: ${err_msg}`)
+                    const err = new Error(`Status Code: ${response.status}. ErrMsg: ${err_msg}`)
+                    err.status = response.status
+                    throw new err
                 }
 
                 const res_json = await response.json()
@@ -44,10 +48,12 @@ export const AuthProvider = ({ children }) => {
                     await setAuthStatus(AUTH_STATUS.OWNER_AUTH)
                 }
                 else {
-                    throw new Error('Unknown user type')
+                    const err = new Error('Unknown user type')
+                    err.status = response.status
+                    throw new err
                 }
-            } catch(e) {
-                console.error('Error: ', e)
+            } catch(err) {
+                await log_error(err)
                 setAuthStatus(AUTH_STATUS.UNAUTH)
             } finally {
                 setIsLoading(false)

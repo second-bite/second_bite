@@ -8,7 +8,8 @@ import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import Select from 'react-select';
 import { cuisine_filters_react_select } from '../misc/FilterTypes'
 import states from '../misc/States'
-import { time_validation, address_validation, money_validation } from '../../utils/api';
+import { time_validation, address_validation, money_validation } from '../../utils/utils';
+import { log_error } from '../../utils/utils'
 
 
 const AddRestaurantModal = () => {
@@ -175,13 +176,15 @@ const AddRestaurantModal = () => {
             await setServerErrorMsg('')
         }
         const { message } = await response.json()
-        if(!response.ok) throw new Error(`Failed to add restaurant. Status: ${response.status}. ErrMsg: ${message}`);
+        const err = new Error(`Failed to add restaurant. Status: ${response.status}. ErrMsg: ${message}`)
+        err.status = response.status
+        if(!response.ok) throw err
 
         setIsAddRestaurantModal(false)
 
         setInputImgURL('')
     } catch (err) {
-        console.error('Error: ', err);
+        await log_error(err)
     }
   }
 

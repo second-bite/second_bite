@@ -2,7 +2,7 @@ import React, {useState, useRef, useContext} from 'react'
 import PropTypes from 'prop-types'
 import states from '../misc/States'
 import { AppContext } from '../../context/AppContext'
-import { address_validation } from '../../utils/api'
+import { address_validation, log_error } from '../../utils/utils'
 
 const SignUpForm = ({auth_form_title, FORM_TYPE, setFormStatus}) => {
     const form_ref = useRef()
@@ -88,12 +88,14 @@ const SignUpForm = ({auth_form_title, FORM_TYPE, setFormStatus}) => {
             } else {
                 await setServerErrorMsg('')
             }
-            if(!response.ok) throw new Error(`Failed to register account. Status: ${response.status}`);
+            const err =  new Error(`Failed to register account. Status: ${response.status}`)
+            err.status = response.status
+            if(!response.ok) throw err
 
             // Success! Direct to Sign in
             setFormStatus(FORM_TYPE.LOG_IN)
-        } catch (e) {
-            console.error('Error: ', e);
+        } catch (err) {
+            await log_error(err)
         }
     }
     const handleAccountTypeToggle = (event) => {
