@@ -39,7 +39,7 @@ const Specifiers = ({search_query, setSearchQuery, searched_address}) => {
     const fetchRestaurants = async () => {
         let address_query = ''
         if(searched_address) {
-            address_query = `&street_address=${encodeURIComponent(searched_address.number + ' ' + searched_address.street)}&city=${encodeURIComponent(searched_address.city)}&postal_code=${encodeURIComponent(searched_address.postalCode)}&state=${encodeURIComponent(searched_address.state)}&country=${encodeURIComponent(searched_address.countryCode)}`
+            address_query = `&street_address=${encodeURIComponent(searched_address.street_address)}&city=${encodeURIComponent(searched_address.city)}&postal_code=${encodeURIComponent(searched_address.postal_code)}&state=${encodeURIComponent(searched_address.state)}&country=${encodeURIComponent(searched_address.country)}`
         }
         const response = await fetch(base_url + `/restaurant?search_query=${search_query}` + address_query, {
             method: 'GET',

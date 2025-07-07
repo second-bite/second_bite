@@ -46,7 +46,7 @@ const ConsumerLocation = ({setSearchedAddress}) => {
                 <form ref={form_ref} className="address_search_form">
                     <input type="text" value={search_query} onChange={handleSearchQueryChange} placeholder="Enter starting address..." className="address_search_text"/>
                     <button type="button" id="clear_address_search" className="address_search_btn" onClick={handleSearchClear}>✖</button>
-                    <button type="submit" id="submit_address_search" className="address_search_btn">🔍</button>
+                    <button type="button" id="submit_address_search" className="address_search_btn">🔍</button>
                     <p className='special_address_dropdown' onClick={(event) => handleSpecialSearch(event)}>▼</p>
                 </form>
                 {
@@ -54,7 +54,7 @@ const ConsumerLocation = ({setSearchedAddress}) => {
                         <section className="search_results_popup">
                             {
                                 (search_popup_status === SEARCH_POPUP_STATUS.REGULAR_SEARCH) ?
-                                <RegularSearchResults search_query={search_query} setSearchedAddress={setSearchedAddress} handleSearchClear={handleSearchClear}/> : <SpecialSearchResults />
+                                <RegularSearchResults search_query={search_query} setSearchedAddress={setSearchedAddress} handleSearchClear={handleSearchClear}/> : <SpecialSearchResults setSearchedAddress={setSearchedAddress} handleSearchClear={handleSearchClear}/>
                             }
                         </section>
                 }

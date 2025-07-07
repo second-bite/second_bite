@@ -60,7 +60,14 @@ const RegularSearchResults = ({ search_query, setSearchedAddress, handleSearchCl
 
     // Handlers
     const handleSelectSearchAddress = (address) => {
-        setSearchedAddress(address)
+        const reformatted_address = {
+            street_address: `${address.number} ${address.street}`,
+            city: address.city,
+            postal_code: address.postalCode,
+            state: address.state,
+            country: address.countryCode,
+        }
+        setSearchedAddress(reformatted_address)
         handleSearchClear()
     }
 
