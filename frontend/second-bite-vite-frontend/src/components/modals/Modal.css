@@ -1,5 +1,5 @@
 /* Both Feedback & Add Restaurant Modal */
-#feedback_modal{
+#feedback_modal, #restaurant_modal {
     background-color: whitesmoke;
     width: clamp(275px, 40vw, 400px);
 }
@@ -13,7 +13,7 @@
 }
 
 /* Feedback Modal */
-.close_feedback_btn {
+.close_btn {
     all:unset;
     cursor: pointer;
     position: absolute;

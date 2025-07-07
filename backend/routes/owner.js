@@ -19,7 +19,7 @@ router.get('/', check_auth(user_types_check.owner), async (req, res, next) => {
         })
 
         if(!owner) {
-            return next({status: 404, message: "Owner not found"});
+            return next({status: 404, message: "Owner not found", error_source: 'backend', error_route: '/owner'});
         }
 
         // const {password, ...visible_owner_info} = owner
@@ -36,24 +36,24 @@ router.put('/', check_auth(user_types_check.owner), async (req, res, next) => {
     try {
         const owner_id = req.session.user_id
 
-        if (!req.body) return next({status: 400, message: `Missing request body for account edit`})
+        if (!req.body) return next({status: 400, message: `Missing request body for account edit`, error_source: 'backend', error_route: '/owner'})
 
         for(const required_field of user_types.owner.required) {
             if(!req.body[required_field]) {
-                return next({status: 400, message: `Missing required field ${required_field}`})
+                return next({status: 400, message: `Missing required field ${required_field}`, error_source: 'backend', error_route: '/owner'})
             }
         }
 
         // Enforce password security
         if(req.body.password.length < 8) {
-            return next({status: 400, message: `Password must be at least 8 characters long.`})
+            return next({status: 400, message: `Password must be at least 8 characters long.`, error_source: 'backend', error_route: '/owner'})
         }
 
         // Check if username or email are already taken
         const username = req.body.username
         const existing_username_owner = await prisma.owner.findUnique({ where: {username: username} })
         if(existing_username_owner && existing_username_owner.owner_id !== owner_id) {
-            return next({status: 400, message: `Username is already taken`})
+            return next({status: 400, message: `Username is already taken`, error_source: 'backend', error_route: '/owner'})
         }
 
         // Hash the password before storing

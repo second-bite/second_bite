@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from 'prop-types'
+import { AppContext } from "../../../context/AppContext";
 
 
 const RestaurantTile = ({restaurant: {name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value}}) => {
+    const { setIsRestaurantModal, setSelectedRestaurant } = useContext(AppContext)
+
     const restaurant_header_style = {
         "background-image": "radial-gradient(circle at center, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7)), url('https://picsum.photos/200/300')",
         "background-size": "cover",
@@ -43,8 +46,14 @@ const RestaurantTile = ({restaurant: {name, descr, address, categories, img_url,
         setAvgCostFormatted(formatted_cost)
     }, [avg_cost])
 
+    // Handlers
+    const handleRestaurantTileClick = () => {
+        setSelectedRestaurant({name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value})
+        setIsRestaurantModal(true)
+    }
+
     return (
-        <section className="restaurant_tile">
+        <section className="restaurant_tile" onClick={handleRestaurantTileClick}>
             <section className="restaurant_header" style={restaurant_header_style}>
                 <p className="restaurant_favorite">★</p>
                 <section className="restaurant_rating">

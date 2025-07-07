@@ -1,6 +1,7 @@
 const express = require('express')
 const session = require('express-session')
 const cookie_parser = require('cookie-parser')
+const prisma = require('./prisma_client')
 const cors = require('cors')
 require('dotenv').config()
 const app = express()
@@ -28,17 +29,34 @@ const { auth_routes } = require('./routes/user_auth')
 const restaurant_routes = require('./routes/restaurant')
 const owner_routes = require('./routes/owner')
 const consumer_routes = require('./routes/consumer')
+const error_log_routes = require('./routes/error_log')
 
 app.use('/auth', auth_routes)
 app.use('/restaurant', restaurant_routes)
 app.use('/owner', owner_routes)
 app.use('/consumer', consumer_routes)
+app.use('/error_log', error_log_routes)
 
 // Error Handling Middleware
-app.use((err, req, res, next) => {
-    const { message, status = 500 } = err
-    console.log(message)
-    res.status(status).json({message: 'Error: ' + message})
+app.use(async (err, req, res, next) => {
+    const { message, status = 500, error_source = 'backend', stack, error_route } = err
+
+    const new_error = {
+        message: message,
+        status: status,
+        error_source: error_source,
+        error_stack: stack,
+    }
+
+    // Optionally add error route (only applies for backend errors)
+    (error_route) ? (new_error.route = error_route) : null 
+    
+    const logged_error = await prisma.error.create({
+        data: new_error
+    })
+
+    // Send to client
+    res.status(status).json({message: 'Error: ' + message, status: status})
 })
 
 app.listen(PORT, () => {

@@ -41,7 +41,7 @@ const FeedbackModal = () => {
         <section className="modal_custom" style={{display: is_feedback_modal ? "block" : "none"}} onClick={handleFeedbackClickoff}>
             <section className="modal_content" id="feedback_modal">
                 <form className="feedback_form" ref={form_ref} onSubmit={handleFeedbackSubmit}>
-                    <button type="button" className="close_feedback_btn" onClick={handleFeedbackClose}>×</button>
+                    <button type="button" className="close_btn" onClick={handleFeedbackClose}>×</button>
                     <h2 className="text-2xl font-bold mt-6 mb-4">We value your opinion.</h2>
                     <p>How would you rate your overall experience?</p>
                     <section className="feedback_stars">

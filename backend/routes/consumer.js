@@ -17,7 +17,7 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
         })
 
         if(!consumer) {
-            return next({status: 404, message: "Consumer not found"});
+            return next({status: 404, message: "Consumer not found", error_source: 'backend', error_route: '/consumer'});
         }
 
         // const {password, ...visible_owner_info} = owner

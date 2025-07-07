@@ -16,6 +16,7 @@ import AddRestaurantModal from './components/modals/AddRestaurantModal'
 import { AuthProvider } from './context/AuthContext'
 import OwnerProtected from './protected_routing/OwnerProtected'
 import ConsumerProtected from './protected_routing/ConsumerProtected'
+import RestaurantModal from './components/modals/RestaurantModal'
 
 function App() {
 
@@ -42,6 +43,7 @@ function App() {
           </Router>
           <FeedbackModal />
           <AddRestaurantModal />
+          <RestaurantModal />
         </div>
       </AuthProvider>
     </AppProvider>

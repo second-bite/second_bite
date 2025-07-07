@@ -164,3 +164,18 @@ model Address {
 //   user_id           Int
 //   create_date       DateTime                      @default(now())
 // }
+
+enum ErrorSource {
+  frontend
+  backend
+}
+
+model Error {
+  error_id          Int                         @id @default(autoincrement())
+  message           String                      
+  status            Int                         @default(500)
+  error_source      ErrorSource                 // Whether the error occurred on the frontend or backend
+  created_at        DateTime                    @default(now())
+  error_stack       String?
+  route             String?                     // If backend error, outlines which route the error occurred in
+}
