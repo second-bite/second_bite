@@ -33,7 +33,7 @@
 }
 
 input[type="text"].address_search_text {
-    border-radius: 5%;
+    border-radius: 0%;
     height: 40%;
     width: 30vw;
 }

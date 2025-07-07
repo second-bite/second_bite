@@ -13,7 +13,7 @@ const ConsumerLocation = () => {
         SPECIAL_SEARCH: 'special_search',
     }
     const [search_popup_status, setSearchPopupStatus] = useState(SEARCH_POPUP_STATUS.NONE)
-    const [search_query, setSearchQuery] = useState('');
+    const [search_query, setSearchQuery] = useState('')
 
     // Handlers
     const handleSpecialSearch = async () => {
@@ -24,12 +24,11 @@ const ConsumerLocation = () => {
         else await setSearchPopupStatus(SEARCH_POPUP_STATUS.NONE)
     }
     const handleSearchQueryChange = (event) => {
-        // 
+        setSearchQuery(event.target.value)
         if(search_query && !event.target.value) setSearchPopupStatus(SEARCH_POPUP_STATUS.NONE)
         else if (search_popup_status !== SEARCH_POPUP_STATUS.REGULAR_SEARCH) {
             setSearchPopupStatus(SEARCH_POPUP_STATUS.REGULAR_SEARCH)
         }
-        // TODO: Add actual dynamic search results as search changes
     }
     const handleSearchClear = async () => {
         await setSearchQuery('')
@@ -54,7 +53,7 @@ const ConsumerLocation = () => {
                         <section className="search_results_popup">
                             {
                                 (search_popup_status === SEARCH_POPUP_STATUS.REGULAR_SEARCH) ?
-                                <RegularSearchResults /> : <SpecialSearchResults />
+                                <RegularSearchResults search_query={search_query} setSearchQuery={setSearchQuery}/> : <SpecialSearchResults />
                             }
                         </section>
                 }
