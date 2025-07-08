@@ -24,7 +24,7 @@ model Consumer {
   // email                   String                  @unique 
   password                String                  
   address                 Address?                @relation("consumer_address")
-  reserved_restaurant     Int?                    // Restaurant ID of currently reserved restaurant
+  reserved_restaurant_id  Int?                    // Restaurant ID of currently reserved restaurant
   reservation_expiration  DateTime?               // Expiration of current reservation                           
   // past_restaurants    PastRestaurants[]
   // pinned_restaurants  PinnedRestaurants[]
