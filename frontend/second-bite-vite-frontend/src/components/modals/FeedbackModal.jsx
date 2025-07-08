@@ -1,18 +1,21 @@
 import React, { useRef, useContext, useState } from "react"
-
-import { AppContext } from "../../context/AppContext";
+import { AppContext } from "../../context/AppContext"
+import Stars from "./Stars"
 
 
 const FeedbackModal = () => {
     // TODO: Make at least submitting some stars/feedback mandatory 
     const form_ref = useRef();
-    const [feedback_stars_color, setFeedbackStarsColor] = useState(['gray', 'gray', 'gray', 'gray', 'gray'])
+    const [num_stars, setNumStars] = useState(0)
 
     const {is_feedback_modal, setIsFeedbackModal} = useContext(AppContext)
 
+    // Handlers
     const handleFeedbackSubmit = (event) => {
+        event.preventDefault()
+
         // Ensure at least one star has been selected
-        if(feedback_stars_color[0] === 'gray') {
+        if(num_stars === 0) {
             alert("Please enter at least a star rating to leave a review")
             return
         }
@@ -22,19 +25,9 @@ const FeedbackModal = () => {
     const handleFeedbackClose = () => {
         setIsFeedbackModal(false)
         form_ref.current.elements.feedback_text.value = ''
-        for (let i = 0; i < feedback_stars_color.length; i++) {
-            setFeedbackStarsColor((prev_feedback_stars_color) => (
-                prev_feedback_stars_color.map(() => 'gray')
-            ))
-        }
     }
     const handleFeedbackClickoff = (event) => {
         if(event.target === event.currentTarget) handleFeedbackClose();
-    }
-    const toggleFeedbackStar = (star_num) => {
-        setFeedbackStarsColor((prev_feedback_stars_color) => (
-            prev_feedback_stars_color.map((_, ind) => (ind <= star_num) ?  'gold' : 'gray')
-        ))
     }
 
     return (
@@ -44,13 +37,7 @@ const FeedbackModal = () => {
                     <button type="button" className="close_btn" onClick={handleFeedbackClose}>×</button>
                     <h2 className="text-2xl font-bold mt-6 mb-4">We value your opinion.</h2>
                     <p>How would you rate your overall experience?</p>
-                    <section className="feedback_stars">
-                        <p className="feedback_star" name="feedback_star1" onClick={() => toggleFeedbackStar(0)} style={{color: feedback_stars_color[0]}}>★</p>
-                        <p className="feedback_star" name="feedback_star2" onClick={() => toggleFeedbackStar(1)} style={{color: feedback_stars_color[1]}}>★</p>
-                        <p className="feedback_star" name="feedback_star3" onClick={() => toggleFeedbackStar(2)} style={{color: feedback_stars_color[2]}}>★</p>
-                        <p className="feedback_star" name="feedback_star4" onClick={() => toggleFeedbackStar(3)} style={{color: feedback_stars_color[3]}}>★</p>
-                        <p className="feedback_star" name="feedback_star5" onClick={() => toggleFeedbackStar(4)} style={{color: feedback_stars_color[4]}}>★</p>
-                    </section>
+                    <Stars is_stars_displayed={is_feedback_modal} setNumStars={setNumStars}/>
                     <p>Kindly take a moment to tell us what you think.</p>
                     <textarea type="text" name="feedback_text" className="feedback_text"/>
                     <button type="submit" className="feedback_submit_btn">Share my feedback</button>
