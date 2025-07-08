@@ -1,25 +1,39 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useContext } from "react"
 import { useNavigate } from 'react-router-dom'
 import states from "../misc/States"
 
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { AppContext } from "../../App"
 
-const AccountInfo = () => {
+const OwnerInfo = () => {
     const navigate = useNavigate()
+    const {setIsAddRestaurantModal} =  useContext(AppContext)
 
     const [username_msg, setUsernameMsg] = useState('')
     const [password_msg, setPasswordMsg] = useState('')
     const [confirm_password_msg, setConfirmPasswordMsg] = useState('')
-    const [street_address_msg, setStreetAddressMsg] = useState('');
-    const [city_msg, setCityMsg] = useState('');
-    const [state_msg, setStateMsg] = useState('');
-    const [country_msg, setCountryMsg] = useState('');
+    const [street_address_msg, setStreetAddressMsg] = useState('')
+    const [city_msg, setCityMsg] = useState('')
+    const [state_msg, setStateMsg] = useState('')
+    const [country_msg, setCountryMsg] = useState('')
+    const [selected_restaurant, setSelectedRestaurant] = useState('Select Your Restaurant:')
 
     const form_ref = useRef();
     // TODO: Pre-populate with existing account info
 
     // Handlers
     const handleAccountReturn = () => {
-        navigate('/main')
+        navigate('/analytics')
+    }
+    const handleRestaurantSelect = (selected_restaurant) => {
+        setSelectedRestaurant(selected_restaurant)
+    }
+    const handleAddRestaurant = () => {
+        setIsAddRestaurantModal(true)
+    }
+    const handleDeleteRestaurant = () => {
+        
     }
 
     return (
@@ -43,8 +57,8 @@ const AccountInfo = () => {
                     <section className="account_entry">
                         <p className="auth_text">Confirm Password:</p>
                         <input type="text" name="signup_confirm_password" className="account_input" placeholder={confirm_password_msg} />
-                    </section>
-                    {/* Location */}
+                    </section>      
+
                     <section className="location_account_entries">
                         <section className="location_account_entry">
                             <p className="location_auth_text">Street Address:</p>
@@ -73,6 +87,51 @@ const AccountInfo = () => {
                             </select>
                         </section>
                     </section>
+
+                    {/* Location */}
+                    <section className="owner_btns self-start">
+                        <Menu as="div" className="relative inline-block text-left self-start">
+                        <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50">
+                            {selected_restaurant}
+                            <ChevronDownIcon aria-hidden="true" className="-mr-1 h-5 w-5 text-gray-400" />
+                        </MenuButton>
+                        <MenuItems
+                            transition
+                            className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none
+                                        data-closed:scale-95 data-closed:transform data-closed:opacity-0
+                                        data-enter:duration-100 data-enter:ease-out
+                                        data-leave:duration-75 data-leave:ease-in"
+                        >
+                            <MenuItem onClick={() => {handleRestaurantSelect('Mezze Cafe')}}>
+                            {({ active }) => (
+                                <a
+                                href="#"
+                                className={`block px-4 py-2 text-sm text-gray-600 ${
+                                    active ? 'bg-gray-100 text-gray-900' : ''
+                                }`}
+                                >
+                                Mezze Cafe
+                                </a>
+                            )}
+                            </MenuItem>
+                            <MenuItem onClick={() => {handleRestaurantSelect('Bento Box')}}>
+                            {({ active }) => (
+                                <a
+                                href="#"
+                                className={`block px-4 py-2 text-sm text-gray-600 ${
+                                    active ? 'bg-gray-100 text-gray-900' : ''
+                                }`}
+                                >
+                                Bento Box
+                                </a>
+                            )}
+                            </MenuItem>
+                        </MenuItems>
+                        </Menu>  
+                        <button type="button" className="add_restaurant_btn" onClick={handleAddRestaurant}>+</button>
+                        <button type="button" className="delete_restaurant_btn" onClick={handleDeleteRestaurant}>🗑</button>
+                    </section>  
+
                     <section className="account_submit_btns">
                         <button type="button" className="account_clear_btn">Cancel</button>
                         <button type="submit" className="account_submit_btn">Save Profile</button>
@@ -84,4 +143,4 @@ const AccountInfo = () => {
 }
 
 
-export default AccountInfo
+export default OwnerInfo

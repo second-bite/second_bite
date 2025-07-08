@@ -1,0 +1,22 @@
+.owner_btns {
+    display: flex; 
+    flex-direction: row;
+    gap: 10px;
+}
+
+button.add_location_btn {
+  background-color: gainsboro;
+  color: black;
+  border: none;
+  padding: 4px;
+  font-size: 31px;
+  height: 35px;
+  width: 35px;
+  box-shadow: 0 0.5px 0.5px darkslategray;
+  border-radius: 50%;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}

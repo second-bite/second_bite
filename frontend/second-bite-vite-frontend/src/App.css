@@ -1,18 +1,27 @@
+/* Tailwind CSS Import */
+@import "tailwindcss";
+@plugin "daisyui";
+@import "../node_modules/preline/variants.css";
+
 /* CSS Imports */
-@import 'Variables.css';
-@import 'header/Header.css';
-@import 'components/auth/Auth.css';
+@import './Variables.css';
+@import './header/Header.css';
+@import './components/auth/Auth.css';
 
 /* Main Page */
-@import 'components/main/LocationSearch/LocationSearch.css';
-@import 'components/main/FilterSort/Specifiers.css';
-@import 'components/main/RestaurantTiles/RestaurantTiles.css';
+@import './components/main/LocationSearch/LocationSearch.css';
+@import './components/main/FilterSort/Specifiers.css';
+@import './components/main/RestaurantTiles/RestaurantTiles.css';
 
-/* Feedback Modal */
-@import 'components/feedback/FeedbackModal.css';
+/* Modals */
+@import './components/modals/Modal.css';
 
 /* Account Info */
-@import 'components/account_info/AccountInfo.css';
+@import './components/account_info/AccountInfo.css';
+@import './components/account_info/OwnerInfo.css';
+
+/* Analytics */
+@import './components/analytics/Analytics.css';
 
 .App {
   height: 100vh;
@@ -29,10 +38,8 @@ main {
   flex: 1;
 }
 
-.modal {
+.modal_custom {
   position: fixed;
-  /* justify-content: center;
-  align-items: center; */
   z-index: 10;
   width: 100%;
   height: 100%;
@@ -53,8 +60,6 @@ main {
   top: 50%;
   transform: translate(-50%, -50%);
   overflow-y: auto;
-
-  /* background-color: white; */
   background-color: white;
   color: black;
 }

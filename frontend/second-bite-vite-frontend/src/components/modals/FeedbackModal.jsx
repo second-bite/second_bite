@@ -32,19 +32,17 @@ const FeedbackModal = () => {
         if(event.target === event.currentTarget) handleFeedbackClose();
     }
     const toggleFeedbackStar = (star_num) => {
-        if(feedback_stars_color[star_num] === 'gray') { // 
-            setFeedbackStarsColor((prev_feedback_stars_color) => (
-                prev_feedback_stars_color.map((_, ind) => (ind <= star_num) ?  'gold' : 'gray')
-            ))
-        }
+        setFeedbackStarsColor((prev_feedback_stars_color) => (
+            prev_feedback_stars_color.map((_, ind) => (ind <= star_num) ?  'gold' : 'gray')
+        ))
     }
 
     return (
-        <section className="modal" style={{display: is_feedback_modal ? "block" : "none"}} onClick={handleFeedbackClickoff}>
+        <section className="modal_custom" style={{display: is_feedback_modal ? "block" : "none"}} onClick={handleFeedbackClickoff}>
             <section className="modal_content" id="feedback_modal">
                 <form className="feedback_form" ref={form_ref} onSubmit={handleFeedbackSubmit}>
                     <button type="button" className="close_feedback_btn" onClick={handleFeedbackClose}>×</button>
-                    <h2>We value your opinion.</h2>
+                    <h2 className="text-2xl font-bold mt-6 mb-4">We value your opinion.</h2>
                     <p>How would you rate your overall experience?</p>
                     <section className="feedback_stars">
                         <p className="feedback_star" name="feedback_star1" onClick={() => toggleFeedbackStar(0)} style={{color: feedback_stars_color[0]}}>★</p>
@@ -54,7 +52,7 @@ const FeedbackModal = () => {
                         <p className="feedback_star" name="feedback_star5" onClick={() => toggleFeedbackStar(4)} style={{color: feedback_stars_color[4]}}>★</p>
                     </section>
                     <p>Kindly take a moment to tell us what you think.</p>
-                    <input type="text" name="feedback_text" className="feedback_text"/>
+                    <textarea type="text" name="feedback_text" className="feedback_text"/>
                     <button type="submit" className="feedback_submit_btn">Share my feedback</button>
                 </form>
             </section>

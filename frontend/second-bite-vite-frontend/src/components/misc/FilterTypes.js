@@ -1,4 +1,4 @@
-const cuisine_filters = [
+export const cuisine_filters = [
   "Asian",
   "Bakery",
   "Bar Food",
@@ -31,5 +31,35 @@ const cuisine_filters = [
   "Vietnamese"
 ];
 
-
-export default cuisine_filters
+export const cuisine_filters_react_select = [
+  { value: 'asian', label: 'Asian' },
+  { value: 'bakery', label: 'Bakery' },
+  { value: 'bar food', label: 'Bar Food' },
+  { value: 'bbq', label: 'BBQ' },
+  { value: 'breakfast', label: 'Breakfast' },
+  { value: 'burgers', label: 'Burgers' },
+  { value: 'cafe', label: 'Cafe' },
+  { value: 'chinese', label: 'Chinese' },
+  { value: 'desserts', label: 'Desserts' },
+  { value: 'fast food', label: 'Fast Food' },
+  { value: 'french', label: 'French' },
+  { value: 'greek', label: 'Greek' },
+  { value: 'healthy', label: 'Healthy' },
+  { value: 'indian', label: 'Indian' },
+  { value: 'italian', label: 'Italian' },
+  { value: 'japanese', label: 'Japanese' },
+  { value: 'korean', label: 'Korean' },
+  { value: 'latin american', label: 'Latin American' },
+  { value: 'mediterranean', label: 'Mediterranean' },
+  { value: 'mexican', label: 'Mexican' },
+  { value: 'middle eastern', label: 'Middle Eastern' },
+  { value: 'pizza', label: 'Pizza' },
+  { value: 'salads', label: 'Salads' },
+  { value: 'sandwiches', label: 'Sandwiches' },
+  { value: 'seafood', label: 'Seafood' },
+  { value: 'sushi', label: 'Sushi' },
+  { value: 'thai', label: 'Thai' },
+  { value: 'vegan', label: 'Vegan' },
+  { value: 'vegetarian', label: 'Vegetarian' },
+  { value: 'vietnamese', label: 'Vietnamese' }
+];

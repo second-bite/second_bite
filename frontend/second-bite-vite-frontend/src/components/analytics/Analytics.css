@@ -1,0 +1,45 @@
+:root {
+    --main-analytics-bg-color: #FAF9F6	;
+    --sub-analytics-bg-color: white;
+}
+
+.analytics_page {
+    background-color: var(--main-analytics-bg-color);
+}
+
+.analytics {
+    margin: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.analytics_kpis {
+    margin-top: 10px;
+}
+
+.analytics img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    box-shadow: 4px 4px 15px rgb(0, 0 , 0, 0.4);
+}
+
+.analytics_graph {
+    width: 90vw;
+}
+
+.analytics_supplementary_graph_section {
+    display: grid;
+    justify-content: center;
+    margin: 20px;
+    padding: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px 15px;
+    width: 100%;
+}
+
+.analytics_supplementary_graph {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+}

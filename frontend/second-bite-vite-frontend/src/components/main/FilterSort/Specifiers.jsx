@@ -1,5 +1,5 @@
 import React, {useState, useRef} from "react";
-import cuisine_filters from '../../misc/FilterTypes'
+import { cuisine_filters } from '../../misc/FilterTypes'
 
 const Specifiers = () => {
     const search_ref = useRef()

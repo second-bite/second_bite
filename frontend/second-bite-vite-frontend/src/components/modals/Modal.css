@@ -1,9 +1,10 @@
-#feedback_modal {
+/* Both Feedback & Add Restaurant Modal */
+#feedback_modal{
     background-color: whitesmoke;
     width: clamp(275px, 40vw, 400px);
 }
 
-.feedback_form {
+.feedback_form, .add_restaurant_form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -11,6 +12,7 @@
     padding: 3%;
 }
 
+/* Feedback Modal */
 .close_feedback_btn {
     all:unset;
     cursor: pointer;
@@ -26,8 +28,9 @@
     font-size: clamp(28px, 5vw, 50px);
 }
 
-input[type="text"].feedback_text {
+textarea.feedback_text {
     border-color: gray;
+    background-color: white;
     border-radius: 20px;
     width: 80%;
     min-height: clamp(150px, 10vh, 250px);
@@ -38,4 +41,11 @@ input[type="text"].feedback_text {
     background-color: steelblue;
     font-weight: 550;
     margin-top: 10px;
+}
+
+/* Add Restaurant Modal */
+#add_restaurant_modal {    
+    width: clamp(350px, 40vw, 700px);
+    height: clamp(400px, 70vh, 1000px);
+    overflow-y: auto;
 }
