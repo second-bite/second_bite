@@ -42,7 +42,7 @@ router.post('/reserve/:restaurant_id', check_auth(user_types_check.consumer), as
 
         // Check user hasn't already reserved restaurant
         const date_time_now = new Date()
-        if(consumer.reserved_restaurant_id && (date_time_now < consumer.reservation_expiration)) return next({status: 400, message: `Already reserved a restaurant today`, error_source: 'backend', error_route: '/consumer/reserve'})
+        if(consumer.reserved_restaurant_id && (date_time_now < consumer.reservation_expiration)) return next({status: 409, message: `Already reserved a restaurant today`, error_source: 'backend', error_route: '/consumer/reserve'})
 
         // Get restaurant to be reserved
         const restaurant = await prisma.restaurant.findUnique({
