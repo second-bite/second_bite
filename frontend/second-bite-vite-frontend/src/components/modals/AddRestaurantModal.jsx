@@ -295,7 +295,7 @@ const AddRestaurantModal = () => {
 
             <div className="border-b border-gray-900/10 pb-12">
               <h2 className="text-base/7 font-semibold text-gray-900">Pickup Times</h2>
-              <p className="mt-1 text-sm/6 text-gray-600">Please enter your restaurant's preferred pickup times (in the form XX:XXPM)</p>
+              <p className="mt-1 text-sm/6 text-gray-600">Please enter your restaurant's preferred pickup times (in the form XX:XXPM or enter N/A)</p>
               {
                 time_err_msg ? <p className="mt-1 text-sm/6 text-red-600">{time_err_msg}</p> : null
               }
