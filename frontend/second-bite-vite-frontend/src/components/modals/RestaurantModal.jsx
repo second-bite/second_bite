@@ -1,10 +1,13 @@
 import React, { useRef, useContext, useState, useEffect } from "react"
 import { AppContext } from "../../context/AppContext"
+import { log_error } from "../../utils/utils"
 
 
 const RestaurantModal = () => {
     const form_ref = useRef()
-    const {selected_restaurant, is_restaurant_modal, setIsRestaurantModal, setIsRatingModal} = useContext(AppContext)
+    const {base_url, selected_restaurant, is_restaurant_modal, setIsRestaurantModal, setIsRatingModal} = useContext(AppContext)
+
+    const [is_reserved, setIsReserved] = useState(false)
 
     // Retrieving day of the week index (to retrieve correct pickup_time)
     const [day_idx, setDayIdx] = useState(new Date().getDay())
@@ -50,8 +53,32 @@ const RestaurantModal = () => {
     const handleAddRating = () => {
         setIsRatingModal(true)
     }
-    const handleReserveRestaurant = () => {
+    const handleReserveRestaurant = async () => {
+        try {
+            const response = await fetch(base_url + '/consumer/reserve/' + selected_restaurant.restaurant_id, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            })
 
+            // Restaurant is either closed or is past pickup/closing time for the day
+            if(response.status === 409 ) {
+                const data = await response.json()
+                alert(data.message)
+                return
+            }
+            else if(!response.ok) {
+                alert('Failed to reserve restaurant due to server error:(')
+                const err = new Error(`Failed to reserve restaurant. Status: ${response.status}`)
+                err.status = response.status
+                throw err
+            }
+
+            // Reservation succeeded!
+            setIsReserved(true)
+        } catch (err) {
+            log_error(err)
+        }
     }
 
     return(
@@ -70,7 +97,7 @@ const RestaurantModal = () => {
                             <span style={{ fontWeight: 550 }}> Pickup Time</span>: {Array.isArray(selected_restaurant.pickup_time) ? selected_restaurant.pickup_time[day_idx] : 'N/A'}</p>
                         <section className="restaurant_modal_btns">
                             <button type="button" className="add_rating_btn" onClick={handleAddRating}>Add Rating</button>
-                            <button type="button" className="reserve_restaurant_btn" onClick={handleReserveRestaurant}>Reserve Order</button>
+                            <button type="button" className="reserve_restaurant_btn" style={(is_reserved) ? {backgroundColor: `steelblue`, color: `white`} : {backgroundColor: `lightgray`, color: `black`}} onClick={handleReserveRestaurant}>{is_reserved ? "Order is Reserved" : "Reserve Order"}</button>
                         </section>
                     </section>
                 </form>
