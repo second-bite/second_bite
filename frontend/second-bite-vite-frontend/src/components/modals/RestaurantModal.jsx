@@ -32,6 +32,33 @@ const RestaurantModal = () => {
 
     }, [])
 
+    // Check if restaurant has been reserved
+    useEffect(() => {
+        const fetchIsRestaurantReserved = async () => {
+            try {
+              const response = await fetch(base_url + '/consumer', {
+                  method: 'GET',
+                  credentials: 'include',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+              })
+              const err = new Error(`Status: ${response.status}. Failed to fetch logged in consumer's info`)
+              err.status = response.status
+              if(!response.ok) throw err
+              const data = await response.json()
+              console.log(data)
+
+              if(data.reservation_expiration && (((new Date()) < (new Date(data.reservation_expiration)))) && (data.reserved_restaurant_id === selected_restaurant.restaurant_id)) setIsReserved(true)
+              else setIsReserved(false)
+            } catch (err) {
+                await log_error(err)
+            }
+        }
+
+        fetchIsRestaurantReserved()
+    }, [is_restaurant_modal])
+
     // Formatting Cost
     const [avg_cost_formatted, setAvgCostFormatted] = useState(0)
     useEffect(() => {
