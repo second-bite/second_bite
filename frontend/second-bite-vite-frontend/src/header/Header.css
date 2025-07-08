@@ -81,6 +81,23 @@ header.primary_header {
     background-color: transparent;
 }
 
+.header_btns {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.friend_btn {
+    height: 50px;
+    width: 100px;
+}
+
+.friend_img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
 /* TODO: Maybe discard? */
 /* .account_dropdown {
     margin-left: 2px;
