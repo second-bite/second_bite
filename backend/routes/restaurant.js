@@ -249,17 +249,11 @@ router.post('/rating/:restaurant_id', check_auth(user_types_check.consumer), asy
     const {restaurant_id} = req.params
     const consumer_id = req.session.user_id
 
-    console.log('Running /rating endpoint')
-    console.log(req.params)
-    console.log(req.session.user_id)
-
     if(!req.body) return next({status: 400, message: `Missing request body for account edit`, error_source: 'backend', error_route: '/restaurant/rating'})
 
     // Check for required req.body fields
     const { msg = null, num_stars } = req.body
 
-    console.log(req.body)
-    console.log(msg)
     // if(!msg) return next({status: 400, message: `Request body is missing required field msg`, error_source: 'backend', error_route: '/restaurant/rating'})
     if(!num_stars) return next({status: 400, message: `Request body is missing required field num_stars`, error_source: 'backend', error_route: '/restaurant/rating'})
 
@@ -268,7 +262,6 @@ router.post('/rating/:restaurant_id', check_auth(user_types_check.consumer), asy
         const user = await prisma.rating.findFirst({ where: {consumer_id: consumer_id, restaurant_id: Number(restaurant_id)} })
         if(user) return next({status: 403, message: `User has already left review on this restaurant`, error_source: 'backend', error_route: '/restaurant/rating'})
 
-        console.log('Jackson<3')
         // Add new rating
         const data = {
             num_stars: num_stars,
@@ -276,9 +269,6 @@ router.post('/rating/:restaurant_id', check_auth(user_types_check.consumer), asy
             restaurant_id: Number(restaurant_id),
             msg: msg,
         }
-
-        console.log('Hello hello hello')
-        console.log('Hello hello hello')
 
         const new_rating = await prisma.rating.create({
             data: data,
