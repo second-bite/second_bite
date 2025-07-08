@@ -19,11 +19,13 @@ datasource db {
  * Consumer-Specific // TODO: Integrate extra fields back in
  */
 model Consumer {
-  consumer_id         Int                     @id @unique @default(autoincrement())
-  username            String                  @unique
-  // email               String                  @unique 
-  password            String                  
-  address             Address?                @relation("consumer_address")
+  consumer_id             Int                     @id @unique @default(autoincrement())
+  username                String                  @unique
+  // email                   String                  @unique 
+  password                String                  
+  address                 Address?                @relation("consumer_address")
+  reserved_restaurant     Int?                    // Restaurant ID of currently reserved restaurant
+  reservation_expiration  DateTime?               // Expiration of current reservation                           
   // past_restaurants    PastRestaurants[]
   // pinned_restaurants  PinnedRestaurants[]
   // friends             Consumer[]              @relation("friends")
