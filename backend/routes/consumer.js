@@ -102,11 +102,163 @@ router.post('/reserve/:restaurant_id', check_auth(user_types_check.consumer), as
 /**
  * Friend Feature
  */
-// TODO: 
+// TODO: Check this
 // Used to get list of consumers (possibly on an Add Friend Search feature?)
 // NOTE: Consumer View
-// router.get('/consumer/all', (req, res) => {
-//     const {...} = req.query
-// })
+router.get('/all_other', check_auth(user_types_check.consumer), async (req, res, next) => {
+    const consumer_id = req.session.user_id
+
+    const FRIEND_STATUS = {
+        FRIEND: 'friend',
+        SENT_FRIEND_REQ: 'sent_friend_req', // consumer has sent request to other
+        NONE: 'none',
+    }
+
+    try {
+        const consumer = await prisma.consumer.findUnique({
+            where: {consumer_id: consumer_id},
+            include: {
+                friends: true,
+                sent_friend_requests: true,
+            }
+        })
+
+        // Store in hashset for efficiency
+        const friends_ids_set = new Set()
+        if(consumer.friends) {
+            for(const friend of consumer.friends) {
+                friends_ids_set.add(friend.consumer_id)
+            }
+        }
+        const sent_friend_request_ids_set = new Set() // Set of consumers that the currently logged in consumer has sent friend requests to
+        if(consumer.sent_friend_requests) {
+            for(const consumer of consumer.sent_friend_requests) {
+                sent_friend_request_ids_set.add(consumer.consumer_id)
+            }
+        }
+
+        // Finds all consumers minus the current consumer
+        const other_consumers = await prisma.consumer.findMany({
+            where: {
+                consumer_id: {
+                    not: consumer_id,
+                }
+            },
+            include: {
+                address: true,
+                friends: true,
+            }
+        })
+
+        other_consumers.map((consumer) => ({
+            ...consumer,
+            friend_status: (friends_ids_set.has(consumer.consumer_id)) ? 
+                            (FRIEND_STATUS.FRIEND) : 
+                            (sent_friend_request_ids_set.has(consumer.consumer_id)) ?
+                                (FRIEND_STATUS.SENT_FRIEND_REQ) :
+                                (FRIEND_STATUS.NONE)
+        }))
+
+        res.status(200).json(other_consumers)
+    } catch (err) {
+        next(err)
+    }
+    
+})
+
+// TODO: Check this
+// Used to get list of consumer's current friends
+router.get('/friend/all', check_auth(user_types_check.consumer), async (req, res, next) => {
+    const consumer_id = req.session.user_id
+
+    try {
+        const consumer = await prisma.restaurant.findUnique({
+            where: {consumer: consumer_id},
+            include: {
+                friends: true,
+            }
+        })
+
+        // TODO: Check if friends field has nested items (e.g. friends' friends' and friends' address)
+        const { friends } = consumer
+
+        res.status(200).json(friends)
+    } catch (err) {
+        next(err)
+    }
+    
+})
+
+// TODO:
+// Used to create a new friend request
+// NOTE: Consumer View
+router.post('/friend/friend_req/:receiving_consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
+    const consumer_id = req.session.user_id
+    try{
+        let { receiving_consumer_id } = req.session.params
+        receiving_consumer_id = parseInt(receiving_consumer_id)
+
+        // Check that this doesn't conflict with existing friend request
+        const existing_friend_request = await prisma.friendRequest.findUnique({
+            where: {
+                OR: [
+                    {sender_consumer_id: consumer_id, receiver_consumer_id: receiving_consumer_id},
+                    {receiver_consumer_id: consumer_id, sender_consumer_id: receiving_consumer_id},
+                ]
+            }
+        })
+        if(existing_friend_request) return next({status: 400, message: `Friend request with these participants already exists`, error_source: 'backend', error_route: '/consumer/friend/friend_req'})
+
+        const data = {
+            sender_consumer_id: consumer_id,
+            receiver_consumer_id: receiving_consumer_id,
+        }
+
+        const new_friend_request = await prisma.friendRequest.create({
+            data: data
+        })
+
+        res.status(201).json(new_friend_request)
+    } catch (err) {
+        next(err)
+    }
+})
+
+// TODO:
+// Used to accept a friend request
+// NOTE: Consumer View
+router.post('/friend/accept/:sender_consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
+    // TODO: Remember to prisma migrate & re-activate the DB
+    const consumer_id = req.session.user_id
+    try {
+        // TODO: 
+    } catch (err) {
+        next(err)
+    }
+})
+
+// TODO:
+// Used to delete a friend request
+// NOTE: Consumer View
+router.post('/friend/reject/:sender_consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
+    const consumer_id = req.session.user_id
+    try{
+        let { receiving_consumer_id } = req.session.params
+        receiving_consumer_id = parseInt(receiving_consumer_id)
+
+        const deleted_friend_request = await prisma.friendRequest.delete({
+            where: {
+                OR: [
+                    {sender_consumer_id: consumer_id, receiver_consumer_id: receiving_consumer_id},
+                    {receiver_consumer_id: consumer_id, sender_consumer_id: receiving_consumer_id},
+                ]
+            }
+        })
+
+        res.status(200).json(deleted_friend_request)
+    } catch (err) {
+        next(err)
+    }
+})
 
 module.exports = router

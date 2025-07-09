@@ -19,17 +19,28 @@ datasource db {
  * Consumer-Specific // TODO: Integrate extra fields back in
  */
 model Consumer {
-  consumer_id             Int                     @id @unique @default(autoincrement())
-  username                String                  @unique
+  consumer_id               Int                     @id @unique @default(autoincrement())
+  username                  String                  @unique
   // email                   String                  @unique 
-  password                String                  
-  address                 Address?                @relation("consumer_address")
-  reserved_restaurant_id  Int?                    // Restaurant ID of currently reserved restaurant
-  reservation_expiration  DateTime?               // Expiration of current reservation                           
+  password                  String                  
+  address                   Address?                @relation("consumer_address")
+  reserved_restaurant_id    Int?                    // Restaurant ID of currently reserved restaurant
+  reservation_expiration    DateTime?               // Expiration of current reservation                           
   // past_restaurants    PastRestaurants[]
   // pinned_restaurants  PinnedRestaurants[]
-  // friends             Consumer[]              @relation("friends")
-  // friends_relation    Consumer[]              @relation("friends")
+  friends                   Consumer[]              @relation("friends")
+  friends_relation          Consumer[]              @relation("friends")
+  sent_friend_requests      FriendRequest[]         @relation("sender")
+  received_friend_requests  FriendRequest[]         @relation("receiver")
+}
+
+model FriendRequest {
+  friend_request_id       Int                     @id @unique @default(autoincrement())
+  sender_consumer_id      Int
+  sender_consumer         Consumer                @relation("sender", fields: [sender_consumer_id], references: [consumer_id])
+  receiver_consumer_id    Int
+  receiver_consumer       Consumer                @relation("receiver", fields: [receiver_consumer_id], references: [consumer_id])
+  created_at              DateTime                @default(now())
 }
 
 // TODO: Integrate this model back in
