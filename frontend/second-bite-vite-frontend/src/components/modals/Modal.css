@@ -125,12 +125,15 @@ textarea.rating_text {
     width: 100%;
 }
 
-.accept_friend_request_btn, .incoming_friend_request_sections {
-    justify-self: flex-end;
+.send_friend_request_btn, .incoming_friend_request_sections {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .current_friends_section, .add_friend_section {
-    width: 95%;
+    width: 98%;
 }
 
 /* Current Friends */
@@ -139,7 +142,7 @@ textarea.rating_text {
     flex-direction: column;
     justify-content: flex-start;
     padding-left: 10px;
-    gap: 20px;
+    gap: 10px;
 }
 
 .current_friend_container {
@@ -173,6 +176,10 @@ textarea.rating_text {
 .available_user_container {
     display: flex;
     flex-direction: row;
+}
+
+.send_friend_request_btn {
+    background-color: gainsboro;
 }
 
 .send_friend_request_btn img {
