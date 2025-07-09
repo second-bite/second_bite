@@ -61,7 +61,7 @@ router.post('/reserve/:restaurant_id', check_auth(user_types_check.consumer), as
         const parsed_time = closing_time_str.match(time_regex)
         const is_am = parsed_time[3] === 'AM' || parsed_time[3] === 'am'
         const closing_hour = is_am ? Number(parsed_time[1]) : Number(parsed_time[1]) + 12 
-        const closing_minute = Number(parsed_time[2]) // TODO: 
+        const closing_minute = Number(parsed_time[2]) 
         let closing_time = new Date()
         closing_time.setHours(closing_hour, closing_minute)
         if(closing_time < date_time_now) return next({status: 409, message: `Restaurant pickup time has already passed`, error_source: 'backend', error_route: '/consumer/reserve'})
@@ -102,7 +102,6 @@ router.post('/reserve/:restaurant_id', check_auth(user_types_check.consumer), as
 /**
  * Friend Feature
  */
-// TODO: Check this
 // Used to get list of consumers (possibly on an Add Friend Search feature?)
 // NOTE: Consumer View
 router.get('/all_other', check_auth(user_types_check.consumer), async (req, res, next) => {
@@ -180,7 +179,6 @@ router.get('/all_other', check_auth(user_types_check.consumer), async (req, res,
     
 })
 
-// TODO: Check this
 // Used to get list of consumer's current friends
 router.get('/friend/all', check_auth(user_types_check.consumer), async (req, res, next) => {
     const consumer_id = req.session.user_id
@@ -220,7 +218,6 @@ router.get('/friend/all', check_auth(user_types_check.consumer), async (req, res
     
 })
 
-// TODO:
 // Used to create a new friend request
 // NOTE: Consumer View
 router.post('/friend/friend_req/:receiving_consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
@@ -240,7 +237,7 @@ router.post('/friend/friend_req/:receiving_consumer_id', check_auth(user_types_c
         })
         if(existing_friend_request) return next({status: 400, message: `Friend request with these participants already exists`, error_source: 'backend', error_route: '/consumer/friend/friend_req'})
         
-        // TODO: Check that these users aren't already friends
+        // Check that these users aren't already friends
         const existing_friendship = await prisma.friendship.findFirst({
             where: {
                 OR: [
@@ -266,14 +263,11 @@ router.post('/friend/friend_req/:receiving_consumer_id', check_auth(user_types_c
     }
 })
 
-// TODO:
 // Used to accept a friend request
 // NOTE: Consumer View
 router.post('/friend/accept/:sender_consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
-    // TODO: Remember to prisma migrate & re-activate the DB
     const consumer_id = req.session.user_id
     try {
-        // TODO: 
         let { sender_consumer_id } = req.params
         sender_consumer_id = parseInt(sender_consumer_id)
         const deleted_friend_request = await prisma.friendRequest.deleteMany({
@@ -300,7 +294,6 @@ router.post('/friend/accept/:sender_consumer_id', check_auth(user_types_check.co
     }
 })
 
-// TODO:
 // Used to delete a friend request
 // NOTE: Consumer View
 router.post('/friend/reject/:sender_consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
