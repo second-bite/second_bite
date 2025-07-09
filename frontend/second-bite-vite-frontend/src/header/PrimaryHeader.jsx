@@ -10,7 +10,7 @@ import { log_error } from '../utils/utils'
 const PrimaryHeader = () => {
     const navigate = useNavigate()
 
-    const {base_url, is_feedback_modal, setIsFeedbackModal} = useContext(AppContext)
+    const {base_url, is_feedback_modal, setIsFeedbackModal, setIsFriendModal} = useContext(AppContext)
     const {setIsLoading, auth_status, AUTH_STATUS, setAuthStatus} = useContext(AuthContext)
 
     const handleFeedbackClick = () => {setIsFeedbackModal(true)}
@@ -48,7 +48,7 @@ const PrimaryHeader = () => {
         }
     }
     const handleFriendClick = () => {
-
+        setIsFriendModal(true)
     }
 
     return (
