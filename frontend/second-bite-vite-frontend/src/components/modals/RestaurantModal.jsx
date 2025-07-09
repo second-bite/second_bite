@@ -82,7 +82,8 @@ const RestaurantModal = () => {
     }
     const handleReserveRestaurant = async () => {
         try {
-            const response = await fetch(base_url + '/consumer/reserve/' + selected_restaurant.restaurant_id, {
+            const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
+            const response = await fetch(base_url + '/consumer/reserve/' + selected_restaurant.restaurant_id + '/' + encodeURIComponent(time_zone), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'

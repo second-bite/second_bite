@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "luxon": "^3.7.1",
     "react-time-picker": "^7.0.0"
   }
 }
