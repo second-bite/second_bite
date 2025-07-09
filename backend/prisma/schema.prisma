@@ -28,10 +28,21 @@ model Consumer {
   reservation_expiration    DateTime?               // Expiration of current reservation                           
   // past_restaurants    PastRestaurants[]
   // pinned_restaurants  PinnedRestaurants[]
-  friends                   Consumer[]              @relation("friends")
-  friends_relation          Consumer[]              @relation("friends")
+  friendships_a             Friendship[]            @relation("friendship_a")
+  friendships_b             Friendship[]            @relation("friendship_b")
   sent_friend_requests      FriendRequest[]         @relation("sender")
   received_friend_requests  FriendRequest[]         @relation("receiver")
+}
+
+model Friendship {
+  friendship_id       Int                     @id @unique @default(autoincrement())
+  consumer_id_a       Int
+  friend_a            Consumer                @relation("friendship_a", fields: [consumer_id_a], references: [consumer_id])
+  consumer_id_b       Int
+  friend_b            Consumer                @relation("friendship_b", fields: [consumer_id_b], references: [consumer_id])
+  created_at          DateTime                @default(now())
+
+  @@unique([consumer_id_a, consumer_id_b]) 
 }
 
 model FriendRequest {

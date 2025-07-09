@@ -115,25 +115,36 @@ router.get('/all_other', check_auth(user_types_check.consumer), async (req, res,
     }
 
     try {
+        // Store all of a users friends in a hashset for efficiency
+        const friends_ids_set = new Set()
+        const friendships = await prisma.friendship.findMany({
+            where: {
+                OR: [
+                    {consumer_id_a: consumer_id},
+                    {consumer_id_b: consumer_id},
+                ]
+            },
+            include: {
+                friend_a: true,
+                friend_b: true,
+            }
+        })
+        for(const friendship of friendships) {
+            if (friendship.consumer_id_a === consumer_id) friends_ids_set.add(friendship.consumer_id_b)
+            else if (friendship.consumer_id_b === consumer_id) friends_ids_set.add(friendship.consumer_id_a)
+        }
+
+        // Store sent friend requests in a hashset for efficiency
         const consumer = await prisma.consumer.findUnique({
             where: {consumer_id: consumer_id},
             include: {
-                friends: true,
                 sent_friend_requests: true,
             }
         })
-
-        // Store in hashset for efficiency
-        const friends_ids_set = new Set()
-        if(consumer.friends) {
-            for(const friend of consumer.friends) {
-                friends_ids_set.add(friend.consumer_id)
-            }
-        }
         const sent_friend_request_ids_set = new Set() // Set of consumers that the currently logged in consumer has sent friend requests to
         if(consumer.sent_friend_requests) {
-            for(const consumer of consumer.sent_friend_requests) {
-                sent_friend_request_ids_set.add(consumer.consumer_id)
+            for(const sent_friend_request of consumer.sent_friend_requests) {
+                sent_friend_request_ids_set.add(sent_friend_request.receiver_consumer_id)
             }
         }
 
@@ -146,7 +157,10 @@ router.get('/all_other', check_auth(user_types_check.consumer), async (req, res,
             },
             include: {
                 address: true,
-                friends: true,
+                friendships_a: true,
+                friendships_b: true,
+                sent_friend_requests: true,
+                received_friend_requests: true,
             }
         })
 
@@ -172,15 +186,32 @@ router.get('/friend/all', check_auth(user_types_check.consumer), async (req, res
     const consumer_id = req.session.user_id
 
     try {
-        const consumer = await prisma.consumer.findUnique({
-            where: {consumer_id: consumer_id},
+        const friends_ids_set = new Set()
+        const friendships = await prisma.friendship.findMany({
+            where: {
+                OR: [
+                    {consumer_id_a: consumer_id},
+                    {consumer_id_b: consumer_id},
+                ]
+            },
             include: {
-                friends: true,
+                friend_a: true,
+                friend_b: true,
             }
         })
+        for(const friendship of friendships) {
+            if (friendship.consumer_id_a === consumer_id) friends_ids_set.add(friendship.consumer_id_b)
+            else if (friendship.consumer_id_b === consumer_id) friends_ids_set.add(friendship.consumer_id_a)
+        }
 
-        // TODO: Check if friends field has nested items (e.g. friends' friends' and friends' address)
-        const { friends } = consumer
+        const friends_ids_arr = Array.from(friends_ids_set)
+        const friends = await prisma.consumer.findMany({
+            where: {
+                consumer_id: {
+                    in: friends_ids_arr
+                }
+            }
+        })
 
         res.status(200).json(friends)
     } catch (err) {
@@ -208,6 +239,17 @@ router.post('/friend/friend_req/:receiving_consumer_id', check_auth(user_types_c
             }
         })
         if(existing_friend_request) return next({status: 400, message: `Friend request with these participants already exists`, error_source: 'backend', error_route: '/consumer/friend/friend_req'})
+        
+        // TODO: Check that these users aren't already friends
+        const existing_friendship = await prisma.friendship.findFirst({
+            where: {
+                OR: [
+                    {consumer_id_a: consumer_id, consumer_id_b: receiving_consumer_id},
+                    {consumer_id_b: consumer_id, consumer_id_a: receiving_consumer_id},
+                ]
+            }
+        })
+        if(existing_friendship) return next({status: 400, message: `These participatns are already friends`, error_source: 'backend', error_route: '/consumer/friend/friend_req'})
 
         const data = {
             sender_consumer_id: consumer_id,
@@ -232,6 +274,27 @@ router.post('/friend/accept/:sender_consumer_id', check_auth(user_types_check.co
     const consumer_id = req.session.user_id
     try {
         // TODO: 
+        let { sender_consumer_id } = req.params
+        sender_consumer_id = parseInt(sender_consumer_id)
+        const deleted_friend_request = await prisma.friendRequest.deleteMany({
+            where: {
+                OR: [
+                    {sender_consumer_id: consumer_id, receiver_consumer_id: sender_consumer_id},
+                    {receiver_consumer_id: consumer_id, sender_consumer_id: sender_consumer_id},
+                ]
+            }
+        })
+
+        const data = {
+            consumer_id_a: consumer_id,
+            consumer_id_b: sender_consumer_id,
+        }
+
+        const created_friendship = await prisma.friendship.create({
+            data: data
+        })
+
+        res.status(201).json(created_friendship)
     } catch (err) {
         next(err)
     }
@@ -243,14 +306,14 @@ router.post('/friend/accept/:sender_consumer_id', check_auth(user_types_check.co
 router.post('/friend/reject/:sender_consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
     const consumer_id = req.session.user_id
     try{
-        let { receiving_consumer_id } = req.params
-        receiving_consumer_id = parseInt(receiving_consumer_id)
+        let { sender_consumer_id } = req.params
+        sender_consumer_id = parseInt(sender_consumer_id)
 
-        const deleted_friend_request = await prisma.friendRequest.delete({
+        const deleted_friend_request = await prisma.friendRequest.deleteMany({
             where: {
                 OR: [
-                    {sender_consumer_id: consumer_id, receiver_consumer_id: receiving_consumer_id},
-                    {receiver_consumer_id: consumer_id, sender_consumer_id: receiving_consumer_id},
+                    {sender_consumer_id: consumer_id, receiver_consumer_id: sender_consumer_id},
+                    {receiver_consumer_id: consumer_id, sender_consumer_id: sender_consumer_id},
                 ]
             }
         })
