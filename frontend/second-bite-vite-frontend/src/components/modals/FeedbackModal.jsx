@@ -4,7 +4,6 @@ import Stars from "./Stars"
 
 
 const FeedbackModal = () => {
-    // TODO: Make at least submitting some stars/feedback mandatory 
     const form_ref = useRef();
     const [num_stars, setNumStars] = useState(0)
 

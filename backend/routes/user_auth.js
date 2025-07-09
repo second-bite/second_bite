@@ -43,17 +43,12 @@ auth_routes.post(`/register/:user_type_param`, async (req, res, next) => {
             return next({status: 400, message: `Password must be at least 8 characters long.`, error_source: 'backend', error_route: '/auth/register'})
         }
 
-        // Check if username or email are already taken
+        // Check if username is already taken
         const username = req.body.username
-        // const email = req.body.email
         const existing_username = await prisma[user_type.type].findUnique({ where: {username: username} })
         if(existing_username) {
             return next({status: 400, message: `Username is already taken`, error_source: 'backend', error_route: '/auth/register'})
         }
-        // const existing_email = await prisma[user_type.type].findUnique({ where: {email: email} })
-        // if (existing_email) {
-        //     return next({status: 400, message: `Email has already been used`})
-        // }
 
         // Hash the password before storing
         const hashed_pwd = await argon2.hash(req.body.password)
@@ -61,7 +56,6 @@ auth_routes.post(`/register/:user_type_param`, async (req, res, next) => {
         // Create a new user in the database
         const data = {
             username,
-            // email,
             password: hashed_pwd,
             address: {
                 create: {

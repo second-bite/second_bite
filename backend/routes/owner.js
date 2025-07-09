@@ -22,8 +22,6 @@ router.get('/', check_auth(user_types_check.owner), async (req, res, next) => {
             return next({status: 404, message: "Owner not found", error_source: 'backend', error_route: '/owner'});
         }
 
-        // const {password, ...visible_owner_info} = owner
-        // res.status(200).send(visible_owner_info)
         res.status(200).send(owner)
     } catch (err) {
         next(err)
@@ -49,7 +47,7 @@ router.put('/', check_auth(user_types_check.owner), async (req, res, next) => {
             return next({status: 400, message: `Password must be at least 8 characters long.`, error_source: 'backend', error_route: '/owner'})
         }
 
-        // Check if username or email are already taken
+        // Check if username is already taken
         const username = req.body.username
         const existing_username_owner = await prisma.owner.findUnique({ where: {username: username} })
         if(existing_username_owner && existing_username_owner.owner_id !== owner_id) {
@@ -85,11 +83,5 @@ router.put('/', check_auth(user_types_check.owner), async (req, res, next) => {
         return next(err);
     }
 })
-
-// // Used to delete account
-// // NOTE: Business Owner View
-// router.delete('/consumer', (req, res) => {
-
-// })
 
 module.exports = router

@@ -98,13 +98,6 @@ header.primary_header {
     object-fit: contain;
 }
 
-/* TODO: Maybe discard? */
-/* .account_dropdown {
-    margin-left: 2px;
-    font-size: clamp(6px, 4vh, 50px);
-    text-shadow: 6px 6px 12px rgb(0, 0, 0, 0.5);
-} */
-
 .friend_toggle_btns {
     display: flex;
     flex-direction: row;

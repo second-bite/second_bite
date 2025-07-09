@@ -2,37 +2,6 @@ import React, {useState, useRef, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import { log_error } from '../../../utils/utils'
 
-// const searched_addresses = [
-//   {
-//     "street_address": "4 Privet Drive",
-//     "city": "Little Whinging",
-//     "state": "Surrey",
-//     "postal_code": "CR3 0AA",
-//     "country": "UK"
-//   },
-//   {
-//     "street_address": "742 Evergreen Terrace",
-//     "city": "Springfield",
-//     "state": "??",
-//     "postal_code": "49007",
-//     "country": "USA"
-//   },
-//   {
-//     "street_address": "1313 Mockingbird Lane",
-//     "city": "Mockingbird Heights",
-//     "state": "CA",
-//     "postal_code": "90210",
-//     "country": "USA"
-//   },
-//   {
-//     "street_address": "1 Infinite Loop",
-//     "city": "Cupertino",
-//     "state": "CA",
-//     "postal_code": "95014",
-//     "country": "USA"
-//   }
-// ];
-
 const RegularSearchResults = ({ search_query, setSearchedAddress, handleSearchClear }) => {
     const [search_results, setSearchResults] = useState([])
 

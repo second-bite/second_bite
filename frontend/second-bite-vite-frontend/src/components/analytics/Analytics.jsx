@@ -97,7 +97,6 @@ const Analytics = () => {
         { name: 'Sunday', value: 68 },
     ]
     const orders_vs_weekday_colors = ['#0088FE', '#00C49F', '#FF69B4', '#8BC34A', '#FFC107', '#2196F3', '#9C27B0']
-    // TODO: Dropdown
     // Main Chart (allow them to choose betweenr evenue, visits, etc)
     // KPIs (# orders, # visits, $ new visitors $ revenue) ------------------ Graphs
     return (
@@ -271,7 +270,7 @@ const Analytics = () => {
                     </ResponsiveContainer>
                 </section>
 
-                {/* Highest Frequency Customers Bar Chart TODO: */}
+                {/* Highest Frequency Customers Bar Chart */}
                 <section className="analytics_supplementary_graph">
                     <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{'Highest Frequency Customers (Past Month)'}</h3>
                     <ResponsiveContainer width="100%" height="100%">
@@ -291,13 +290,12 @@ const Analytics = () => {
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        {/* <Bar dataKey="pv" fill="#8884d8" activeBar={<Rectangle fill="pink" stroke="blue" />} /> */}
                         <Bar dataKey="uv" fill="#82ca9d" activeBar={<Rectangle fill="gold" stroke="purple" />} />
                         </BarChart>
                     </ResponsiveContainer>
                 </section>
 
-                {/* Orders by Day of Week Pie Chart TODO: */}
+                {/* Orders by Day of Week Pie Chart */}
                 <section className="analytics_supplementary_graph">
                     <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{'Orders by Day (Past Month)'}</h3>
                     <ResponsiveContainer width="100%" height="100%">

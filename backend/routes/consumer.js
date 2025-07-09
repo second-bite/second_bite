@@ -20,8 +20,6 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
             return next({status: 404, message: "Consumer not found", error_source: 'backend', error_route: '/consumer'});
         }
 
-        // const {password, ...visible_owner_info} = owner
-        // res.status(200).send(visible_owner_info)
         res.status(200).send(consumer)
     } catch (err) {
         next(err)
@@ -80,24 +78,6 @@ router.post('/reserve/:restaurant_id', check_auth(user_types_check.consumer), as
         next(err)
     }
 })
-
-/**
- * Edit Account Details
- */
-// Used to edit account details
-// TODO:
-// NOTE: Consumer View
-// router.patch('/consumer/:id', (req, res) => {
-//     const {consumer_id} = req.params
-//     const {...} = req.body // TODO: Add defaault empty values here (to isolate what changed)
-// })
-
-// Used to delete account
-// TODO:
-// NOTE: Consumer View
-// router.delete('/consumer', (req, res) => {
-
-// })
 
 /**
  * Friend Feature
