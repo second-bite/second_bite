@@ -8,12 +8,13 @@ export const AppProvider = ({ children }) => {
     const [is_add_restaurant_modal, setIsAddRestaurantModal] = useState(false)
     const [is_restaurant_modal, setIsRestaurantModal] = useState(false)
     const [is_rating_modal, setIsRatingModal] = useState(false)
+    const [is_friend_modal, setIsFriendModal] = useState(false)
     const [selected_restaurant, setSelectedRestaurant] = useState({})
     const [restaurants, setRestaurants] = useState([])
     const [displayed_restaurants, setDisplayedRestaurants] = useState([])
 
     return (
-        <AppContext.Provider value={{base_url, is_feedback_modal, setIsFeedbackModal, is_add_restaurant_modal, setIsAddRestaurantModal, is_restaurant_modal, setIsRestaurantModal, is_rating_modal, setIsRatingModal, selected_restaurant, setSelectedRestaurant, restaurants, setRestaurants, displayed_restaurants, setDisplayedRestaurants}}>
+        <AppContext.Provider value={{base_url, is_feedback_modal, setIsFeedbackModal, is_add_restaurant_modal, setIsAddRestaurantModal, is_restaurant_modal, setIsRestaurantModal, is_rating_modal, setIsRatingModal, is_friend_modal, setIsFriendModal, selected_restaurant, setSelectedRestaurant, restaurants, setRestaurants, displayed_restaurants, setDisplayedRestaurants}}>
             {children}
         </AppContext.Provider>
     )
