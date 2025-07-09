@@ -150,7 +150,7 @@ router.get('/all_other', check_auth(user_types_check.consumer), async (req, res,
             }
         })
 
-        other_consumers.map((consumer) => ({
+        const other_consumers_updated = other_consumers.map((consumer) => ({
             ...consumer,
             friend_status: (friends_ids_set.has(consumer.consumer_id)) ? 
                             (FRIEND_STATUS.FRIEND) : 
@@ -159,7 +159,7 @@ router.get('/all_other', check_auth(user_types_check.consumer), async (req, res,
                                 (FRIEND_STATUS.NONE)
         }))
 
-        res.status(200).json(other_consumers)
+        res.status(200).json(other_consumers_updated)
     } catch (err) {
         next(err)
     }
@@ -172,8 +172,8 @@ router.get('/friend/all', check_auth(user_types_check.consumer), async (req, res
     const consumer_id = req.session.user_id
 
     try {
-        const consumer = await prisma.restaurant.findUnique({
-            where: {consumer: consumer_id},
+        const consumer = await prisma.consumer.findUnique({
+            where: {consumer_id: consumer_id},
             include: {
                 friends: true,
             }
@@ -195,11 +195,11 @@ router.get('/friend/all', check_auth(user_types_check.consumer), async (req, res
 router.post('/friend/friend_req/:receiving_consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
     const consumer_id = req.session.user_id
     try{
-        let { receiving_consumer_id } = req.session.params
+        let { receiving_consumer_id } = req.params
         receiving_consumer_id = parseInt(receiving_consumer_id)
 
         // Check that this doesn't conflict with existing friend request
-        const existing_friend_request = await prisma.friendRequest.findUnique({
+        const existing_friend_request = await prisma.friendRequest.findFirst({
             where: {
                 OR: [
                     {sender_consumer_id: consumer_id, receiver_consumer_id: receiving_consumer_id},
@@ -243,7 +243,7 @@ router.post('/friend/accept/:sender_consumer_id', check_auth(user_types_check.co
 router.post('/friend/reject/:sender_consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
     const consumer_id = req.session.user_id
     try{
-        let { receiving_consumer_id } = req.session.params
+        let { receiving_consumer_id } = req.params
         receiving_consumer_id = parseInt(receiving_consumer_id)
 
         const deleted_friend_request = await prisma.friendRequest.delete({

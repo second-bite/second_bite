@@ -41,6 +41,8 @@ model FriendRequest {
   receiver_consumer_id    Int
   receiver_consumer       Consumer                @relation("receiver", fields: [receiver_consumer_id], references: [consumer_id])
   created_at              DateTime                @default(now())
+
+  @@unique([sender_consumer_id, receiver_consumer_id])
 }
 
 // TODO: Integrate this model back in
