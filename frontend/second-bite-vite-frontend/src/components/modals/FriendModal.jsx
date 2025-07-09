@@ -79,14 +79,17 @@ const FriendModal = () => {
                         <section className="current_friends_section">
                             {
                                 users.map((user) => (
-                                    <section className="current_friend_container">                                    
-                                        <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                                            <svg class="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
-                                        </div>
-                                        <section className="current_friend_info">
-                                            <p className="current_friend_username">{user.username}</p>
-                                            <p className="current_friend_supp">Consumer</p>
+                                    <section className="current_friend">
+                                        <section className="current_friend_container">                                    
+                                            <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                                                <svg class="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                                            </div>
+                                            <section className="current_friend_info">
+                                                <p className="current_friend_username">{user.username}</p>
+                                                <p className="current_friend_supp">Consumer</p>
+                                            </section>
                                         </section>
+                                        <hr class="h-px my-1 bg-gray-200 border-0 dark:bg-gray-700"></hr>
                                     </section>
                                 ))
                             }
@@ -98,37 +101,43 @@ const FriendModal = () => {
                                 <h3 className="text-xl font-bold dark:text-white">Incoming Friend Requests</h3>
                                 {
                                     users.map((user) => (
-                                        <section className="incoming_friend_request_container">
-                                            <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                                                <svg class="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
-                                            </div>
-                                            <section className="current_friend_info">
-                                                <p className="current_friend_username">{user.username}</p>
-                                                <p className="current_friend_supp">Consumer</p>
-                                            </section>        
-                                            <section className="incoming_friend_request_sections">
-                                                <button className="accept_friend_request_btn">Accept</button>
-                                                <button className="reject_friend_request_btn">Reject</button>
-                                            </section> 
+                                        <section className="incoming_friend_request">
+                                            <section className="incoming_friend_request_container">
+                                                <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                                                    <svg class="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                                                </div>
+                                                <section className="current_friend_info">
+                                                    <p className="current_friend_username">{user.username}</p>
+                                                    <p className="current_friend_supp">Consumer</p>
+                                                </section>        
+                                                <section className="incoming_friend_request_sections">
+                                                    <button className="accept_friend_request_btn">Accept</button>
+                                                    <button className="reject_friend_request_btn">Reject</button>
+                                                </section> 
+                                            </section>
+                                            <hr class="h-px my-1 bg-gray-200 border-0 dark:bg-gray-700"></hr>
                                         </section>
                                     ))
                                 }
                             </section>
-                            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+                            <hr class="h-px my-8 bg-gray-200 border-0.5 dark:bg-gray-400"></hr>
                             <section className="available_users_section">
                                 <h3 className="text-xl font-bold dark:text-white">Users</h3>
                                 
                                 {
                                     users.map((user) => (
-                                        <section className="available_user_container">
-                                            <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                                                <svg class="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
-                                            </div>
-                                            <section className="current_friend_info">
-                                                <p className="current_friend_username">{user.username}</p>
-                                                <p className="current_friend_supp">Consumer</p>
-                                            </section>         
-                                            <button className="send_friend_request_btn"><img src="/add_user.png" alt="Send Friend Request Icon"/></button>
+                                        <section className="available_user">
+                                            <section className="available_user_container">
+                                                <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                                                    <svg class="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                                                </div>
+                                                <section className="current_friend_info">
+                                                    <p className="current_friend_username">{user.username}</p>
+                                                    <p className="current_friend_supp">Consumer</p>
+                                                </section>         
+                                                <button className="send_friend_request_btn"><img src="/add_user.png" alt="Send Friend Request Icon"/></button>
+                                            </section>
+                                            <hr class="h-px my-1 bg-gray-200 border-0 dark:bg-gray-700"></hr>
                                         </section>
                                     ))
                                 }
