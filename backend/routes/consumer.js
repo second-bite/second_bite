@@ -55,9 +55,8 @@ router.post('/reserve/:restaurant_id', check_auth(user_types_check.consumer), as
         if(closing_time_str === 'N/A') return next({status: 409, message: `Restaurant is closed today`, error_source: 'backend', error_route: '/consumer/reserve'})
 
         // Parse out closing time
-        const time_regex = /^(\d{1,2}):(\d{2})(AM|PM)$/i
+        const time_regex = /^(\d{1,2}):(\d{2})$/i
         const parsed_time = closing_time_str.match(time_regex)
-        const is_am = parsed_time[3] === 'AM' || parsed_time[3] === 'am'
         const closing_hour = is_am ? Number(parsed_time[1]) : Number(parsed_time[1]) + 12 
         const closing_minute = Number(parsed_time[2]) 
         let closing_time = new Date()

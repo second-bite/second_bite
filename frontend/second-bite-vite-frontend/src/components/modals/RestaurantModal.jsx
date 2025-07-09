@@ -124,7 +124,7 @@ const RestaurantModal = () => {
                             <span style={{ fontWeight: 550 }}> Pickup Time</span>: {Array.isArray(selected_restaurant.pickup_time) ? selected_restaurant.pickup_time[day_idx] : 'N/A'}</p>
                         <section className="restaurant_modal_btns">
                             <button type="button" className="add_rating_btn" onClick={handleAddRating}>Add Rating</button>
-                            <button type="button" className="reserve_restaurant_btn" style={(is_reserved) ? {backgroundColor: `steelblue`, color: `white`} : {backgroundColor: `lightgray`, color: `black`}} onClick={handleReserveRestaurant}>{is_reserved ? "Order is Reserved" : "Reserve Order"}</button>
+                            <button type="button" className="reserve_restaurant_btn" style={(is_reserved) ? {backgroundColor: `steelblue`, color: `white`} : {backgroundColor: `lightgray`, color: `black`}} onClick={handleReserveRestaurant}>{is_reserved ? "Restaurant is Reserved" : "Reserve Order"}</button>
                         </section>
                     </section>
                 </form>
