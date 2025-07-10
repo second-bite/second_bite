@@ -114,8 +114,6 @@ function KpiCards() {
             variant="small"
             className="font-normal text-gray-600 md:w-full w-4/5"
           >
-            Upward arrow indicating an increase in revenue compared to the
-            previous period.
           </Typography>
         </div>
         <div className="shrink-0">
