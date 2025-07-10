@@ -23,7 +23,20 @@ let users = [
 
 const FriendModal = () => {
     const {base_url, is_friend_modal, setIsFriendModal} = useContext(AppContext)
+
+    // State Variables
     const [friends, setFriends] = useState([])
+    const [sent_friend_requests, setSentFriendRequests] = useState([])
+    const [incoming_friend_requests, setIncomingFriendRequests] = useState([])
+    const [other_consumers, setOtherConsumers] = useState([]) // NOTE: Other consumers not including friends and consumers with sent/incoming friend requests
+
+    // Friend Status
+    const FRIEND_STATUS = {
+        FRIEND: 'friend',
+        SENT_FRIEND_REQ: 'sent_friend_req', // consumer has sent request to other
+        RECEIVED_FRIEND_REQ: 'received_friend_req', // consumer has received friend request from other
+        NONE: 'none',
+    }
 
     // Friend Modal Display Type
     const [friend_modal_title, setFriendModalTitle] = useState(`Sign Up`)
@@ -62,11 +75,10 @@ const FriendModal = () => {
                 headers: { 'Content-Type': 'application/json' },
             })
             if(!response.ok) {
-                const err = new Error(`Status: ${response.status}. Error: ${res_json.message}`)
+                const err = new Error(`Status: ${response.status}. Fialed to get friends`)
                 err.status = response.status
                 throw err
             } 
-
             const friends = await response.json()
             setFriends(friends)
         } catch (err) {
@@ -83,10 +95,36 @@ const FriendModal = () => {
         try {
             const response = await fetch(base_url + '/consumer/all_other', {
                 method: 'GET',
-
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
             })
-            // TODO: Other logic here
-            // TODO: Store in different variables -> one for friend requests, one for available users to add
+            if(!response.ok) {
+                const err = new Error(`Status: ${response.status}. Error: Failed to get other consumers`)
+                err.status = response.status
+                throw err
+            } 
+            const data = await response.json()
+
+            // Clear relevant state variables
+            setSentFriendRequests([])
+            setIncomingFriendRequests([])
+            setOtherConsumers([])
+
+            // Fill in relevant state variables
+            for(const consumer of data) {
+                switch(consumer.friend_status) {
+                    case FRIEND_STATUS.SENT_FRIEND_REQ:
+                        setSentFriendRequests((prev_sent_friend_requests) => [...prev_sent_friend_requests, consumer])
+                        break
+                    case FRIEND_STATUS.RECEIVED_FRIEND_REQ:
+                        setIncomingFriendRequests((prev_incoming_friend_requests) => [...prev_incoming_friend_requests, consumer])
+                        break
+                    case FRIEND_STATUS.NONE:
+                        setOtherConsumers((prev_other_consumers) => [...prev_other_consumers, consumer])
+                        break
+                }
+            }
+            // Clear out 
             // TODO: Add logic for accept/reject
             // TODO: Add logic for send friend request
         } catch (err) {
@@ -142,7 +180,7 @@ const FriendModal = () => {
                             <section className="incoming_friend_requests_section">
                                 <h3 className="text-xl font-bold dark:text-white">Incoming Friend Requests</h3>
                                 {
-                                    users.map((user) => (
+                                    incoming_friend_requests.map((user) => (
                                         <section className="incoming_friend_request">
                                             <section className="incoming_friend_request_container">
                                                 <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
@@ -167,7 +205,7 @@ const FriendModal = () => {
                                 <h3 className="text-xl font-bold dark:text-white">Users</h3>
                                 
                                 {
-                                    users.map((user) => (
+                                    [...sent_friend_requests, ...other_consumers].map((user) => (
                                         <section className="available_user">
                                             <section className="available_user_container">
                                                 <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
