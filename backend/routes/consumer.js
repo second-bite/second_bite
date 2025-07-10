@@ -150,6 +150,7 @@ router.get('/all_other', check_auth(user_types_check.consumer), async (req, res,
     const FRIEND_STATUS = {
         FRIEND: 'friend',
         SENT_FRIEND_REQ: 'sent_friend_req', // consumer has sent request to other
+        RECEIVED_FRIEND_REQ: 'received_friend_req', // consumer has received friend request from other
         NONE: 'none',
     }
 
@@ -178,12 +179,19 @@ router.get('/all_other', check_auth(user_types_check.consumer), async (req, res,
             where: {consumer_id: consumer_id},
             include: {
                 sent_friend_requests: true,
+                received_friend_requests: true,
             }
         })
         const sent_friend_request_ids_set = new Set() // Set of consumers that the currently logged in consumer has sent friend requests to
         if(consumer.sent_friend_requests) {
             for(const sent_friend_request of consumer.sent_friend_requests) {
                 sent_friend_request_ids_set.add(sent_friend_request.receiver_consumer_id)
+            }
+        }
+        const received_friend_requests_ids_set = new Set() // Set of consumers that the currently logged in consumer has received friend requests from
+        if(consumer.received_friend_requests) {
+            for(const received_friend_request of consumer.received_friend_requests) {
+                received_friend_requests_ids_set.add(received_friend_request.sender_consumer_id)
             }
         }
 
@@ -209,7 +217,9 @@ router.get('/all_other', check_auth(user_types_check.consumer), async (req, res,
                             (FRIEND_STATUS.FRIEND) : 
                             (sent_friend_request_ids_set.has(consumer.consumer_id)) ?
                                 (FRIEND_STATUS.SENT_FRIEND_REQ) :
-                                (FRIEND_STATUS.NONE)
+                                (received_friend_requests_ids_set.has(consumer.consumer_id)) ?
+                                    (FRIEND_STATUS.RECEIVED_FRIEND_REQ) :
+                                    (FRIEND_STATUS.NONE),
         }))
 
         res.status(200).json(other_consumers_updated)
