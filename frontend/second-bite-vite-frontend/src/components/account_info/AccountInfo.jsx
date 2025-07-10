@@ -67,10 +67,16 @@ const AccountInfo = () => {
     const handleAccountReturn = () => {
         navigate('/main')
     }
+    const handleCancel = async () => {
+        await getOwnerInfo()
+    }
+    const handleAccountInfoSave = () => {
+        
+    }
 
     return (
         <section className="account_info">
-            <form className="account_info_form">
+            <form className="account_info_form" onSubmit={handleAccountInfoSave}>
                 <button type="button" className="account_return_btn" onClick={handleAccountReturn}>←</button>
                 <h2 className="text-2xl font-bold mt-6 mb-4" id="account_info_title">Edit Personal info</h2>
 
@@ -124,7 +130,7 @@ const AccountInfo = () => {
                         </section>
                     </section>
                     <section className="account_submit_btns">
-                        <button type="button" className="account_clear_btn">Cancel</button>
+                        <button type="button" className="account_clear_btn" onClick={() => handleCancel()}>Cancel</button>
                         <button type="submit" className="account_submit_btn">Save Profile</button>
                     </section>
                 </section>
