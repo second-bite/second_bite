@@ -47,11 +47,9 @@ const FriendModal = () => {
         "background-color": (form_status === FORM_TYPE.ADD_FRIENDS) ?  "black" : "transparent"       
     }
     const handleCurrentFriendsToggle = () => {
-        console.log(form_status)
         if(!(form_status === FORM_TYPE.CURRENT_FRIENDS)) setFormStatus(FORM_TYPE.CURRENT_FRIENDS)
     }
     const handleAddFriendToggle = () => {
-        console.log(form_status)
         if(!(form_status === FORM_TYPE.ADD_FRIENDS)) setFormStatus(FORM_TYPE.ADD_FRIENDS)
     }
 
