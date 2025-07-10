@@ -187,13 +187,32 @@ router.post('/reserve/:restaurant_id/:time_zone', check_auth(user_types_check.co
             }
         }
 
-        // Add reservation
+        // Add reservation to consumer
         const updated_consumer = await prisma.consumer.update({
             where: {consumer_id: consumer_id},
             data: {
                 reserved_restaurant_id: restaurant_id,
                 reservation_expiration: closing_time_in_zone.toJSDate(),
             }
+        })
+
+        // Find if it's the first order
+        const prev_order = await prisma.order.findFirst({
+            where: {restaurant_id: restaurant_id, consumer_id: consumer_id}
+        })
+        let is_first_order = true
+        if (prev_order) is_first_order = false
+
+        const order_data = {
+            cost: restaurant.avg_cost,
+            is_first_order: is_first_order,
+            restaurant_id: restaurant_id,
+            consumer_id: consumer_id,
+        }
+
+        // Record order
+        const order = await prisma.order.create({
+            data: order_data
         })
 
         res.status(200).json({username: updated_consumer.username, reservation_expiration: updated_consumer.reservation_expiration})

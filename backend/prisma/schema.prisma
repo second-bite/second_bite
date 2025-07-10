@@ -146,7 +146,6 @@ model Order {
   order_id              Int                     @id @default(autoincrement())
   cost                  Decimal
   is_first_order        Boolean
-  weekday               Weekday
   order_time            DateTime                @default(now())
   restaurant_id         Int
   restaurant            Restaurant              @relation("orders_restaurant", fields: [restaurant_id], references: [restaurant_id])
@@ -158,7 +157,6 @@ model Order {
 model PageVisit {
   visit_id              Int                     @id @default(autoincrement())
   is_first_visit        Boolean
-  weekday               Weekday
   visit_time            DateTime                @default(now())
   restaurant_id         Int
   restaurant            Restaurant              @relation("visits_restaurant", fields: [restaurant_id], references: [restaurant_id])
