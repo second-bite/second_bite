@@ -144,6 +144,7 @@ enum Weekday {
 // Orders
 model Order {
   order_id              Int                     @id @default(autoincrement())
+  cost                  Decimal
   is_first_order        Boolean
   weekday               Weekday
   order_time            DateTime                @default(now())
