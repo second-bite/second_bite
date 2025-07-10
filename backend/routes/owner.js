@@ -30,7 +30,7 @@ router.get('/', check_auth(user_types_check.owner), async (req, res, next) => {
 
 // Used to edit account details
 // NOTE: Business Owner View
-router.put('/', check_auth(user_types_check.owner), async (req, res, next) => {
+router.patch('/', check_auth(user_types_check.owner), async (req, res, next) => {
     try {
         const owner_id = req.session.user_id
 

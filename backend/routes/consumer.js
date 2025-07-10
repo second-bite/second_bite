@@ -31,7 +31,7 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
 
 // Used to edit consumer account details
 // NOTE: Consumer View
-router.put('/', check_auth(user_types_check.consumer), async (req, res, next) => {
+router.patch('/', check_auth(user_types_check.consumer), async (req, res, next) => {
     try {
         const consumer_id = req.session.user_id
 
@@ -54,6 +54,8 @@ router.put('/', check_auth(user_types_check.consumer), async (req, res, next) =>
         if(existing_username_consumer && existing_username_consumer.consumer_id !== consumer_id) {
             return next({status: 400, message: `Username is already taken`, error_source: 'backend', error_route: '/consumer'})
         }
+
+        console.log('Arrived here')
 
         // Hash the password before storing
         const hashed_pwd = await argon2.hash(req.body.password)

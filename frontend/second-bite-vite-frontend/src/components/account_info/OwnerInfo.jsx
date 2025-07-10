@@ -5,7 +5,7 @@ import states from "../misc/States"
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { AppContext } from "../../context/AppContext"
-import { log_error } from "../../utils/utils"
+import { address_validation, log_error } from "../../utils/utils"
 
 const OwnerInfo = () => {
     const navigate = useNavigate()
@@ -135,7 +135,7 @@ const OwnerInfo = () => {
         }
 
         try {
-            const register_body = {
+            const update_body = {
                 username: form.owner_edit_username.value,
                 password: form.owner_edit_password.value,
                 street_address: form.owner_edit_street_address.value,
@@ -145,8 +145,8 @@ const OwnerInfo = () => {
                 country: form.owner_edit_country.value,
             }
             const response  = await fetch(base_url + `/owner`, {
-                method: 'PUT',
-                body: JSON.stringify(register_body),
+                method: 'PATCH',
+                body: JSON.stringify(update_body),
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
             })
@@ -156,7 +156,7 @@ const OwnerInfo = () => {
             } else {
                 setServerErrorMsg('')
             }
-            const err = new Error(`Failed to register account. Status: ${response.status}`)
+            const err = new Error(`Status: ${response.status}. Failed to update account information.`)
             err.status = response.status
             if(!response.ok) throw err
 

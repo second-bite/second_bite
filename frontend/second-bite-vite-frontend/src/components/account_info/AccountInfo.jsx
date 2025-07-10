@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from "react"
 import { useNavigate } from 'react-router-dom'
 import states from "../misc/States"
 import { AppContext } from "../../context/AppContext"
+import { address_validation, log_error } from "../../utils/utils"
 
 
 const AccountInfo = () => {
@@ -56,7 +57,6 @@ const AccountInfo = () => {
         setPostalCode(data.address.postal_code)
         setState(data.address.state)
         setCountry(data.address.country)
-        setOwnedRestaurants(data.restaurants)
     }
 
     useEffect(() => {
@@ -68,15 +68,84 @@ const AccountInfo = () => {
         navigate('/main')
     }
     const handleCancel = async () => {
-        await getOwnerInfo()
+        await getConsumerInfo()
     }
-    const handleAccountInfoSave = () => {
-        
+    const handleAccountInfoSave = async () => {
+        event.preventDefault()
+
+        const form = form_ref.current.elements;
+
+        // Clear required field error messages
+        setUsernameMsg('');
+        setPasswordMsg('');
+        setConfirmPasswordMsg('');
+        setStreetAddressMsg('');
+        setCityMsg('');
+        setPostalCodeMsg('');
+        setStateMsg('');
+        setCountryMsg('');
+
+        // Ensure all required fields are filled
+        if(!form.consumer_edit_username.value) setUsernameMsg('Please enter username.')
+        if(!form.consumer_edit_password.value) setPasswordMsg('Please enter password.')
+        if(!form.consumer_edit_confirm_password.value) setConfirmPasswordMsg('Please enter re-enter password.')
+        if (!form.consumer_edit_street_address.value) setStreetAddressMsg('Please enter street address.');
+        if (!form.consumer_edit_city.value) setCityMsg('Please enter city.');
+        if (!form.consumer_edit_postal_code.value) setPostalCodeMsg('Please enter postal code.');
+        if (form.consumer_edit_state.value === 'none') setStateMsg('Please select a state.');
+        if (form.consumer_edit_country.value === 'none') setCountryMsg('Please select a country.');
+        if (!form.consumer_edit_username.value || !form.consumer_edit_password.value || !form.consumer_edit_confirm_password.value || !form.consumer_edit_street_address.value || !form.consumer_edit_city.value || !form.consumer_edit_postal_code.value || form.consumer_edit_state.value === 'none' || form.consumer_edit_country.value === 'none') return // Done like this to prevent issues with async
+
+        // Check passwords match
+        if(!(form.consumer_edit_password.value === form.consumer_edit_confirm_password.value)) {
+            form.consumer_edit_password.value = ''
+            form.consumer_edit_confirm_password.value = ''
+            setServerErrorMsg('Passwords must match.')
+            return
+        }
+
+        // Address validation
+        const is_valid_address = await address_validation(form.consumer_edit_street_address.value, form.consumer_edit_city.value, form.consumer_edit_state.value, form.consumer_edit_postal_code.value)
+        if(!is_valid_address) {
+            setServerErrorMsg('Entered invalid address')
+            return
+        }
+
+        try {
+            const update_body = {
+                username: form.consumer_edit_username.value,
+                password: form.consumer_edit_password.value,
+                street_address: form.consumer_edit_street_address.value,
+                city: form.consumer_edit_city.value,
+                postal_code: form.consumer_edit_postal_code.value,
+                state: form.consumer_edit_state.value,
+                country: form.consumer_edit_country.value,
+            }
+            const response  = await fetch(base_url + `/consumer`, {
+                method: 'PATCH',
+                body: JSON.stringify(update_body),
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+            })
+            if(response.status === 400) {
+                const { message } = await response.json()
+                setServerErrorMsg(message)
+            } else {
+                setServerErrorMsg('')
+            }
+            const err = new Error(`Status: ${response.status}. Failed to update account information.`)
+            err.status = response.status
+            if(!response.ok) throw err
+
+            await getConsumerInfo()
+        } catch (err) {
+            await log_error(err)
+        }
     }
 
     return (
         <section className="account_info">
-            <form className="account_info_form" onSubmit={handleAccountInfoSave}>
+            <form className="account_info_form" ref={form_ref} onSubmit={handleAccountInfoSave}>
                 <button type="button" className="account_return_btn" onClick={handleAccountReturn}>←</button>
                 <h2 className="text-2xl font-bold mt-6 mb-4" id="account_info_title">Edit Personal info</h2>
 
