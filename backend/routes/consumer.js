@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const prisma = require('./prisma_client')
 const { DateTime } = require("luxon")
+const argon2 = require('argon2')
 
 const {user_types, user_types_check, check_auth} = require('./user_auth')
 
@@ -54,8 +55,6 @@ router.patch('/', check_auth(user_types_check.consumer), async (req, res, next) 
         if(existing_username_consumer && existing_username_consumer.consumer_id !== consumer_id) {
             return next({status: 400, message: `Username is already taken`, error_source: 'backend', error_route: '/consumer'})
         }
-
-        console.log('Arrived here')
 
         // Hash the password before storing
         const hashed_pwd = await argon2.hash(req.body.password)
