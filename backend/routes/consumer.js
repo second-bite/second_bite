@@ -3,7 +3,7 @@ const router = express.Router()
 const prisma = require('./prisma_client')
 const { DateTime } = require("luxon")
 
-const {user_types_check, check_auth} = require('./user_auth')
+const {user_types, user_types_check, check_auth} = require('./user_auth')
 
 // Used to retrieve currently logged in consumer's details
 // NOTE: Consumer View
@@ -26,6 +26,62 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
         res.status(200).send(consumer)
     } catch (err) {
         next(err)
+    }
+})
+
+// Used to edit consumer account details
+// NOTE: Consumer View
+router.put('/', check_auth(user_types_check.consumer), async (req, res, next) => {
+    try {
+        const consumer_id = req.session.user_id
+
+        if (!req.body) return next({status: 400, message: `Missing request body for account edit`, error_source: 'backend', error_route: '/consumer'})
+
+        for(const required_field of user_types.consumer.required) {
+            if(!req.body[required_field]) {
+                return next({status: 400, message: `Missing required field ${required_field}`, error_source: 'backend', error_route: '/consumer'})
+            }
+        }
+
+        // Enforce password security
+        if(req.body.password.length < 8) {
+            return next({status: 400, message: `Password must be at least 8 characters long.`, error_source: 'backend', error_route: '/consumer'})
+        }
+
+        // Check if username is already taken
+        const username = req.body.username
+        const existing_username_consumer = await prisma.consumer.findUnique({ where: {username: username} })
+        if(existing_username_consumer && existing_username_consumer.consumer_id !== consumer_id) {
+            return next({status: 400, message: `Username is already taken`, error_source: 'backend', error_route: '/consumer'})
+        }
+
+        // Hash the password before storing
+        const hashed_pwd = await argon2.hash(req.body.password)
+
+        // Create a new user in the database
+        const data = {
+            username,
+            password: hashed_pwd,
+            address: {
+                update: {
+                    street_address: req.body.street_address,
+                    city: req.body.city,
+                    state: req.body.state,
+                    postal_code: req.body.postal_code,
+                    country: req.body.country, 
+                }
+            }
+        }
+
+        const consumer = await prisma.consumer.update({
+            where: { consumer_id: consumer_id },
+            data: data,         
+            include: {address: true}      
+        })
+
+        res.status(200).json({ id: consumer.consumer_id, username: consumer.username })
+    } catch (err) {
+        return next(err);
     }
 })
 
