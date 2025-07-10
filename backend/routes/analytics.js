@@ -1,5 +1,3 @@
-import { check_auth } from './user_auth'
-
 const express = require('express')
 const router = express.Router()
 const prisma = require('./prisma_client')
@@ -61,11 +59,16 @@ router.post('/visit/:restaurant_id', check_auth(user_types_check.consumer), asyn
         if(!restaurant) return next({status: 400, message: `Restaurant does not exist`, error_source: 'backend', error_route: '/analytics/visits'})
 
         // Find if it's a consumer's first visit page visit for a specific restaurant
+        console.log('PageVisit')
         const page_visit = await prisma.pageVisit.findFirst({
-            where: {restaurant_id: restaurant_id, consumer_id: consumer_id}
+            where: {
+                restaurant_id: restaurant_id,
+                consumer_id: consumer_id,
+            }
         })
         let is_first_visit = true
         if (page_visit) is_first_visit = false
+        console.log('blah')
 
         const data = {
             is_first_visit: is_first_visit,
@@ -123,4 +126,4 @@ router.get('/orders/:restaurant_id/:time_zone', check_auth(user_types_check.owne
     }
 })
 
-export default router
+module.exports = router

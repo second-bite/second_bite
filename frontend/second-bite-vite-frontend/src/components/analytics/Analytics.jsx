@@ -1,4 +1,4 @@
-import React, { useRef, useState, PureComponent } from "react"
+import React, { useRef, useState, useEffect, PureComponent, useContext } from "react"
 
 // Tailwind Imports
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
@@ -9,10 +9,10 @@ import { Button, Typography, MenuHandler, MenuList, Card, CardBody } from "@mate
 import { PieChart, Pie, Sector, Cell, ComposedChart, Line, Area, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { log_error } from "../../utils/utils"
 import KpiCards from "./KPIs";
+import { AppContext } from "../../context/AppContext";
 
 const Analytics = () => {
-    const restaurant_ref = useRef()
-    const graph_ref = useRef()
+    const { base_url } = useContext(AppContext)
 
     const GRAPH_TYPE = {
         ORDERS: "Orders",
@@ -20,13 +20,43 @@ const Analytics = () => {
         PAGE_VISITS: "Page Visits"
     }
 
-    const [selected_restaurant, setSelectedRestaurant] = useState('Mezze Cafe')
+    // State Variables
+    const [selected_restaurant, setSelectedRestaurant] = useState({})
     const [selected_graph, setSelectedGraph] = useState(GRAPH_TYPE.ORDERS)
+    const [owned_restaurants, setOwnedRestaurants] = useState([]) // Array of owned restaurants
+
+    // Getters
+    const getOwnerRestaurants = async () => {
+        // Fetch owner info from DB
+        let data
+        console.log('Called getOwnerRestaurants')
+        try {
+            const response = await fetch(base_url + '/owner', {
+                method: 'GET',
+                credentials: 'include',
+            })
+            const err = new Error(`Status: ${response.status}. Failed to retrieve owner info from DB`)
+            err.status = response.status
+            if(!response.ok) throw err
+            data = await response.json()
+        } catch (err) {
+            await log_error(err)
+        }
+
+        setOwnedRestaurants(data.restaurants)
+        if(owned_restaurants.length > 0) setSelectedRestaurant(owned_restaurants[0])
+        console.log(data.restaurants)
+    }
+
+    // Load Info on Startup
+    useEffect(() => {
+        getOwnerRestaurants()
+    }, [])
 
     // Handlers
-    const handleRestaurantSelect = (selection) => {
+    const handleRestaurantSelect = (restaurant) => {
         // TODO: Add validation
-        setSelectedRestaurant(selection)
+        setSelectedRestaurant(restaurant)
     }
     const handleGraphSelect = async (selection) => {
         try {
@@ -148,7 +178,7 @@ const Analytics = () => {
             {/* Restaurant Dropdown */}
             <Menu as="div" className="relative inline-block text-left">
             <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50">
-                {selected_restaurant}
+                {selected_restaurant.name || 'Please Select a Restaurant:'}
                 <ChevronDownIcon aria-hidden="true" className="-mr-1 h-5 w-5 text-gray-400" />
             </MenuButton>
             <MenuItems
@@ -158,30 +188,22 @@ const Analytics = () => {
                             data-enter:duration-100 data-enter:ease-out
                             data-leave:duration-75 data-leave:ease-in"
             >
-                <MenuItem onClick={() => {handleRestaurantSelect('Mezze Cafe')}}>
-                {({ active }) => (
-                    <a
-                    href="#"
-                    className={`block px-4 py-2 text-sm text-gray-600 ${
-                        active ? 'bg-gray-100 text-gray-900' : ''
-                    }`}
-                    >
-                    Mezze Cafe
-                    </a>
-                )}
-                </MenuItem>
-                <MenuItem onClick={() => {handleRestaurantSelect('Bento Box')}}>
-                {({ active }) => (
-                    <a
-                    href="#"
-                    className={`block px-4 py-2 text-sm text-gray-600 ${
-                        active ? 'bg-gray-100 text-gray-900' : ''
-                    }`}
-                    >
-                    Bento Box
-                    </a>
-                )}
-                </MenuItem>
+                {
+                    owned_restaurants.map((restaurant) => (
+                        <MenuItem onClick={() => {handleRestaurantSelect(restaurant)}}>
+                        {({ active }) => (
+                            <a
+                            href="#"
+                            className={`block px-4 py-2 text-sm text-gray-600 ${
+                                active ? 'bg-gray-100 text-gray-900' : ''
+                            }`}
+                            >
+                            {restaurant.name}
+                            </a>
+                        )}
+                        </MenuItem>
+                    ))
+                }
             </MenuItems>
             </Menu>
 
