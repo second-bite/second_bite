@@ -215,7 +215,7 @@ const FriendModal = () => {
                                                     <p className="current_friend_username">{user.username}</p>
                                                     <p className="current_friend_supp">Consumer</p>
                                                 </section>         
-                                                <button className="send_friend_request_btn"><img src="/add_user.png" alt="Send Friend Request Icon"/></button>
+                                                <button className="send_friend_request_btn" style={{backgroundColor: (user.friend_status === FRIEND_STATUS.NONE) ? 'gainsboro' : 'lightgreen'}}>{(user.friend_status === FRIEND_STATUS.NONE)? <img src="/add_user.png" alt="Send Friend Request Icon"/> : <img src="/send.png" alt="Friend Request Sent Icon"/>}</button>
                                             </section>
                                             <hr class="h-px my-1 bg-gray-200 border-0 dark:bg-gray-700"></hr>
                                         </section>
