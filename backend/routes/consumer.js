@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const prisma = require('./prisma_client')
-const { DateTime } = require("luxon")
+const { DateTime } = require('luxon')
 const argon2 = require('argon2')
 
 const {user_types, user_types_check, check_auth} = require('./user_auth')
@@ -57,12 +57,16 @@ router.patch('/', check_auth(user_types_check.consumer), async (req, res, next) 
         }
 
         // Hash the password before storing
-        const hashed_pwd = await argon2.hash(req.body.password)
+        const consumer_prev = await prisma.consumer.findUnique({ where: {consumer_id: consumer_id} })
+        let password = consumer_prev.password
+        if(consumer_prev.password !== req.body.password) {
+            password = await argon2.hash(req.body.password)
+        }
 
         // Create a new user in the database
         const data = {
             username,
-            password: hashed_pwd,
+            password: password,
             address: {
                 update: {
                     street_address: req.body.street_address,
