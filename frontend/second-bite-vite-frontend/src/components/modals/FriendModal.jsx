@@ -111,7 +111,7 @@ const FriendModal = () => {
         }
     }
 
-    useEffect(() => { // TODO: Make sure to run getFriendRequestsNOtherConsumers on each friend request send & friend request accept/reject 
+    useEffect(() => {
         getFriendRequestsNOtherConsumers()
     }, [is_friend_modal, form_status])
 

@@ -14,7 +14,10 @@ router.get('/visits/:restaurant_id', check_auth(user_types_check.owner), async (
 
         // Retrieve the visists
         const visits = await prisma.pageVisit.findMany({
-            where: {restaurant_id: restaurant_id}
+            where: {restaurant_id: restaurant_id},
+            include: {
+                consumer: true
+            }
         })
 
         res.status(200).send(visits)
@@ -71,7 +74,10 @@ router.get('/orders/:restaurant_id', check_auth(user_types_check.owner), async (
 
         // Retrieve the orders
         const orders = await prisma.order.findMany({
-            where: {restaurant_id: restaurant_id}
+            where: {restaurant_id: restaurant_id},
+            include: {
+                consumer: true
+            }
         })
 
         res.status(200).send(orders)
