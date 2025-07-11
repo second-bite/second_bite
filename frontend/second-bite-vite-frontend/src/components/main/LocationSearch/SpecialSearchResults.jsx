@@ -21,22 +21,22 @@ import { log_error } from '../../../utils/utils'
 // ]
 
 
-const recent_addresses = [
-  {
-    "street_address": "1600 Amphitheatre Parkway",
-    "city": "Mountain View",
-    "state": "CA",
-    "postal_code": "94043",
-    "country": "USA"
-  },
-  {
-    "street_address": "1 Apple Park Way",
-    "city": "Cupertino",
-    "state": "CA",
-    "postal_code": "95014",
-    "country": "USA"
-  }
-]
+// const recent_addresses = [
+//   {
+//     "street_address": "1600 Amphitheatre Parkway",
+//     "city": "Mountain View",
+//     "state": "CA",
+//     "postal_code": "94043",
+//     "country": "USA"
+//   },
+//   {
+//     "street_address": "1 Apple Park Way",
+//     "city": "Cupertino",
+//     "state": "CA",
+//     "postal_code": "95014",
+//     "country": "USA"
+//   }
+// ]
 
 
 const SpecialSearchResults = ({ setSearchedAddress, handleSearchClear }) => {
@@ -90,7 +90,7 @@ const SpecialSearchResults = ({ setSearchedAddress, handleSearchClear }) => {
                     ))
                 } */}
             </section>
-            <p className="search_results_title">Recent Addresses</p>
+            {/* <p className="search_results_title">Recent Addresses</p>
             <section className="special_search_recent_addresses">
                 {
                     recent_addresses.map((address) => (
@@ -100,7 +100,7 @@ const SpecialSearchResults = ({ setSearchedAddress, handleSearchClear }) => {
                         </section>
                     ))
                 }
-            </section>
+            </section> */}
         </section>
     )
 }
