@@ -8,7 +8,6 @@ const {user_types_check, check_auth} = require('./user_auth')
  * Fundamental Operations
  */
 
-// TODO:
 // Get list of all restaurants (w/ desired filters, etc - used for Main Search Page)
 // NOTE: Consumer View
 router.get('/', check_auth(user_types_check.consumer), async (req, res, next) => {

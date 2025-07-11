@@ -51,7 +51,7 @@ export function KpiCard({ title, percentage, price, color, icon,}) {
   );
 }
 
-function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRange } ) {
+function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRange, setOrders, setVisits } ) {
   const { base_url } = useContext(AppContext)
 
   // State Variables
@@ -92,6 +92,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
             const orders_last_week = orders_owner_time_week.filter((order) => {
                 return order.order_time  >= date_time_one_week_ago
             })
+            setOrders(orders_last_week)
             const orders_week_before_last = orders_owner_time_week.filter((order) => {
                 return ((order.order_time  < date_time_one_week_ago) && (order.order_time >= date_time_two_weeks_ago))
             })
@@ -168,6 +169,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
             const visits_last_week = visits_owner_time_week.filter((visit) => {
                 return visit.visit_time  >= date_time_one_week_ago
             })
+            setVisits(visits_last_week)
             const visits_week_before_last = visits_owner_time_week.filter((visit) => {
                 return ((visit.visit_time  < date_time_one_week_ago) && (visit.visit_time >= date_time_two_weeks_ago))
             })
@@ -220,6 +222,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
         const orders_last_month        = orders_owner_time_month.filter((order) => {
             return order.order_time  >= date_time_one_month_ago
         })
+        setOrders(orders_last_month)
         const orders_month_before_last = orders_owner_time_month.filter((order) => {
             return ((order.order_time  < date_time_one_month_ago) && (order.order_time >= date_time_two_months_ago))
         })
@@ -296,6 +299,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
         const visits_last_month        = visits_owner_time_month.filter((visit) => {
             return visit.visit_time  >= date_time_one_month_ago
         })
+        setVisits(visits_last_month)
         const visits_month_before_last = visits_owner_time_month.filter((visit) => {
             return ((visit.visit_time  < date_time_one_month_ago) && (visit.visit_time >= date_time_two_months_ago))
         })

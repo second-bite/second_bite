@@ -14,6 +14,7 @@ import { AppContext } from "../../context/AppContext";
 const Analytics = () => {
     const { base_url } = useContext(AppContext)
 
+    // enums
     const GRAPH_TYPE = {
         ORDERS: "Orders",
         REVENUE: "Revenue",
@@ -23,11 +24,21 @@ const Analytics = () => {
         LAST_WEEK: "Last Week",
         LAST_MONTH: "Last Month",
     }
+
+    // Colors (for graphs)
+    const new_vs_existing_colors = ['#0088FE', '#00C49F']
+    const orders_vs_weekday_colors = ['#0088FE', '#00C49F', '#FF69B4', '#8BC34A', '#FFC107', '#2196F3', '#9C27B0']
+
     // State Variables
     const [selected_restaurant, setSelectedRestaurant] = useState({})
     const [kpi_time_range, setKPITimeRange] = useState(KPI_TIME_RANGE.LAST_WEEK)
     const [selected_graph, setSelectedGraph] = useState(GRAPH_TYPE.ORDERS)
     const [owned_restaurants, setOwnedRestaurants] = useState([]) // Array of owned restaurants
+    const [orders, setOrders] = useState([]) // Dynamically changed in KPIs.jsx as KPI Time Range changes
+    const [visits, setVisits] = useState([]) // Dynamically changed in KPIs.jsx as KPI Time Range changes
+    // const [new_vs_existing_data, setNewVsExistingData] = useState([])
+    // const [top_consumers_data, setTopConsumersData] = useState([])
+    const [orders_vs_weekday_data, setOrdersVsWeekdayData] = useState([])
 
     // Getters
     const getOwnerRestaurants = async () => {
@@ -47,7 +58,33 @@ const Analytics = () => {
         }
 
         setOwnedRestaurants(data.restaurants)
-        if(owned_restaurants.length > 0) setSelectedRestaurant(owned_restaurants[0])
+        if(owned_restaurants.length > 0) setSelectedRestaurant(data.restaurants[0])
+    }
+    const getNewVsExistingData = () => {
+
+    }
+    const getTopConsumersData = () => {
+
+    }
+    const getOrdersVsWeekdayData = () => {
+        console.log(orders)
+        const new_orders_vs_weekday_data = [
+            { name: 'Monday', value: 0 },
+            { name: 'Tuesday', value: 0},
+            { name: 'Wednesday', value: 0 },
+            { name: 'Thursday', value: 0},
+            { name: 'Friday', value: 0 },
+            { name: 'Saturday', value: 0},
+            { name: 'Sunday', value: 0 },
+        ]
+
+        for(const order of orders) {
+            const day_ind = order.order_time.weekday - 1 // subtract one to make it zero-indexed
+            new_orders_vs_weekday_data[day_ind].value += 1
+        }
+
+        // Update State Variable
+        setOrdersVsWeekdayData(new_orders_vs_weekday_data)
     }
 
     // Load Info on Startup
@@ -55,9 +92,15 @@ const Analytics = () => {
         getOwnerRestaurants()
     }, [])
 
+    // Change supplementary graph data as orders change
+    useEffect(() => {
+        getNewVsExistingData()
+        getTopConsumersData()
+        getOrdersVsWeekdayData()
+    }, [orders])
+
     // Handlers
     const handleRestaurantSelect = (restaurant) => {
-        // TODO: Add validation
         setSelectedRestaurant(restaurant)
     }
     const handleGraphSelect = async (selection) => {
@@ -76,7 +119,6 @@ const Analytics = () => {
         { name: 'New Consumers', value: 68 },
         { name: 'Existing Consumers', value: 368}
     ]
-    const new_vs_existing_colors = ['#0088FE', '#00C49F']
     const RADIAN = Math.PI / 180;
     const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
@@ -161,18 +203,17 @@ const Analytics = () => {
     ];
 
     // Orders by Day of Week
-    const orders_vs_weekday_data = [
-        { name: 'Mondays', value: 68 },
-        { name: 'Tuesday', value: 368},
-        { name: 'Wednesday', value: 68 },
-        { name: 'Thursday', value: 368},
-        { name: 'Friday', value: 68 },
-        { name: 'Saturday', value: 368},
-        { name: 'Sunday', value: 68 },
-    ]
-    const orders_vs_weekday_colors = ['#0088FE', '#00C49F', '#FF69B4', '#8BC34A', '#FFC107', '#2196F3', '#9C27B0']
-    // Main Chart (allow them to choose betweenr evenue, visits, etc)
-    // KPIs (# orders, # visits, $ new visitors $ revenue) ------------------ Graphs
+    // const orders_vs_weekday_data = [
+    //     { name: 'Mondays', value: 68 },
+    //     { name: 'Tuesday', value: 368},
+    //     { name: 'Wednesday', value: 68 },
+    //     { name: 'Thursday', value: 368},
+    //     { name: 'Friday', value: 68 },
+    //     { name: 'Saturday', value: 368},
+    //     { name: 'Sunday', value: 68 },
+    // ]
+
+
     return (
         <section className="analytics">
             <h2 className="text-2xl font-bold mt-6 mb-4">Business Name Analytics</h2>
@@ -210,7 +251,7 @@ const Analytics = () => {
             </Menu>
 
             {/* KPIs */}
-            <KpiCards restaurant_id={selected_restaurant.restaurant_id} KPI_TIME_RANGE={KPI_TIME_RANGE} kpi_time_range={kpi_time_range} setKPITimeRange={setKPITimeRange}/>
+            <KpiCards restaurant_id={selected_restaurant.restaurant_id} KPI_TIME_RANGE={KPI_TIME_RANGE} kpi_time_range={kpi_time_range} setKPITimeRange={setKPITimeRange} setOrders={setOrders} setVisits={setVisits} />
 
             {/* Primary Chart */}
             {/* Code largely taken from https://recharts.org/en-US/examples/ComposedChartWithAxisLabels */}
