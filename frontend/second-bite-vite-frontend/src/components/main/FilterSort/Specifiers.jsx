@@ -62,7 +62,6 @@ const Specifiers = ({search_query, setSearchQuery, searched_address}) => {
         setSelectedFilter((prev_selected_filter) => (selected_filter === filter_type) ? '' : filter_type)
     }
     const handleSearch = async () => {
-        console.log('handleSearch called')
         try{
             const search_query = search_ref.current.elements.search_query.value
             setSearchQuery(search_query)
