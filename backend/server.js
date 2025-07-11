@@ -39,7 +39,6 @@ app.use('/error_log', error_log_routes)
 
 // Error Handling Middleware
 app.use(async (err, req, res, next) => {
-    console.log('Error Handling Middleware called', err)
     const { message, status = 500, error_source = 'backend', error_route } = err
 
     const new_error = {
@@ -49,19 +48,14 @@ app.use(async (err, req, res, next) => {
     };
 
     // Optionally add error route (only applies for backend errors)
-    // console.log(error_route);
     (error_route) ? (new_error.route = error_route) : null ;
     
-    try {
-        const logged_error = await prisma.errorLog.create({
-            data: new_error
-        })
-    }
-    catch(err) {console.error(err)}
+    const logged_error = await prisma.errorLog.create({
+        data: new_error
+    })
+
     // Send to client
     res.status(status).json({message: 'Error: ' + message, status: status})
 })
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`)
-})
+app.listen(PORT)

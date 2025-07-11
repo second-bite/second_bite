@@ -9,7 +9,6 @@ const Stars = ({is_stars_displayed, setNumStars}) => {
     const toggleStar = (star_num) => {
         setStarsColor((prev_stars_color) => (
             prev_stars_color.map((_, ind) => (ind <= star_num) ?  'gold' : 'gray')
-            // TODO: Set num stars
         ))
         setNumStars(star_num + 1) // Star num is zero-indexed (for consistency with color array indices)
     }

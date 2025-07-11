@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -16,52 +15,49 @@ datasource db {
 
 
 /**
- * Consumer-Specific // TODO: Integrate extra fields back in
+ * Consumer-Specific
  */
 model Consumer {
-  consumer_id             Int                     @id @unique @default(autoincrement())
-  username                String                  @unique
-  // email                   String                  @unique 
-  password                String                  
-  address                 Address?                @relation("consumer_address")
-  reserved_restaurant_id  Int?                    // Restaurant ID of currently reserved restaurant
-  reservation_expiration  DateTime?               // Expiration of current reservation                           
-  // past_restaurants    PastRestaurants[]
-  // pinned_restaurants  PinnedRestaurants[]
-  // friends             Consumer[]              @relation("friends")
-  // friends_relation    Consumer[]              @relation("friends")
+  consumer_id               Int                     @id @unique @default(autoincrement())
+  username                  String                  @unique
+  password                  String                  
+  address                   Address?                @relation("consumer_address")
+  reserved_restaurant_id    Int?                    // Restaurant ID of currently reserved restaurant
+  reservation_expiration    DateTime?               // Expiration of current reservation                           
+  friendships_a             Friendship[]            @relation("friendship_a")
+  friendships_b             Friendship[]            @relation("friendship_b")
+  sent_friend_requests      FriendRequest[]         @relation("sender")
+  received_friend_requests  FriendRequest[]         @relation("receiver")
 }
 
-// TODO: Integrate this model back in
-// model PastRestaurants {
-//   consumer_id         Int 
-//   consumer            Consumer                @relation(fields: [consumer_id], references: [consumer_id])
-//   restaurant_id       Int
-//   restaurant          Restaurant              @relation(fields: [restaurant_id], references: [restauraunt_id])
-//   assigned_at         DateTime                @default(now())
+model Friendship {
+  friendship_id       Int                     @id @unique @default(autoincrement())
+  consumer_id_a       Int
+  friend_a            Consumer                @relation("friendship_a", fields: [consumer_id_a], references: [consumer_id])
+  consumer_id_b       Int
+  friend_b            Consumer                @relation("friendship_b", fields: [consumer_id_b], references: [consumer_id])
+  created_at          DateTime                @default(now())
 
-//   @@id([consumer_id, restaurant_id])
-// }
+  @@unique([consumer_id_a, consumer_id_b]) 
+}
 
-// model PinnedRestaurants {
-//   consumer_id         Int 
-//   consumer            Consumer                @relation(fields: [consumer_id], references: [consumer_id])
-//   restaurant_id       Int
-//   restaurant          Restaurant              @relation(fields: [restaurant_id], references: [restauraunt_id])
-//   assigned_at         DateTime                @default(now())
+model FriendRequest {
+  friend_request_id       Int                     @id @unique @default(autoincrement())
+  sender_consumer_id      Int
+  sender_consumer         Consumer                @relation("sender", fields: [sender_consumer_id], references: [consumer_id])
+  receiver_consumer_id    Int
+  receiver_consumer       Consumer                @relation("receiver", fields: [receiver_consumer_id], references: [consumer_id])
+  created_at              DateTime                @default(now())
 
-//   @@id([consumer_id, restaurant_id])
-// }
-
-
+  @@unique([sender_consumer_id, receiver_consumer_id])
+}
 
 /**
- * Owner-Specific // TODO: Integrate extra fields back in
+ * Owner-Specific
  */
 model Owner {
   owner_id            Int                     @id @default(autoincrement())
   username            String                  @unique
-  // email               String                  @unique 
   password            String
   address             Address?                @relation("owner_address")
   restaurants         Restaurant[]
@@ -127,19 +123,12 @@ model Restaurant {
   pickup_time       String[]                // Each entry represents a day of the week (Mon-Su)
   owner_id          Int
   owner             Owner                   @relation(fields: [owner_id], references: [owner_id])
-  // pinned_by_users   PinnedRestaurants[]
-  // visited_by_users  PastRestaurants[]
-
-  // Analytics
-  // page_visits       Int                     @default(0)
-  // revenue           Decimal                 @default(0)
-  // num_orders        Int                     @default(0)
 }
 
 
 
 /**
- * Other // TODO: Integrate extra fields back in
+ * Other
  */
 model Address {
   // Core Address Info
@@ -157,15 +146,6 @@ model Address {
   restaurant_id     Int?                        @unique
   restaurant        Restaurant?                 @relation("restaurant_address", fields:[restaurant_id], references: [restaurant_id])
 }
-
-// TODO: Integrate this model back in
-// model Feedback {
-//   feedback_id       Int                           @id @default(autoincrement())
-//   num_stars         Int
-//   msg               String
-//   user_id           Int
-//   create_date       DateTime                      @default(now())
-// }
 
 enum ErrorSource {
   frontend

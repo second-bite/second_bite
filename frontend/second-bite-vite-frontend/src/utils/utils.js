@@ -2,26 +2,20 @@
 
 export const log_error = async (err) => {
     const base_url = import.meta.env.VITE_BASE_URL
-    try {
-        console.log(err)
-        const body = {
-            status: err.status,
-            message: err.message,
-        }
-        console.log(body)
-        const response = await fetch(base_url + '/error_log', {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-        })
-        const data = await response.json()
-        const error = new Error(`Logging failed: ${response.status} ${response.statusText}`)
-        error.status = response.status
-        if(!response.ok) throw error
-    } catch (err) {
-        console.error(err) // Logging unsuccessful, console.error
+    const body = {
+        status: err.status,
+        message: err.message,
     }
+    const response = await fetch(base_url + '/error_log', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+    })
+    const data = await response.json()
+    const error = new Error(`Logging failed: ${response.status} ${response.statusText}`)
+    error.status = response.status
+    if(!response.ok) throw error
 }
 
 export const address_validation = async (street_address, city, state, postal_code) => {
