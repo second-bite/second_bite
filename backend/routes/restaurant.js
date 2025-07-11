@@ -26,9 +26,9 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
         
 
         // Apply filters
-        if(categories || search_query) {
-            filters.where = {}
-        }
+        // if(categories || search_query) {
+        //     filters.where = {}
+        // }
         // if(categories) {
         //     filters.where.categories = {}
         //     categories = categories.split(',')
@@ -39,6 +39,7 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
         //     }
         // }
         if(search_query?.trim()) {
+            filters.where = {}
             filters.where.name = {
                 contains: search_query,
                 mode: 'insensitive',

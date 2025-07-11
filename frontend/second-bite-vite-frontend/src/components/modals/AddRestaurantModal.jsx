@@ -160,7 +160,7 @@ const AddRestaurantModal = () => {
             img_url: input_img_url,
             img_alt: `${form.name.value} Banner`,
             avg_cost: form.avg_cost.value,
-            pickup_time: [form.mon_time.value, form.tue_time.value, form.wed_time.value, form.thu_time.value, form.fri_time.value, form.sat_time.value, form.sun_time.value],
+            pickup_time: [form.sun_time.value, form.mon_time.value, form.tue_time.value, form.wed_time.value, form.thu_time.value, form.fri_time.value, form.sat_time.value],
         }
         const response  = await fetch(base_url + `/restaurant`, {
             method: 'POST',

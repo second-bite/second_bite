@@ -27,10 +27,12 @@ app.use(cookie_parser())
 const { auth_routes } = require('./routes/user_auth')
 const restaurant_routes = require('./routes/restaurant')
 const owner_routes = require('./routes/owner')
+const consumer_routes = require('./routes/consumer')
 
 app.use('/auth', auth_routes)
 app.use('/restaurant', restaurant_routes)
 app.use('/owner', owner_routes)
+app.use('/consumer', consumer_routes)
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

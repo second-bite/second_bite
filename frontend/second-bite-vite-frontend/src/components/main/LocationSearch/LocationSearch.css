@@ -33,7 +33,7 @@
 }
 
 input[type="text"].address_search_text {
-    border-radius: 5%;
+    border-radius: 0%;
     height: 40%;
     width: 30vw;
 }
@@ -76,6 +76,7 @@ input[type="text"].address_search_text {
     flex-direction: column;
     padding-left: 10px;
     padding-right: 10px;
+    cursor: pointer;
 }
 
 .special_search_saved_address, .special_search_recent_address, .regular_search_address {

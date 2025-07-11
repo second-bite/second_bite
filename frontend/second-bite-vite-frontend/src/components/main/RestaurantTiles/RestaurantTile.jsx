@@ -87,4 +87,6 @@ RestaurantTile.propTypes = {
     distance_value: PropTypes.number,
   }).isRequired,
 };
+
+
 export default RestaurantTile

@@ -6,6 +6,7 @@ const argon2 = require('argon2')
 const {user_types, user_types_check, check_auth} = require('./user_auth')
 
 // Used to retrieve owner details (for Edit Owner Account page)
+// NOTE: Business Owner View
 router.get('/', check_auth(user_types_check.owner), async (req, res, next) => {
     try {
         const owner_id = req.session.user_id
