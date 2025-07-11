@@ -51,16 +51,10 @@ export function KpiCard({ title, percentage, price, color, icon,}) {
   );
 }
 
-function KpiCards( { restaurant_id } ) {
+function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRange } ) {
   const { base_url } = useContext(AppContext)
 
-  const KPI_TIME_RANGE = {
-      LAST_WEEK: "Last Week",
-      LAST_MONTH: "Last Month",
-  }
-
   // State Variables
-  const [kpi_time_range, setKPITimeRange] = useState(KPI_TIME_RANGE.LAST_WEEK)
   const [kpi_titles, setKPITitles] = useState(["Revenue", "Orders", "Page Visits", "New Consumers"])
   const [kpi_percentages, setKPIPercentages] = useState(new Array(4).fill("0%"))
   const [kpi_price, setKPIPrice] = useState(new Array(4).fill("0"))

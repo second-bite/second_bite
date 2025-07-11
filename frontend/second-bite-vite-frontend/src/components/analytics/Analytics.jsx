@@ -19,9 +19,13 @@ const Analytics = () => {
         REVENUE: "Revenue",
         PAGE_VISITS: "Page Visits"
     }
-
+    const KPI_TIME_RANGE = {
+        LAST_WEEK: "Last Week",
+        LAST_MONTH: "Last Month",
+    }
     // State Variables
     const [selected_restaurant, setSelectedRestaurant] = useState({})
+    const [kpi_time_range, setKPITimeRange] = useState(KPI_TIME_RANGE.LAST_WEEK)
     const [selected_graph, setSelectedGraph] = useState(GRAPH_TYPE.ORDERS)
     const [owned_restaurants, setOwnedRestaurants] = useState([]) // Array of owned restaurants
 
@@ -206,7 +210,7 @@ const Analytics = () => {
             </Menu>
 
             {/* KPIs */}
-            <KpiCards restaurant_id={selected_restaurant.restaurant_id} />
+            <KpiCards restaurant_id={selected_restaurant.restaurant_id} KPI_TIME_RANGE={KPI_TIME_RANGE} kpi_time_range={kpi_time_range} setKPITimeRange={setKPITimeRange}/>
 
             {/* Primary Chart */}
             {/* Code largely taken from https://recharts.org/en-US/examples/ComposedChartWithAxisLabels */}
@@ -239,7 +243,7 @@ const Analytics = () => {
             <section className="analytics_supplementary_graph_section">
                 {/* New vs Existing Users Pie Chart */}
                 <section className="analytics_supplementary_graph">
-                    <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{'New vs Existing Consumers (Past Month)'}</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{`New vs Existing Consumers ` +  ((kpi_time_range === KPI_TIME_RANGE.LAST_WEEK) ? `(Past Week)` : `(Past Month)`)}</h3>
                     <ResponsiveContainer width="100%" height="100%">
                         {/* Code largely taken from https://recharts.org/en-US/examples/PieChartWithCustomizedLabel */}
                         <PieChart width={400} height={400}>
@@ -264,7 +268,7 @@ const Analytics = () => {
 
                 {/* Highest Frequency Customers Bar Chart */}
                 <section className="analytics_supplementary_graph">
-                    <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{'Highest Frequency Customers (Past Month)'}</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{`Highest Frequency Customers `+  ((kpi_time_range === KPI_TIME_RANGE.LAST_WEEK) ? `(Past Week)` : `(Past Month)`)}</h3>
                     {/* Code largely taken from https://recharts.org/en-US/api/BarChart */}
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
@@ -290,7 +294,7 @@ const Analytics = () => {
 
                 {/* Orders by Day of Week Pie Chart */}
                 <section className="analytics_supplementary_graph">
-                    <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{'Orders by Day (Past Month)'}</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{`Orders by Day `+  ((kpi_time_range === KPI_TIME_RANGE.LAST_WEEK) ? `(Past Week)` : `(Past Month)`)}</h3>
                     <ResponsiveContainer width="100%" height="100%">
                         {/* Code largely taken from https://recharts.org/en-US/examples/PieChartWithCustomizedLabel */}
                         <PieChart width={400} height={400}>

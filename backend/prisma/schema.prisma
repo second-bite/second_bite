@@ -131,16 +131,6 @@ model Restaurant {
 }
 
 /* Analytics */
-enum Weekday {
-  mon
-  tue
-  wed
-  thu
-  fri
-  sat
-  sun
-}
-
 // Orders
 model Order {
   order_id              Int                     @id @default(autoincrement())
