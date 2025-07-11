@@ -3,13 +3,15 @@ import React, { useRef, useState, useEffect, PureComponent, useContext } from "r
 // Tailwind Imports
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import { Button, Typography, MenuHandler, MenuList, Card, CardBody } from "@material-tailwind/react";
 
 // Rechart Imports
-import { PieChart, Pie, Sector, Cell, ComposedChart, Line, Area, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { PieChart, Pie, Cell, ComposedChart, Line, Area, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+
+// Internal Imports
 import { log_error } from "../../utils/utils"
 import KpiCards from "./KPIs";
 import { AppContext } from "../../context/AppContext";
+import { currency_formatter } from "../../utils/utils"
 
 const Analytics = () => {
     const { base_url } = useContext(AppContext)
@@ -37,7 +39,7 @@ const Analytics = () => {
     const [orders, setOrders] = useState([]) // Dynamically changed in KPIs.jsx as KPI Time Range changes
     const [visits, setVisits] = useState([]) // Dynamically changed in KPIs.jsx as KPI Time Range changes
     const [new_vs_existing_data, setNewVsExistingData] = useState([])
-    // const [top_consumers_data, setTopConsumersData] = useState([])
+    const [top_consumers_data, setTopConsumersData] = useState([])
     const [orders_vs_weekday_data, setOrdersVsWeekdayData] = useState([])
 
     // Getters
@@ -83,7 +85,43 @@ const Analytics = () => {
         setNewVsExistingData(updated_new_vs_existing_data)
     }
     const getTopConsumersData = () => {
+        // Accumulate consumers based on descending total cost/revenue
+        const aggregated_consumers_revenue_obj = orders.reduce((accumulator, order) => {
+            const {consumer_id, cost} = order
+            const {username} = order.consumer
 
+            if(accumulator[consumer_id]) {
+                accumulator[consumer_id].price += cost
+            }
+            else {
+                accumulator[consumer_id] = {
+                    username: username,
+                    price: cost,
+                }
+            }
+
+            return accumulator
+        }, {})
+
+        // Creates array of consumers (each entry containing all info necessary for bar chart)
+        let aggregated_consumers_revenue_arr = []
+        for(const consumer_to_price in aggregated_consumers_revenue_obj) {
+            aggregated_consumers_revenue_arr.push([consumer_to_price, aggregated_consumers_revenue_obj[consumer_to_price].username, aggregated_consumers_revenue_obj[consumer_to_price].price])
+        }
+
+        // Sort consumers by descending total cost/revenue
+        aggregated_consumers_revenue_arr.sort((a,b) => b[2] - a[2])
+
+        // Retrieve Top Consumers Data for Bar Chart (takes top 4)
+        const new_top_consumers_data = aggregated_consumers_revenue_arr.slice(0, 4).map((consumer_bar_info) => (
+            {
+                name: consumer_bar_info[1],
+                price: consumer_bar_info[2]
+            }
+        ))
+
+        // Update State Variable
+        setTopConsumersData(new_top_consumers_data)
     }
     const getOrdersVsWeekdayData = () => {
         const new_orders_vs_weekday_data = [
@@ -184,36 +222,6 @@ const Analytics = () => {
         pv: 680,
         amt: 1700,
     },
-    ];
-
-
-    // Top Consumers Bar Chart Attributes
-    const top_consumers_data = [
-        {
-            name: 'Bill Nye',
-            uv: 4000,
-            amt: 2400,
-        },
-        {
-            name: 'Sabrina Carpenter',
-            uv: 3000,
-            amt: 2210,
-        },
-        {
-            name: 'Mark Zuckerberg',
-            uv: 2000,
-            amt: 2290,
-        },
-        {
-            name: 'Andrew Bosman',
-            uv: 2780,
-            amt: 2000,
-        },
-        {
-            name: 'John Doe',
-            uv: 1890,
-            amt: 2181,
-        },
     ];
 
 
@@ -326,12 +334,12 @@ const Analytics = () => {
                             bottom: 5,
                         }}
                         >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="uv" fill="#82ca9d" activeBar={<Rectangle fill="gold" stroke="purple" />} />
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis label={{ value: 'Revenue ($)', angle: -90, position: 'insideLeft' }} />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="price" fill="#82ca9d" activeBar={<Rectangle fill="gold" stroke="purple" />} />
                         </BarChart>
                     </ResponsiveContainer>
                 </section>
