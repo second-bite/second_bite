@@ -47,7 +47,7 @@ const RestaurantModal = () => {
               err.status = response.status
               if(!response.ok) throw err
               const data = await response.json()
-              
+
               if(data.reservation_expiration && (((new Date()) < (new Date(data.reservation_expiration)))) && (data.reserved_restaurant_id === selected_restaurant.restaurant_id)) setIsReserved(true)
               else setIsReserved(false)
             } catch (err) {
