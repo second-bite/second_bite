@@ -18,6 +18,7 @@ import OwnerProtected from './protected_routing/OwnerProtected'
 import ConsumerProtected from './protected_routing/ConsumerProtected'
 import RestaurantModal from './components/modals/RestaurantModal'
 import RatingModal from './components/modals/RatingModal'
+import FriendModal from './components/modals/FriendModal'
 
 function App() {
 
@@ -46,6 +47,7 @@ function App() {
           <AddRestaurantModal />
           <RestaurantModal />
           <RatingModal />
+          <FriendModal />
         </div>
       </AuthProvider>
     </AppProvider>

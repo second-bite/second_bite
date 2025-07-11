@@ -81,9 +81,45 @@ header.primary_header {
     background-color: transparent;
 }
 
+.header_btns {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.friend_btn {
+    height: 50px;
+    width: 100px;
+}
+
+.friend_img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
 /* TODO: Maybe discard? */
 /* .account_dropdown {
     margin-left: 2px;
     font-size: clamp(6px, 4vh, 50px);
     text-shadow: 6px 6px 12px rgb(0, 0, 0, 0.5);
 } */
+
+.friend_toggle_btns {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 250px;
+    background-color: lightgray;
+    gap: 3px;
+    border-radius: 10px;
+}
+
+.friend_toggle_btn {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 15px;
+    font-weight: bold;
+}
