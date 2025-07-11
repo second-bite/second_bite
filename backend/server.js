@@ -1,6 +1,8 @@
 const express = require('express')
 const session = require('express-session')
+const cookie_parser = require('cookie-parser')
 const cors = require('cors')
+require('dotenv').config()
 const app = express()
 const PORT = 3000
 
@@ -12,18 +14,23 @@ app.use(cors({
   credentials: true
 }));
 
-const { auth_routes } = require('./routes/user_auth')
-const restaurant_routes = require('./routes/restaurant')
-
 app.use(session({
     secret: 'second-bite',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60, sameSite: 'none' }
+    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60, sameSite: 'lax' }
 }))
+
+app.use(cookie_parser())
+
+// Routes
+const { auth_routes } = require('./routes/user_auth')
+const restaurant_routes = require('./routes/restaurant')
+const owner_routes = require('./routes/owner')
 
 app.use('/auth', auth_routes)
 app.use('/restaurant', restaurant_routes)
+app.use('/owner', owner_routes)
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

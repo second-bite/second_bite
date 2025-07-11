@@ -43,8 +43,8 @@
 .cuisine_filter {
     flex: 1 1 7vw;     
     flex-shrink: 0;
-    color: black;
-    background-color: #f1f1f2;
+    /* color: black; */
+    /* background-color: #f1f1f2; */
     border-radius: 16px;
     white-space: nowrap;
     box-shadow: 4px 4px 10px rgb(0, 0, 0, 0.2);
@@ -55,7 +55,7 @@
     padding: 2px 2px;
     text-align: center;
     font-weight: 500;
-    color: #2e2f32;
+    /* color: #2e2f32; */
 }
 
 /* Sort */

@@ -83,8 +83,8 @@ const SignUpForm = ({auth_form_title, FORM_TYPE, setFormStatus}) => {
                 credentials: 'include',
             })
             if(response.status === 400) {
-                const { err_msg } = await response.json()
-                await setServerErrorMsg(err_msg)
+                const { message } = await response.json()
+                await setServerErrorMsg(message)
             } else {
                 await setServerErrorMsg('')
             }
