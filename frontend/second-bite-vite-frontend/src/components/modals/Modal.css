@@ -1,10 +1,5 @@
-/* Both Feedback & Add Restaurant Modal */
-#feedback_modal{
-    background-color: whitesmoke;
-    width: clamp(275px, 40vw, 400px);
-}
-
-.feedback_form, .add_restaurant_form {
+/* Shared Between Modals */
+ .feedback_form, .add_restaurant_form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -12,8 +7,13 @@
     padding: 3%;
 }
 
-/* Feedback Modal */
-.close_feedback_btn {
+.star {
+    all: unset;
+    cursor: pointer;
+    font-size: clamp(28px, 5vw, 50px);
+}
+
+.close_btn {
     all:unset;
     cursor: pointer;
     position: absolute;
@@ -22,10 +22,17 @@
     font-size: 25px;
 }
 
-.feedback_star {
-    all: unset;
-    cursor: pointer;
-    font-size: clamp(28px, 5vw, 50px);
+.feedback_submit_btn, .rating_submit_btn {
+    color: white;
+    background-color: steelblue;
+    font-weight: 550;
+    margin-top: 10px;
+}
+
+/* Feedback Modal */
+#feedback_modal {
+    background-color: whitesmoke;
+    width: clamp(275px, 40vw, 400px);
 }
 
 textarea.feedback_text {
@@ -34,13 +41,6 @@ textarea.feedback_text {
     border-radius: 20px;
     width: 80%;
     min-height: clamp(150px, 10vh, 250px);
-}
-
-.feedback_submit_btn {
-    color: white;
-    background-color: steelblue;
-    font-weight: 550;
-    margin-top: 10px;
 }
 
 /* Add Restaurant Modal */
@@ -52,4 +52,41 @@ textarea.feedback_text {
 
 .add_restaurant_form input::placeholder, .add_restaurant_form textarea::placeholder {
     color: red;
+}
+
+/* Restaurant Modal */
+#restaurant_modal {
+    background-color: whitesmoke;
+    width: clamp(275px, 40vw, 650px);
+}
+
+.restaurant_modal_btns {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+}
+
+.restaurant_modal_btns button {
+    background-color: lightgray;
+    color: black;
+    font-weight: bold;
+}
+
+/* Rating Modal */
+.modal_star_custom { 
+  position: fixed;
+  z-index: 20;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+textarea.rating_text {
+    border-color: gray;
+    background-color: whitesmoke;
+    border-radius: 20px;
+    width: 80%;
+    min-height: clamp(150px, 10vh, 250px);
 }

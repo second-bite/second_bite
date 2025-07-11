@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import PropTypes from 'prop-types'
+import { log_error } from '../../../utils/utils'
 
 // const searched_addresses = [
 //   {
@@ -46,11 +47,13 @@ const RegularSearchResults = ({ search_query, setSearchedAddress, handleSearchCl
                         'Content-Type': 'application/json'
                     }
                   })
-                  if(!response.ok) throw new Error(`Status: ${response.status}. Failed to Radar address autocomplete`)
+                  const err = new Error(`Status: ${response.status}. Failed to Radar address autocomplete`)
+                  err.status = response.status
+                  if(!response.ok) throw err
                   const { addresses } = await response.json()
                   setSearchResults(addresses)
               } catch (err) {
-                  console.error('Error: ', err)
+                  await (err)
               }
         }
         if(search_query) {

@@ -1,6 +1,7 @@
 import React, {useState, useContext, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import { AppContext } from '../../../context/AppContext'
+import { log_error } from '../../../utils/utils'
 
 // const saved_addresses = [
 //   {
@@ -53,11 +54,13 @@ const SpecialSearchResults = ({ setSearchedAddress, handleSearchClear }) => {
                       'Content-Type': 'application/json',
                   },
               })
-              if(!response.ok) throw new Error(`Status: ${response.status}. Failed to fetch logged in consumer's info`)
+              const err = new Error(`Status: ${response.status}. Failed to fetch logged in consumer's info`)
+              err.status = response.status
+              if(!response.ok) throw err
               const { address } = await response.json()
               setConsumerAddress(address)
             } catch (err) {
-                console.error('Error: ', err)
+                await log_error(err)
             }
         }
 

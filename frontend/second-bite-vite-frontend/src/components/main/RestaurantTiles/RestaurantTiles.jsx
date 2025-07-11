@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import RestaurantTile from "./RestaurantTile";
 import sample_restaurants from "../../misc/SampleRestaurants";
 import { AppContext } from "../../../context/AppContext";
+import { log_error } from "../../../utils/utils";
 
 
 const RestaurantTiles = () => {
@@ -17,12 +18,14 @@ const RestaurantTiles = () => {
                         'Content-Type': 'application/json',
                     },
                 })
-                if(!response.ok) throw new Error(`Status: ${response.status}. Failed to initially fetch restaurants`)
+                const err = new Error(`Status: ${response.status}. Failed to initially fetch restaurants`)
+                err.status = response.status
+                if(!response.ok) throw err
                 const restaurant_data = await response.json()
                 setRestaurants(restaurant_data)
                 setDisplayedRestaurants(restaurant_data)
             } catch (err) {
-                console.error('Error: ', err)
+                await log_error(err)
             }
         }
         initialRestaurantFetch()

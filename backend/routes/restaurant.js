@@ -17,7 +17,7 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
     // If an address field is provided, all must be provided
     const is_address_provided = [street_address, city, postal_code, state, country].some(elem => elem)
     const all_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
-    if(is_address_provided && !all_address_provided) return next({status: 400, message: 'Missing some address fields'})
+    if(is_address_provided && !all_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant'})
     
     let filters = {}
     try {
@@ -168,18 +168,18 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
 router.post('/', check_auth(user_types_check.owner),  async (req, res, next) => {
     try {
         const owner_id = req.session.user_id
-        if (!req.body) return next({status: 400, message: `Missing request body for account register`})
+        if (!req.body) return next({status: 400, message: `Missing request body for account register`, error_source: 'backend', error_route: '/restaurant'})
 
         const required_fields = [`name`, `descr`, `address`, `categories`, `img_url`, `img_alt`, `avg_cost`, `pickup_time`]
         const required_address_fields = [`street_address`, `city`, `postal_code`, `state`, `country`]
         for(const required_field of required_fields) {
             if(!req.body[required_field]) {
-                return next({status: 400, message: `Missing required field ${required_field}`})
+                return next({status: 400, message: `Missing required field ${required_field}`, error_source: 'backend', error_route: '/restaurant'})
             }
         }
         for(const required_address_field of required_address_fields) {
             if(!req.body.address[required_address_field]) {
-                return next({status: 400, message: `Missing required address field ${required_address_field}`})
+                return next({status: 400, message: `Missing required address field ${required_address_field}`, error_source: 'backend', error_route: '/restaurant'})
             }
         }
 

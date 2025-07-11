@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { AppContext } from '../context/AppContext'
 import { AuthContext } from '../context/AuthContext'
+import { log_error } from '../utils/utils'
 
 const PrimaryHeader = () => {
     const navigate = useNavigate()
@@ -34,13 +35,14 @@ const PrimaryHeader = () => {
             })
             const res_json = await response.json()
             if(!response.ok) {
-                throw new Error(`Status Code: ${response.status}. ErrMsg: ${res_json.message}`)
+                const err = new Error(`Status Code: ${response.status}. ErrMsg: ${res_json.message}`)
+                err.status = response.status
+                throw err
             }
-            console.log(res_json)
             setAuthStatus(AUTH_STATUS.UNAUTH)
             navigate('/auth')
-        } catch (e) {
-            // TODO: Meaningfully handle this error
+        } catch (err) {
+            await log_error(err)
         } finally {
             setIsLoading(false)
         }
