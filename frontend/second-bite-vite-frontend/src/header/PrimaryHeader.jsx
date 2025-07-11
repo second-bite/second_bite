@@ -10,7 +10,7 @@ const PrimaryHeader = () => {
     const navigate = useNavigate()
 
     const {base_url, is_feedback_modal, setIsFeedbackModal} = useContext(AppContext)
-    const {setIsLoading, auth_status, AUTH_STATUS} = useContext(AuthContext)
+    const {setIsLoading, auth_status, AUTH_STATUS, setAuthStatus} = useContext(AuthContext)
 
     const handleFeedbackClick = () => {setIsFeedbackModal(true)}
 
@@ -37,6 +37,7 @@ const PrimaryHeader = () => {
                 throw new Error(`Status Code: ${response.status}. ErrMsg: ${res_json.message}`)
             }
             console.log(res_json)
+            setAuthStatus(AUTH_STATUS.UNAUTH)
             navigate('/auth')
         } catch (e) {
             // TODO: Meaningfully handle this error

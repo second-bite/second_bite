@@ -137,11 +137,11 @@ const AddRestaurantModal = () => {
     }
 
     // Address validation
-    // const is_valid_address = address_validation(form.street_address.value, form.city.value, form.state.value, form.postal_code.value)
-    // if(!is_valid_address) {
-    //     setAddressErrMsg('Entered invalid address')
-    //     return
-    // }
+    const is_valid_address = address_validation(form.street_address.value, form.city.value, form.state.value, form.postal_code.value)
+    if(!is_valid_address) {
+        setAddressErrMsg('Entered invalid address')
+        return
+    }
 
     // TODO: Add API call
     try {
@@ -164,16 +164,18 @@ const AddRestaurantModal = () => {
         }
         const response  = await fetch(base_url + `/restaurant`, {
             method: 'POST',
+            credentials: 'include',
             body: JSON.stringify(body),
             headers: { 'Content-Type': 'application/json' }
         })
         if(response.status === 400) {
-            const { err_msg } = await response.json()
-            await setServerErrorMsg(err_msg)
+            const { message } = await response.json()
+            await setServerErrorMsg(message)
         } else {
             await setServerErrorMsg('')
         }
-        if(!response.ok) throw new Error(`Failed to add restaurant. Status: ${response.status}`);
+        const { message } = await response.json()
+        if(!response.ok) throw new Error(`Failed to add restaurant. Status: ${response.status}. ErrMsg: ${message}`);
 
         setIsAddRestaurantModal(false)
 

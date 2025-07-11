@@ -79,7 +79,8 @@ const SignUpForm = ({auth_form_title, FORM_TYPE, setFormStatus}) => {
             const response  = await fetch(base_url + `/auth/register/` + account_type, {
                 method: 'POST',
                 body: JSON.stringify(register_body),
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
             })
             if(response.status === 400) {
                 const { err_msg } = await response.json()
