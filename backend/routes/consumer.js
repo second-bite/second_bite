@@ -14,6 +14,8 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
             where: {consumer_id: consumer_id},
             include: {
                 address: true,
+                sent_friend_requests: true,
+                received_friend_requests: true,
             }
         })
 

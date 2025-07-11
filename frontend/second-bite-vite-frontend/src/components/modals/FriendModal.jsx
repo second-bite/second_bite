@@ -2,28 +2,22 @@ import React, { useContext, useState, useEffect } from "react"
 import { AppContext } from "../../context/AppContext"
 import { log_error } from "../../utils/utils";
 
-let users = [
-  {
-    username: "johnDoe",
-    userId: 1
-  },
-  {
-    username: "janeDoe",
-    userId: 2
-  },
-  {
-    username: "aliceSmith",
-    userId: 3
-  },
-  {
-    username: "bobJohnson",
-    userId: 4
-  }
-];
-
 const FriendModal = () => {
     const {base_url, is_friend_modal, setIsFriendModal} = useContext(AppContext)
+
+    // State Variables
     const [friends, setFriends] = useState([])
+    const [sent_friend_requests, setSentFriendRequests] = useState([])
+    const [incoming_friend_requests, setIncomingFriendRequests] = useState([])
+    const [other_consumers, setOtherConsumers] = useState([]) // NOTE: Other consumers not including friends and consumers with sent/incoming friend requests
+
+    // Friend Status
+    const FRIEND_STATUS = {
+        FRIEND: 'friend',
+        SENT_FRIEND_REQ: 'sent_friend_req', // consumer has sent request to other
+        RECEIVED_FRIEND_REQ: 'received_friend_req', // consumer has received friend request from other
+        NONE: 'none',
+    }
 
     // Friend Modal Display Type
     const [friend_modal_title, setFriendModalTitle] = useState(`Sign Up`)
@@ -62,11 +56,10 @@ const FriendModal = () => {
                 headers: { 'Content-Type': 'application/json' },
             })
             if(!response.ok) {
-                const err = new Error(`Status: ${response.status}. Error: ${res_json.message}`)
+                const err = new Error(`Status: ${response.status}. Fialed to get friends`)
                 err.status = response.status
                 throw err
             } 
-
             const friends = await response.json()
             setFriends(friends)
         } catch (err) {
@@ -83,12 +76,37 @@ const FriendModal = () => {
         try {
             const response = await fetch(base_url + '/consumer/all_other', {
                 method: 'GET',
-
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
             })
-            // TODO: Other logic here
-            // TODO: Store in different variables -> one for friend requests, one for available users to add
+            if(!response.ok) {
+                const err = new Error(`Status: ${response.status}. Error: Failed to get other consumers`)
+                err.status = response.status
+                throw err
+            } 
+            const data = await response.json()
+
+            // Clear relevant state variables
+            setSentFriendRequests([])
+            setIncomingFriendRequests([])
+            setOtherConsumers([])
+
+            // Fill in relevant state variables
+            for(const consumer of data) {
+                switch(consumer.friend_status) {
+                    case FRIEND_STATUS.SENT_FRIEND_REQ:
+                        setSentFriendRequests((prev_sent_friend_requests) => [...prev_sent_friend_requests, consumer])
+                        break
+                    case FRIEND_STATUS.RECEIVED_FRIEND_REQ:
+                        setIncomingFriendRequests((prev_incoming_friend_requests) => [...prev_incoming_friend_requests, consumer])
+                        break
+                    case FRIEND_STATUS.NONE:
+                        setOtherConsumers((prev_other_consumers) => [...prev_other_consumers, consumer])
+                        break
+                }
+            }
+            // Clear out 
             // TODO: Add logic for accept/reject
-            // TODO: Add logic for send friend request
         } catch (err) {
             log_error(err)
         }
@@ -104,6 +122,64 @@ const FriendModal = () => {
     }
     const handleClickoff = (event) => {
         if(event.target === event.currentTarget) handleClose()
+    }
+    const handleSendFriendRequest = async (receiving_consumer) => {
+        if(receiving_consumer.friend_status === FRIEND_STATUS.NONE) {
+            try {
+                const response = await fetch(base_url + `/consumer/friend/friend_req/${receiving_consumer.consumer_id}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                })
+                if(!response.ok && response.status === 400) {
+                    const { message } = await response.json()
+                    alert(message)
+                    return
+                }
+                else if(!response.ok) {
+                    const err = new Error(`Status: ${response.status}. Failed to send friend request`)
+                    err.status = response.status
+                    if(!response.ok) throw err
+                }
+                await getFriendRequestsNOtherConsumers()
+            } catch (err) {
+                log_error(err)
+            }
+        }
+    }
+    const handleAcceptFriendRequest = async (sender_consumer) => {
+        try {
+            const response = await fetch(base_url + `/consumer/friend/accept/${sender_consumer.consumer_id}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            if (!response.ok) {
+                const err = new Error(`Status: ${response.status}. Failed to accept friend request`)
+                err.status = response.status
+                if(!response.ok) throw err
+            }
+            await getFriendRequestsNOtherConsumers()
+        } catch (err) {
+            log_error(err)
+        }  
+    }
+    const handleRejectFriendRequest = async (sender_consumer) => {
+        try {
+            const response = await fetch(base_url + `/consumer/friend/reject/${sender_consumer.consumer_id}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            if (!response.ok) {
+                const err = new Error(`Status: ${response.status}. Failed to reject friend request`)
+                err.status = response.status
+                if(!response.ok) throw err
+            }
+            await getFriendRequestsNOtherConsumers()
+        } catch (err) {
+            log_error(err)
+        }  
     }
 
     return(
@@ -142,7 +218,7 @@ const FriendModal = () => {
                             <section className="incoming_friend_requests_section">
                                 <h3 className="text-xl font-bold dark:text-white">Incoming Friend Requests</h3>
                                 {
-                                    users.map((user) => (
+                                    incoming_friend_requests.map((user) => (
                                         <section className="incoming_friend_request">
                                             <section className="incoming_friend_request_container">
                                                 <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
@@ -153,8 +229,8 @@ const FriendModal = () => {
                                                     <p className="current_friend_supp">Consumer</p>
                                                 </section>        
                                                 <section className="incoming_friend_request_sections">
-                                                    <button className="accept_friend_request_btn">Accept</button>
-                                                    <button className="reject_friend_request_btn">Reject</button>
+                                                    <button className="accept_friend_request_btn" onClick={() => handleAcceptFriendRequest(user)}>Accept</button>
+                                                    <button className="reject_friend_request_btn" onClick={() => handleRejectFriendRequest(user)}>Reject</button>
                                                 </section> 
                                             </section>
                                             <hr class="h-px my-1 bg-gray-200 border-0 dark:bg-gray-700"></hr>
@@ -167,7 +243,7 @@ const FriendModal = () => {
                                 <h3 className="text-xl font-bold dark:text-white">Users</h3>
                                 
                                 {
-                                    users.map((user) => (
+                                    [...sent_friend_requests, ...other_consumers].map((user) => (
                                         <section className="available_user">
                                             <section className="available_user_container">
                                                 <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
@@ -177,7 +253,7 @@ const FriendModal = () => {
                                                     <p className="current_friend_username">{user.username}</p>
                                                     <p className="current_friend_supp">Consumer</p>
                                                 </section>         
-                                                <button className="send_friend_request_btn"><img src="/add_user.png" alt="Send Friend Request Icon"/></button>
+                                                <button className="send_friend_request_btn" style={{backgroundColor: (user.friend_status === FRIEND_STATUS.NONE) ? 'gainsboro' : 'lightgreen'}} onClick={() => handleSendFriendRequest(user)}>{(user.friend_status === FRIEND_STATUS.NONE)? <img src="/add_user.png" alt="Send Friend Request Icon"/> : <img src="/send.png" alt="Friend Request Sent Icon"/>}</button>
                                             </section>
                                             <hr class="h-px my-1 bg-gray-200 border-0 dark:bg-gray-700"></hr>
                                         </section>
