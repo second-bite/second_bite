@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { AppContext } from "../../../context/AppContext";
 
 
-const RestaurantTile = ({restaurant: {name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value}}) => {
+const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value}}) => {
     const { setIsRestaurantModal, setSelectedRestaurant } = useContext(AppContext)
 
     const restaurant_header_style = {
@@ -48,7 +48,7 @@ const RestaurantTile = ({restaurant: {name, descr, address, categories, img_url,
 
     // Handlers
     const handleRestaurantTileClick = () => {
-        setSelectedRestaurant({name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value})
+        setSelectedRestaurant({restaurant_id, name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value})
         setIsRestaurantModal(true)
     }
 
