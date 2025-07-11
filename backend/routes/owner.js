@@ -30,7 +30,7 @@ router.get('/', check_auth(user_types_check.owner), async (req, res, next) => {
 
 // Used to edit account details
 // NOTE: Business Owner View
-router.patch('/', check_auth(user_types_check.owner), async (req, res, next) => {
+router.put('/', check_auth(user_types_check.owner), async (req, res, next) => {
     try {
         const owner_id = req.session.user_id
 
@@ -54,17 +54,13 @@ router.patch('/', check_auth(user_types_check.owner), async (req, res, next) => 
             return next({status: 400, message: `Username is already taken`, error_source: 'backend', error_route: '/owner'})
         }
 
-        // Hash the new password before storing (if password changed)
-        const owner_prev = await prisma.owner.findUnique({ where: {owner_id: owner_id} }) 
-        let password = owner_prev.password
-        if(owner_prev.password !== req.body.password) {
-            password = await argon2.hash(req.body.password)
-        }
+        // Hash the password before storing
+        const hashed_pwd = await argon2.hash(req.body.password)
 
         // Create a new user in the database
         const data = {
             username,
-            password: password,
+            password: hashed_pwd,
             address: {
                 update: {
                     street_address: req.body.street_address,

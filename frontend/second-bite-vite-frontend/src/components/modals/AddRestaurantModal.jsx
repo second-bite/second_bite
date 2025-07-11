@@ -140,6 +140,7 @@ const AddRestaurantModal = () => {
         return
     }
 
+    // TODO: Add API call
     try {
         
         const body = {

@@ -106,6 +106,7 @@ const FriendModal = () => {
                 }
             }
             // Clear out 
+            // TODO: Add logic for accept/reject
         } catch (err) {
             log_error(err)
         }
