@@ -139,15 +139,15 @@ router.post('/', check_auth(user_types_check.owner),  async (req, res, next) => 
 
 // Delete existing restaurant entry
 // NOTE: Business Owner View
-router.delete('/:id', check_auth(user_types_check.owner), async (req, res, next) => {
+router.delete('/:restaurant_id', check_auth(user_types_check.owner), async (req, res, next) => {
     try {
-        let {id} = req.params
-        id = parseInt(id)
+        let {restaurant_id} = req.params
+        id = parseInt(restaurant_id)
         const deleted_restaurant = await prisma.restaurant.delete({
-            where: {restaurant_id: id}
+            where: {restaurant_id: restaurant_id}
         })
 
-        const {restaurant_id, owner_id, ...visible_deleted_restaurant} = deleted_restaurant
+        const {restaurant_id_, owner_id, ...visible_deleted_restaurant} = deleted_restaurant
         res.status(200).send(visible_deleted_restaurant)
     } catch (err) {
         return next(err)
