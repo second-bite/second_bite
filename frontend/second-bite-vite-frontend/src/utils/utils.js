@@ -50,3 +50,8 @@ export const money_validation = (money) => {
     const regex_check = /^\$?(([1-9]\d{0,2}(,\d{3})*)|0)?\.\d{1,2}$/
     return regex_check.test(money.trim())
 }
+
+export const currency_formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+})

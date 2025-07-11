@@ -29,7 +29,6 @@ const Analytics = () => {
     const getOwnerRestaurants = async () => {
         // Fetch owner info from DB
         let data
-        console.log('Called getOwnerRestaurants')
         try {
             const response = await fetch(base_url + '/owner', {
                 method: 'GET',
@@ -45,7 +44,6 @@ const Analytics = () => {
 
         setOwnedRestaurants(data.restaurants)
         if(owned_restaurants.length > 0) setSelectedRestaurant(owned_restaurants[0])
-        console.log(data.restaurants)
     }
 
     // Load Info on Startup
@@ -208,7 +206,7 @@ const Analytics = () => {
             </Menu>
 
             {/* KPIs */}
-            <KpiCards />
+            <KpiCards restaurant_id={selected_restaurant.restaurant_id} />
 
             {/* Primary Chart */}
             {/* Code largely taken from https://recharts.org/en-US/examples/ComposedChartWithAxisLabels */}
