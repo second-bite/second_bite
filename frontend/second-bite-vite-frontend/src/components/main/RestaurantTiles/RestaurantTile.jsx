@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import PropTypes from 'prop-types'
 import { AppContext } from "../../../context/AppContext";
+import { log_error } from "../../../utils/utils";
 
 
 const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value}}) => {
-    const { setIsRestaurantModal, setSelectedRestaurant } = useContext(AppContext)
+    const { base_url, setIsRestaurantModal, setSelectedRestaurant } = useContext(AppContext)
 
     const restaurant_header_style = {
         "background-image": "radial-gradient(circle at center, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7)), url('https://picsum.photos/200/300')",
@@ -47,9 +48,23 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
     }, [avg_cost])
 
     // Handlers
-    const handleRestaurantTileClick = () => {
+    const handleRestaurantTileClick = async () => {
         setSelectedRestaurant({restaurant_id, name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value})
         setIsRestaurantModal(true)
+        try {
+            const response = await fetch(base_url + '/analytics/visit/' + restaurant_id, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+            })
+            if(!response.ok) {
+                const err = new Error(`Status: ${response.status}. Failed to retrieve owner info from DB`)
+                err.status = response.status
+                throw err
+            }
+        } catch (err) {
+            log_error(err)
+        }
     }
 
     return (
