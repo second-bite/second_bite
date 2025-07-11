@@ -1,8 +1,11 @@
-import { useState, createContext } from 'react'
-import {BrowserRouter as Router, Routes, Route, useNavigate} from 'react-router-dom'
+import React from 'react'
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import './App.css'
 
+// Contexts
+import { AppProvider } from './context/AppContext'
 
+// Pages
 import AuthPage from './pages/AuthPage'
 import MainPage from './pages/MainPage'
 import FeedbackModal from './components/modals/FeedbackModal'
@@ -10,30 +13,38 @@ import AccountInfoPage from './pages/AccountInfoPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import OwnerInfoPage from './pages/OwnerInfoPage'
 import AddRestaurantModal from './components/modals/AddRestaurantModal'
-
-
-export const AppContext = createContext()
+import { AuthProvider } from './context/AuthContext'
+import OwnerProtected from './protected_routing/OwnerProtected'
+import ConsumerProtected from './protected_routing/ConsumerProtected'
 
 function App() {
-  const [is_feedback_modal, setIsFeedbackModal] = useState(false)
-  const [is_add_restaurant_modal, setIsAddRestaurantModal] = useState(false)
 
   return (
-    <AppContext.Provider value={{is_feedback_modal, setIsFeedbackModal, is_add_restaurant_modal, setIsAddRestaurantModal}}>
-      <div className="App">
-        <Router>
-          <Routes>
-            <Route path='/auth' element={<AuthPage />} />
-            <Route path='/main' element={<MainPage />} />
-            <Route path='/account' element={<AccountInfoPage />} />
-            <Route path='/analytics' element={<AnalyticsPage />} />
-            <Route path='/owner' element={<OwnerInfoPage />} />
-          </Routes>
-        </Router>
-        <FeedbackModal />
-        <AddRestaurantModal />
-      </div>
-    </AppContext.Provider>
+    <AppProvider>
+      <AuthProvider>
+        <div className="App">
+          <Router>
+            <Routes>
+              <Route path='/auth' element={<AuthPage />} />
+
+              {/* Consumer Routes */}
+              <Route element={<ConsumerProtected />}>
+                <Route path='/main' element={<MainPage />} />
+                <Route path='/account' element={<AccountInfoPage />} />
+              </Route>
+
+              {/* Owner Routes */}
+              <Route element={<OwnerProtected />}>
+                <Route path='/analytics' element={<AnalyticsPage />} />
+                <Route path='/owner' element={<OwnerInfoPage />} />
+              </Route>
+            </Routes>
+          </Router>
+          <FeedbackModal />
+          <AddRestaurantModal />
+        </div>
+      </AuthProvider>
+    </AppProvider>
   )
 }
 

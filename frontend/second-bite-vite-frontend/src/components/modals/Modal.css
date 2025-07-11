@@ -49,3 +49,7 @@ textarea.feedback_text {
     height: clamp(400px, 70vh, 1000px);
     overflow-y: auto;
 }
+
+.add_restaurant_form input::placeholder, .add_restaurant_form textarea::placeholder {
+    color: red;
+}

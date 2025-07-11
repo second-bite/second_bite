@@ -5,14 +5,14 @@ const Specifiers = () => {
     const search_ref = useRef()
     const sort_dropdown_ref = useRef()
 
-    const sort_types_enum = {
-        none: "Best Match",
-        price: "Price",
-        rating: "Rating",
-        distance: "Distance",
+    const SORT_TYPE = {
+        NONE: "Best Match",
+        PRICE: "Price",
+        RATING: "Rating",
+        DISTANCE: "Distance",
     }
 
-    const [sort_type, setSortType] = useState(sort_types_enum.price)
+    const [sort_type, setSortType] = useState(SORT_TYPE.PRICE)
     const [is_sort_dropdown, setIsSortDropdown] = useState(false)
 
     const sort_dropdown_symbol_style = (is_sort_dropdown) ? {"transform": "translate(0%, -5%)"} : {"transform": "translate(0%, -5%)"}
@@ -46,7 +46,7 @@ const Specifiers = () => {
                         is_sort_dropdown && 
                             <section className="sort_dropdown_popup">
                                 {
-                                    Object.entries(sort_types_enum).map(([key, value]) => (
+                                    Object.entries(SORT_TYPE).map(([key, value]) => (
                                         <p className="sort_dropdown_popup_option">{value}</p>
                                     ))
                                 }

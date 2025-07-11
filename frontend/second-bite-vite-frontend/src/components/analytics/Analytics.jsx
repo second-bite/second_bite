@@ -12,14 +12,14 @@ const Analytics = () => {
     const restaurant_ref = useRef()
     const graph_ref = useRef()
 
-    const graph_enum = {
-        orders: "Orders",
-        revenue: "Revenue",
-        page_visits: "Page Visits"
+    const GRAPH_TYPE = {
+        ORDERS: "Orders",
+        REVENUE: "Revenue",
+        PAGE_VISITS: "Page Visits"
     }
 
     const [selected_restaurant, setSelectedRestaurant] = useState('Mezze Cafe')
-    const [selected_graph, setSelectedGraph] = useState(graph_enum.orders)
+    const [selected_graph, setSelectedGraph] = useState(GRAPH_TYPE.ORDERS)
 
     // Handlers
     const handleRestaurantSelect = (selection) => {
@@ -28,7 +28,7 @@ const Analytics = () => {
     }
     const handleGraphSelect = (selection) => {
         try {
-            if(!Object.values(graph_enum).includes(selection)) throw new Error('Invalid graph type selected')
+            if(!Object.values(GRAPH_TYPE).includes(selection)) throw new Error('Invalid graph type selected')
             setSelectedGraph(selection)
         } catch (e) {
             console.log('Error', e)

@@ -1,20 +1,29 @@
 const express = require('express')
 const session = require('express-session')
+const cors = require('cors')
 const app = express()
 const PORT = 3000
 
 app.use(express.json())
 
-const auth_routes = require('./routes/user_auth')
+const allowed_cors_origins = ['http://localhost:5173', 'http://localhost:3000']
+app.use(cors({
+  origin: allowed_cors_origins,
+  credentials: true
+}));
+
+const { auth_routes } = require('./routes/user_auth')
+const restaurant_routes = require('./routes/restaurant')
 
 app.use(session({
     secret: 'second-bite',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 }
+    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60, sameSite: 'none' }
 }))
 
 app.use('/auth', auth_routes)
+app.use('/restaurant', restaurant_routes)
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

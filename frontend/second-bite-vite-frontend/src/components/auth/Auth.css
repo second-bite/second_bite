@@ -7,6 +7,12 @@
     align-items: center;
 }
 
+.auth_server_error_msg {
+    margin-top: 5px;
+    font-size: clamp(1rem, 1vw, 2rem);
+    color: red;
+}
+
 .auth_container {
     display: flex;
     background-color: var(--auth-container-bg-color);
@@ -71,6 +77,11 @@
     gap: 15px;
 }
 
+.auth_entry {
+    display: flex;
+    flex-direction: column;
+}
+
 .location_auth_entries, .auth_password{
     display: grid;
     grid-template-columns: auto auto;
@@ -92,7 +103,7 @@ select.auth_input {
     width: 100%;
 }
 
-input[type="text"].auth_input {
+input[type="text"].auth_input, input[type="password"].auth_input {
     background-color: whitesmoke;
 }
 

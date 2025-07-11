@@ -1,6 +1,6 @@
 import React, { useRef, useContext, useState } from "react"
 
-import { AppContext } from "../../App"
+import { AppContext } from "../../context/AppContext";
 
 
 const FeedbackModal = () => {
