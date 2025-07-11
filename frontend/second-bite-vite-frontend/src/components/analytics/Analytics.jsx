@@ -36,7 +36,7 @@ const Analytics = () => {
     const [owned_restaurants, setOwnedRestaurants] = useState([]) // Array of owned restaurants
     const [orders, setOrders] = useState([]) // Dynamically changed in KPIs.jsx as KPI Time Range changes
     const [visits, setVisits] = useState([]) // Dynamically changed in KPIs.jsx as KPI Time Range changes
-    // const [new_vs_existing_data, setNewVsExistingData] = useState([])
+    const [new_vs_existing_data, setNewVsExistingData] = useState([])
     // const [top_consumers_data, setTopConsumersData] = useState([])
     const [orders_vs_weekday_data, setOrdersVsWeekdayData] = useState([])
 
@@ -61,13 +61,31 @@ const Analytics = () => {
         if(owned_restaurants.length > 0) setSelectedRestaurant(data.restaurants[0])
     }
     const getNewVsExistingData = () => {
+        // Get total number of new customers 
+        // NOTE: This approach works b/c we're only looking at a single restaurant and a consumer can only be first-time for a given restaurant once
+        const num_new_customers = orders.reduce((num_new_customers, order) => (order.is_first_order) ? (num_new_customers + 1) : (num_new_customers), 0)
 
+        // Group based on consumers
+        let consumer_id_set = new Set()
+        for(const order of orders) {
+            if(!consumer_id_set.has(order.consumer_id)) {
+                consumer_id_set.add(order.consumer_id)
+            }
+        }
+        const total_num_consumers = consumer_id_set.size
+        const num_non_first_time_consumers = total_num_consumers - num_new_customers
+
+        // Update State Variable
+        const updated_new_vs_existing_data = [
+            {name: 'New Consumers', value: num_new_customers},
+            {name: 'Existing Consumers', value: num_non_first_time_consumers},
+        ]
+        setNewVsExistingData(updated_new_vs_existing_data)
     }
     const getTopConsumersData = () => {
 
     }
     const getOrdersVsWeekdayData = () => {
-        console.log(orders)
         const new_orders_vs_weekday_data = [
             { name: 'Monday', value: 0 },
             { name: 'Tuesday', value: 0},
@@ -115,10 +133,6 @@ const Analytics = () => {
     }
 
     // New vs Existing Consumers Pie Chart Attributes
-    const new_vs_existing_data = [
-        { name: 'New Consumers', value: 68 },
-        { name: 'Existing Consumers', value: 368}
-    ]
     const RADIAN = Math.PI / 180;
     const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
@@ -201,17 +215,6 @@ const Analytics = () => {
             amt: 2181,
         },
     ];
-
-    // Orders by Day of Week
-    // const orders_vs_weekday_data = [
-    //     { name: 'Mondays', value: 68 },
-    //     { name: 'Tuesday', value: 368},
-    //     { name: 'Wednesday', value: 68 },
-    //     { name: 'Thursday', value: 368},
-    //     { name: 'Friday', value: 68 },
-    //     { name: 'Saturday', value: 368},
-    //     { name: 'Sunday', value: 68 },
-    // ]
 
 
     return (
