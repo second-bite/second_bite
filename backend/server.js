@@ -53,7 +53,6 @@ app.use(async (err, req, res, next) => {
     const logged_error = await prisma.errorLog.create({
         data: new_error
     })
-
     // Send to client
     res.status(status).json({message: 'Error: ' + message, status: status})
 })

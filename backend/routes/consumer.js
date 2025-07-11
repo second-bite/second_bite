@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const prisma = require('./prisma_client')
+const { DateTime } = require("luxon")
 
 const {user_types_check, check_auth} = require('./user_auth')
 
@@ -28,8 +29,8 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
 
 // Used to add restaurant reservation (for currently logged in cosnumer)
 // NOTE: Consumer View
-router.post('/reserve/:restaurant_id', check_auth(user_types_check.consumer), async (req, res, next) => {
-    let {restaurant_id} = req.params
+router.post('/reserve/:restaurant_id/:time_zone', check_auth(user_types_check.consumer), async (req, res, next) => {
+    let {restaurant_id, time_zone} = req.params
     restaurant_id = Number(restaurant_id)
 
     try {
@@ -38,9 +39,26 @@ router.post('/reserve/:restaurant_id', check_auth(user_types_check.consumer), as
             where: {consumer_id: consumer_id},
         })
 
+        // Check if user's time zone is valid
+        let is_time_zone_valid = false
+        try {
+            Intl.DateTimeFormat(undefined, { timeZone: time_zone });
+            is_time_zone_valid = true;
+        } catch (ex) {
+            is_time_zone_valid = false;
+        }
+        if(!is_time_zone_valid) return next({status: 400, message: `Time Zone parameter is invalid`})
+
+        // Get the current time in time zone
+        const date_time_now_in_zone = DateTime.now().setZone(time_zone)
+
         // Check user hasn't already reserved restaurant
-        const date_time_now = new Date()
-        if(consumer.reserved_restaurant_id && (date_time_now < consumer.reservation_expiration)) return next({status: 409, message: `Already reserved a restaurant today`, error_source: 'backend', error_route: '/consumer/reserve'})
+        if(consumer.reserved_restaurant_id) {
+            // Get reservation expiration
+            const parsed_reservation_expiration = DateTime.fromJSDate(consumer.reservation_expiration, { zone: "utc" })
+            const reservation_expiration_in_zone = parsed_reservation_expiration.setZone(time_zone)
+            if(consumer.reserved_restaurant_id && (date_time_now_in_zone.toMillis() < reservation_expiration_in_zone.toMillis())) return next({status: 409, message: `Already reserved a restaurant today. Existing reservation lasts from ${date_time_now_in_zone.toFormat("cccc, LLLL dd yyyy, hh:mm a ZZZZ")} to ${reservation_expiration_in_zone.toFormat("cccc, LLLL dd yyyy, hh:mm a ZZZZ")}`, error_source: 'backend', error_route: '/consumer/reserve'})
+        }
 
         // Get restaurant to be reserved
         const restaurant = await prisma.restaurant.findUnique({
@@ -48,28 +66,70 @@ router.post('/reserve/:restaurant_id', check_auth(user_types_check.consumer), as
         })
         if(!restaurant) return next({status: 400, message: `Restaurant no longer exists`, error_source: 'backend', error_route: '/consumer/reserve'})
 
-        let day_ind = date_time_now.getDay()
+        let day_ind = date_time_now_in_zone.toJSDate().getDay()
         const closing_time_str = restaurant.pickup_time[day_ind]
 
+        // Function used to find next closing time if restaurant is closed today or pickup time has already passed
+        const findNextClosingTime = () => {
+            let next_open_day_ind
+            let days_to_add = 0
+            for(let i = (day_ind + 1) % 7; i != day_ind; i = (i + 1) % 7) {
+                days_to_add++
+                if(restaurant.pickup_time[i] !== 'N/A') {
+                    next_open_day_ind = i
+                    break
+                }
+                if(days_to_add === 7) throw new Error('Restaurant is always closed')
+            }
+            const next_closing_time_str = restaurant.pickup_time[next_open_day_ind]
+            let [closing_hour, closing_minute] = next_closing_time_str.split(":")
+            closing_hour = Number(closing_hour)
+            closing_minute = Number(closing_minute) 
+            let next_closing_time_in_zone = date_time_now_in_zone.plus({ days: days_to_add }).set({
+                hour: closing_hour,
+                minute: closing_minute,
+                second: 0,
+                millisecond: 0
+            })
+            return next_closing_time_in_zone.toFormat("cccc, LLLL dd yyyy, hh:mm a ZZZZ")
+        }
+
         // Check that store isn't closed
-        if(closing_time_str === 'N/A') return next({status: 409, message: `Restaurant is closed today`, error_source: 'backend', error_route: '/consumer/reserve'})
+        if(closing_time_str === 'N/A') {
+            try {
+                const next_closing_time_formatted_str = findNextClosingTime()
+                return next({status: 409, message: `Restaurant is closed today. Next open: ${next_closing_time_formatted_str}`, error_source: 'backend', error_route: '/consumer/reserve'})
+            } catch(err) {
+                return next({status: 409, message: `Restaurant is always closed`, error_source: 'backend', error_route: '/consumer/reserve'})
+            }
+        }
 
         // Parse out closing time
-        const time_regex = /^(\d{1,2}):(\d{2})(AM|PM)$/i
-        const parsed_time = closing_time_str.match(time_regex)
-        const is_am = parsed_time[3] === 'AM' || parsed_time[3] === 'am'
-        const closing_hour = is_am ? Number(parsed_time[1]) : Number(parsed_time[1]) + 12 
-        const closing_minute = Number(parsed_time[2]) 
-        let closing_time = new Date()
-        closing_time.setHours(closing_hour, closing_minute)
-        if(closing_time < date_time_now) return next({status: 409, message: `Restaurant pickup time has already passed`, error_source: 'backend', error_route: '/consumer/reserve'})
+        let [closing_hour, closing_minute] = closing_time_str.split(":")
+        closing_hour = Number(closing_hour)
+        closing_minute = Number(closing_minute) 
+        let closing_time_in_zone = date_time_now_in_zone.set({
+            hour: closing_hour,
+            minute: closing_minute,
+            second: 0,
+            millisecond: 0
+        })
+
+        if(closing_time_in_zone.toMillis() < date_time_now_in_zone.toMillis()) { 
+            try { 
+                const next_closing_time_formatted_str = findNextClosingTime()
+                return next({status: 409, message: `Restaurant pickup time has already passed. Next open: ${next_closing_time_formatted_str}`, error_source: 'backend', error_route: '/consumer/reserve'})
+            } catch(err) {
+                return next({status: 409, message: `Restaurant is always closed`, error_source: 'backend', error_route: '/consumer/reserve'})
+            }
+        }
 
         // Add reservation
         const updated_consumer = await prisma.consumer.update({
             where: {consumer_id: consumer_id},
             data: {
                 reserved_restaurant_id: restaurant_id,
-                reservation_expiration: closing_time,
+                reservation_expiration: closing_time_in_zone.toJSDate(),
             }
         })
 

@@ -39,29 +39,29 @@ const OwnerInfo = () => {
 
     const getOwnerInfo = async () => {
         // Fetch owner info from DB
+        let data
         try {
             const response = await fetch(base_url + '/owner', {
                 method: 'GET',
                 credentials: 'include',
             })
-            const res_json = await response.json()
-            
-            const err = new Error(`Status: ${response.status}. Error: ${res_json.message}`)
+            const err = new Error(`Status: ${response.status}. Failed to retrieve owner info from DB`)
             err.status = response.status
             if(!response.ok) throw err
+            data = await response.json()
         } catch (err) {
             await log_error(err)
         }
         // Set state variables
-        setUsername(res_json.username)
-        setPassword(res_json.password)
-        setConfirmPassword(res_json.password)
-        setStreetAddress(res_json.address.street_address)
-        setCity(res_json.address.city)
-        setPostalCode(res_json.address.postal_code)
-        setState(res_json.address.state)
-        setCountry(res_json.address.country)
-        setOwnedRestaurants(res_json.restaurants)
+        setUsername(data.username)
+        setPassword(data.password)
+        setConfirmPassword(data.password)
+        setStreetAddress(data.address.street_address)
+        setCity(data.address.city)
+        setPostalCode(data.address.postal_code)
+        setState(data.address.state)
+        setCountry(data.address.country)
+        setOwnedRestaurants(data.restaurants)
     }
 
     useEffect(() => {

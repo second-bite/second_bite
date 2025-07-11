@@ -93,7 +93,7 @@ router.post('/', check_auth(user_types_check.owner),  async (req, res, next) => 
         const owner_id = req.session.user_id
         if (!req.body) return next({status: 400, message: `Missing request body for account register`, error_source: 'backend', error_route: '/restaurant'})
 
-        const required_fields = [`name`, `descr`, `address`, `categories`, `img_url`, `img_alt`, `avg_cost`, `pickup_time`]
+        const required_fields = [`name`, `descr`, `address`, `categories`, `img_url`, `img_alt`, `avg_cost`, `pickup_time`, `time_zone`]
         const required_address_fields = [`street_address`, `city`, `postal_code`, `state`, `country`]
         for(const required_field of required_fields) {
             if(!req.body[required_field]) {
@@ -123,6 +123,7 @@ router.post('/', check_auth(user_types_check.owner),  async (req, res, next) => 
             img_alt: req.body.img_alt,
             avg_cost: req.body.avg_cost,
             pickup_time: req.body.pickup_time,
+            time_zone: req.body.time_zone,
             owner_id: owner_id,
         }
         const restaurant = await prisma.restaurant.create({

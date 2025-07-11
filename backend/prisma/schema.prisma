@@ -121,6 +121,7 @@ model Restaurant {
   avg_cost          Decimal                 // Avg cost of the surplus (not typical prices)
   ratings           Rating[]
   pickup_time       String[]                // Each entry represents a day of the week (Mon-Su)
+  time_zone         String                  @default("America/Los_Angeles")
   owner_id          Int
   owner             Owner                   @relation(fields: [owner_id], references: [owner_id])
 }

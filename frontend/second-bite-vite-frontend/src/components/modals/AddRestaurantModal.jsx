@@ -19,27 +19,6 @@ const AddRestaurantModal = () => {
   const [ selected_categories, setSelectedCategories ] = useState([])
   const [ input_img_url, setInputImgURL ] = useState('')
 
-  const [ time_err_msg, setTimeErrMsg ] = useState('')
-  const [ avg_cost_err_msg, setAvgCostErrMsg ] = useState('')
-  const [ address_err_msg, setAddressErrMsg ] = useState('')
-  const [ server_err_msg, setServerErrorMsg ] = useState('')
-
-  const [name_msg, setNameMsg] = useState('')
-  const [cost_msg, setCostMsg] = useState('')
-  const [descr_msg, setDescrMsg] = useState('')
-  const [mon_msg, setMonMsg] = useState('')
-  const [tue_msg, setTueMsg] = useState('')
-  const [wed_msg, setWedMsg] = useState('')
-  const [thu_msg, setThuMsg] = useState('')
-  const [fri_msg, setFriMsg] = useState('')
-  const [sat_msg, setSatMsg] = useState('')
-  const [sun_msg, setSunMsg] = useState('')
-  const [street_msg, setStreetMsg] = useState('')
-  const [city_msg, setCityMsg] = useState('')
-  const [state_msg, setStateMsg] = useState('')
-  const [postal_msg, setPostalMsg] = useState('')
-  const [country_msg, setCountryMsg] = useState('')
-    
   const weekdays = ["mon","tue","wed","thu","fri","sat","sun"]
   const weekday_labels = {
     mon: "Mon.",
@@ -50,7 +29,21 @@ const AddRestaurantModal = () => {
     sat: "Sat.",
     sun: "Sun."
   }
-  const weekday_msgs = { mon_msg, tue_msg, wed_msg, thu_msg, fri_msg, sat_msg, sun_msg }
+
+  const [ avg_cost_err_msg, setAvgCostErrMsg ] = useState('')
+  const [ address_err_msg, setAddressErrMsg ] = useState('')
+  const [ server_err_msg, setServerErrorMsg ] = useState('')
+  const [ pickup_time_err_msg, setPickupTimeErrMsg ] = useState('')
+  const initial_closed_state = Object.fromEntries(weekdays.map(day => [`is_${day}_closed`, false]))
+  const [closedStates, setClosedStates] = useState(initial_closed_state)
+  const [name_msg, setNameMsg] = useState('')
+  const [cost_msg, setCostMsg] = useState('')
+  const [descr_msg, setDescrMsg] = useState('')
+  const [street_msg, setStreetMsg] = useState('')
+  const [city_msg, setCityMsg] = useState('')
+  const [state_msg, setStateMsg] = useState('')
+  const [postal_msg, setPostalMsg] = useState('')
+  const [country_msg, setCountryMsg] = useState('')
 
   // Take user image file input & convert to usable <img> link
   function previewImage(event) {
@@ -62,73 +55,76 @@ const AddRestaurantModal = () => {
             };
             reader.readAsDataURL(file);
         }
-    }
+  }
+
+  // Utility Functions
+  const clearAllErrMsgs = () => {
+    setNameMsg(''); setCostMsg(''); setDescrMsg('');
+    setPickupTimeErrMsg(''); setStreetMsg(''); 
+    setStateMsg(''); setPostalMsg(''); 
+    setCityMsg(''); setCountryMsg(''); setAvgCostErrMsg('');
+    setAddressErrMsg(''); setServerErrorMsg('')
+  }
+  const clearAllUserEntries = () => {
+    if(form_ref.current) form_ref.current.reset()
+  }
 
   // Handlers
   const handleAddRestaurantClose = () => {
     setIsAddRestaurantModal(false)
 
-    // TODO: clear out all the fields
+    clearAllErrMsgs()
+    clearAllUserEntries()
   }
   const handleAddRestaurantClickOff = (event) => {
     if (event.target === event.currentTarget) handleAddRestaurantClose();
+  }
+  const handleClosedClick = (is_closed_str) => {
+    setClosedStates((prev_closed_states) => ({
+      ...prev_closed_states,
+      [is_closed_str]: !prev_closed_states[is_closed_str], // toggle the closed state for a specific day
+    }))
   }
   const handleAddRestaurantSubmit = async (event) => {
     event.preventDefault();
     const form = form_ref.current.elements;
 
     // Clear all error messages
-    setNameMsg(''); setCostMsg(''); setDescrMsg('');
-    setMonMsg(''); setTueMsg(''); setWedMsg('');
-    setThuMsg(''); setFriMsg(''); setSatMsg(''); setSunMsg('');
-    setStreetMsg(''); setCityMsg(''); setStateMsg('');
-    setPostalMsg(''); setCountryMsg('');
-    setTimeErrMsg(''); setAvgCostErrMsg('');
-    setAddressErrMsg(''); setServerErrorMsg('')
+    clearAllErrMsgs()
 
     // Ensure all required fields are filled
-    if (!form.name.value) await setNameMsg('Please enter restaurant name.')
-    if (!form.avg_cost.value) await setCostMsg('Please enter average surplus cost.')
-    if (!form.descr.value) await setDescrMsg('Please write something about the restaurant.')
-    if (!form.mon_time.value) await setMonMsg('Please enter Monday closing time.')
-    if (!form.tue_time.value) await setTueMsg('Please enter Tuesday closing time.')
-    if (!form.wed_time.value) await setWedMsg('Please enter Wednesday closing time.')
-    if (!form.thu_time.value) await setThuMsg('Please enter Thursday closing time.')
-    if (!form.fri_time.value) await setFriMsg('Please enter Friday closing time.')
-    if (!form.sat_time.value) await setSatMsg('Please enter Saturday closing time.')
-    if (!form.sun_time.value) await setSunMsg('Please enter Sunday closing time.')
-    if (!form.street_address.value) await setStreetMsg('Please enter street address.')
-    if (!form.city.value) await setCityMsg('Please enter city.')
-    if (form.state.value === 'none') await setStateMsg('Please select a state.')
-    if (!form.postal_code.value) await setPostalMsg('Please enter ZIP/postal code.')
-    if (form.country.value === 'none') await setCountryMsg('Please select a country.')
+    if (!form.name.value) setNameMsg('Please enter restaurant name.')
+    if (!form.avg_cost.value) setCostMsg('Please enter average surplus cost.')
+    if (!form.descr.value) setDescrMsg('Please write something about the restaurant.')
+    if (!form.mon_time.value && !closedStates.is_mon_closed) setPickupTimeErrMsg('Missing monday pickup time')
+    if (!form.tue_time.value && !closedStates.is_tue_closed) setPickupTimeErrMsg('Missing tuesday pickup time')
+    if (!form.wed_time.value && !closedStates.is_wed_closed) setPickupTimeErrMsg('Missing wednesday pickup time')
+    if (!form.thu_time.value && !closedStates.is_thu_closed) setPickupTimeErrMsg('Missing thursday pickup time')
+    if (!form.fri_time.value && !closedStates.is_fri_closed) setPickupTimeErrMsg('Missing friday pickup time')
+    if (!form.sat_time.value && !closedStates.is_sat_closed) setPickupTimeErrMsg('Missing saturday pickup time') 
+    if (!form.sun_time.value && !closedStates.is_sun_closed) setPickupTimeErrMsg('Missing sunday pickup time') 
+    if (!form.street_address.value) setStreetMsg('Please enter street address.')
+    if (!form.city.value) setCityMsg('Please enter city.')
+    if (form.state.value === 'none') setStateMsg('Please select a state.')
+    if (!form.postal_code.value) setPostalMsg('Please enter ZIP/postal code.')
+    if (form.country.value === 'none') setCountryMsg('Please select a country.')
     if (
       !form.name.value ||
       !form.avg_cost.value ||
       !form.descr.value ||
-      !form.mon_time.value ||
-      !form.tue_time.value ||
-      !form.wed_time.value ||
-      !form.thu_time.value ||
-      !form.fri_time.value ||
-      !form.sat_time.value ||
-      !form.sun_time.value ||
+      (!form.mon_time.value && !closedStates.is_mon_closed ) ||
+      (!form.tue_time.value && !closedStates.is_tue_closed ) ||
+      (!form.wed_time.value && !closedStates.is_wed_closed ) ||
+      (!form.thu_time.value && !closedStates.is_thu_closed ) ||
+      (!form.fri_time.value && !closedStates.is_fri_closed ) ||
+      (!form.sat_time.value && !closedStates.is_sat_closed ) ||
+      (!form.sun_time.value && !closedStates.is_sun_closed ) ||
       !form.street_address.value ||
       !form.city.value ||
       form.state.value === 'none' ||
       !form.postal_code.value ||
       form.country.value === 'none'
     ) return
-
-    // Time validation
-    let are_times_valid = true
-    for(const day of weekdays) {
-        if(!time_validation(form[`${day}_time`].value)) are_times_valid = false
-    }
-    if(!are_times_valid) {
-        setTimeErrMsg('Entered an invalid time')
-        return
-    }
 
     // Cost validation
     const is_valid_cost = money_validation(form.avg_cost.value)
@@ -161,7 +157,14 @@ const AddRestaurantModal = () => {
             img_url: input_img_url,
             img_alt: `${form.name.value} Banner`,
             avg_cost: form.avg_cost.value,
-            pickup_time: [form.sun_time.value, form.mon_time.value, form.tue_time.value, form.wed_time.value, form.thu_time.value, form.fri_time.value, form.sat_time.value],
+            pickup_time: [(closedStates[`is_sun_closed`]) ? 'N/A' : form.sun_time.value, 
+                          (closedStates[`is_mon_closed`]) ? 'N/A' : form.mon_time.value, 
+                          (closedStates[`is_tue_closed`]) ? 'N/A' : form.tue_time.value, 
+                          (closedStates[`is_wed_closed`]) ? 'N/A' : form.wed_time.value, 
+                          (closedStates[`is_thu_closed`]) ? 'N/A' : form.thu_time.value, 
+                          (closedStates[`is_fri_closed`]) ? 'N/A' : form.fri_time.value, 
+                          (closedStates[`is_sat_closed`]) ? 'N/A' : form.sat_time.value],
+            time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         }
         const response  = await fetch(base_url + `/restaurant`, {
             method: 'POST',
@@ -171,9 +174,9 @@ const AddRestaurantModal = () => {
         })
         if(response.status === 400) {
             const { message } = await response.json()
-            await setServerErrorMsg(message)
+            setServerErrorMsg(message)
         } else {
-            await setServerErrorMsg('')
+            setServerErrorMsg('')
         }
         const { message } = await response.json()
         const err = new Error(`Failed to add restaurant. Status: ${response.status}. ErrMsg: ${message}`)
@@ -295,9 +298,9 @@ const AddRestaurantModal = () => {
 
             <div className="border-b border-gray-900/10 pb-12">
               <h2 className="text-base/7 font-semibold text-gray-900">Pickup Times</h2>
-              <p className="mt-1 text-sm/6 text-gray-600">Please enter your restaurant's preferred pickup times (in the form XX:XXPM or enter N/A)</p>
+              <p className="mt-1 text-sm/6 text-gray-600">Please enter your restaurant's preferred pickup times</p>
               {
-                time_err_msg ? <p className="mt-1 text-sm/6 text-red-600">{time_err_msg}</p> : null
+                pickup_time_err_msg ? <p className="mt-1 text-sm/6 text-red-600">{pickup_time_err_msg}</p> : null
               }
               {
                 weekdays.map((day) => (
@@ -306,13 +309,8 @@ const AddRestaurantModal = () => {
                       {weekday_labels[day]}
                     </label>
                     <div className="mt-2">
-                      <input
-                        id={`${day}_time`}
-                        name={`${day}_time`}
-                        type="text"
-                        placeholder={weekday_msgs[`${day}_msg`]}
-                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                      />
+                      <input aria-label="Time" name={`${day}_time`} type="time" />
+                      <button type="button" name={`${day}_closed_btn`} style={{backgroundColor: closedStates[`is_${day}_closed`] ? `#EE4B2B` : `#AFE1AF`}} onClick={() => {handleClosedClick(`is_${day}_closed`)}}>{closedStates[`is_${day}_closed`] ? `Closed` : `Open`}</button>
                     </div>
                   </div>
                 ))
