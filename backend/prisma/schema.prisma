@@ -34,12 +34,14 @@ model Consumer {
 }
 
 model Favorite {
-  favorite_id       Int                       @id @default(autoincrement())
+  is_favorited      Boolean                   @default(false)
   consumer_id       Int                       
   consumer          Consumer                  @relation("consumer_favorites", fields: [consumer_id], references: [consumer_id])
   create_date       DateTime                  @default(now())
   restaurant_id     Int  
   restaurant        Restaurant                @relation("favorited_by_consumers", fields: [restaurant_id], references: [restaurant_id])
+
+  @@unique([consumer_id, restaurant_id])
 }
 
 model Friendship {
