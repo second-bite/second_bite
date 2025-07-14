@@ -22,7 +22,8 @@ model Consumer {
   username                  String                  @unique
   password                  String                  
   address                   Address?                @relation("consumer_address")
-  orders                     Order[]                @relation("orders_consumer")
+  favorite_restaurants      Favorite[]              @relation("consumer_favorites")
+  orders                    Order[]                 @relation("orders_consumer")
   reserved_restaurant_id    Int?                    // Restaurant ID of currently reserved restaurant
   reservation_expiration    DateTime?               // Expiration of current reservation                           
   friendships_a             Friendship[]            @relation("friendship_a")
@@ -30,6 +31,15 @@ model Consumer {
   sent_friend_requests      FriendRequest[]         @relation("sender")
   received_friend_requests  FriendRequest[]         @relation("receiver")
   restaurant_visits         PageVisit[]             @relation("visits_consumer")
+}
+
+model Favorite {
+  favorite_id       Int                       @id @default(autoincrement())
+  consumer_id       Int                       
+  consumer          Consumer                  @relation("consumer_favorites", fields: [consumer_id], references: [consumer_id])
+  create_date       DateTime                  @default(now())
+  restaurant_id     Int  
+  restaurant        Restaurant                @relation("favorited_by_consumers", fields: [restaurant_id], references: [restaurant_id])
 }
 
 model Friendship {
@@ -113,21 +123,22 @@ model Rating {
 }
 
 model Restaurant {
-  restaurant_id     Int                      @id @default(autoincrement())
-  name              String
-  descr             String
-  address           Address?                @relation("restaurant_address")
-  categories        Categories[]
-  img_url           String
-  img_alt           String
-  avg_cost          Decimal                 // Avg cost of the surplus (not typical prices)
-  ratings           Rating[]
-  pickup_time       String[]                // Each entry represents a day of the week (Mon-Su)
-  time_zone         String                  @default("America/Los_Angeles")
-  orders            Order[]                 @relation("orders_restaurant")
-  page_visits       PageVisit[]             @relation("visits_restaurant")
-  owner_id          Int
-  owner             Owner                   @relation(fields: [owner_id], references: [owner_id])
+  restaurant_id           Int                      @id @default(autoincrement())
+  name                    String
+  descr                   String
+  address                 Address?                @relation("restaurant_address")
+  favorited_by_consumers  Favorite[]              @relation("favorited_by_consumers")
+  categories              Categories[]
+  img_url                 String
+  img_alt                 String
+  avg_cost                Decimal                 // Avg cost of the surplus (not typical prices)
+  ratings                 Rating[]
+  pickup_time             String[]                // Each entry represents a day of the week (Mon-Su)
+  time_zone               String                  @default("America/Los_Angeles")
+  orders                  Order[]                 @relation("orders_restaurant")
+  page_visits             PageVisit[]             @relation("visits_restaurant")
+  owner_id                Int
+  owner                   Owner                   @relation(fields: [owner_id], references: [owner_id])
 }
 
 /* Analytics */
