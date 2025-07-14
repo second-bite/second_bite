@@ -235,8 +235,10 @@ router.get('/favorite/:restaurant_id', check_auth(user_types_check.consumer), as
         // Extract current favorited status (or create if not yet existent)
         let consumer_favorite_status = await prisma.favorite.findUnique({
             where: { 
-                consumer_id: consumer_id, 
-                restaurant_id: restaurant_id 
+                consumer_id_restaurant_id: {
+                    consumer_id: consumer_id,
+                    restaurant_id: restaurant_id
+                }
             },
             select: {
                 is_favorited: true
@@ -271,8 +273,10 @@ router.post('/favorite/:restaurant_id', check_auth(user_types_check.consumer), a
         // Extract current favorited status (or create if not yet existent)
         let consumer_favorite_status = await prisma.favorite.findUnique({
             where: { 
-                consumer_id: consumer_id, 
-                restaurant_id: restaurant_id 
+                consumer_id_restaurant_id: {
+                    consumer_id: consumer_id,
+                    restaurant_id: restaurant_id
+                }
             },
             select: {
                 is_favorited: true
@@ -293,8 +297,10 @@ router.post('/favorite/:restaurant_id', check_auth(user_types_check.consumer), a
         // Toggle favorite status
         const favorite_status = await prisma.favorite.update({
             where: { 
-                consumer_id: consumer_id, 
-                restaurant_id: restaurant_id 
+                consumer_id_restaurant_id: {
+                    consumer_id: consumer_id,
+                    restaurant_id: restaurant_id
+                }
             },
             data: {
                 is_favorited: !consumer_favorite_status.is_favorited
