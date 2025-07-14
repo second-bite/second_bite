@@ -45,7 +45,49 @@ const PrimaryChart = ({ orders, visits, kpi_time_range, KPI_TIME_RANGE }) => {
     ];
 
     const structureMonthlyData = () => {
-        // TODO: 
+        // Initialize maps
+        const order_count_map = new Map()
+        const visit_count_map = new Map()
+        
+        // Get totals per week
+        for (const order of orders) {
+            const day = order.order_time
+            const map_key = `${day.weekNumber} ${day.weekYear}`  
+            const week_order_count = order_count_map.get(map_key) || 0
+            order_count_map.set(map_key, week_order_count + 1)    
+        }
+        for (const visit of visits) {
+            const day = visit.visit_time
+            const map_key = `${day.weekNumber} ${day.weekYear}` 
+            const week_visit_count = visit_count_map.get(map_key) || 0
+            visit_count_map.set(map_key, week_visit_count + 1)   
+        }
+
+        // Create array holding the weeks in the past month
+        const now = DateTime.now()
+        const weeks = Array.from({ length: 5 }).map((_, ind) => {
+            const week = now.minus({ weeks: 4 - ind });
+            return { 
+                weekNumber: week.weekNumber, 
+                weekYear: week.weekYear,
+                key: `${week.weekNumber} ${week.weekYear}`   
+            }
+        })
+
+        const new_data = weeks.map(week => {
+            const start_of_week = DateTime.fromObject({
+                weekYear: week.weekYear,
+                weekNumber: week.weekNumber
+            }).startOf("week")
+
+            return {
+                name: `Week of ${start_of_week.toFormat("MMM d")}`,
+                orders: order_count_map.get(week.key) || 0,       
+                visits: visit_count_map.get(week.key) || 0,  
+            }
+        })
+
+        setGraphData(new_data)
     }
 
     const structureWeeklyData = () => {
