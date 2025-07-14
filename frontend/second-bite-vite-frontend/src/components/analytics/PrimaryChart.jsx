@@ -1,8 +1,10 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
+import { DateTime } from 'luxon'
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 
-const PrimaryChart = ({orders, visits}) => {
+const PrimaryChart = ({ orders, visits, kpi_time_range, KPI_TIME_RANGE }) => {
+    const [graph_data, setGraphData] = useState([])
     // Primary Chart Data
     const data = [
       {
@@ -42,6 +44,55 @@ const PrimaryChart = ({orders, visits}) => {
       },
     ];
 
+    const structureMonthlyData = () => {
+        // TODO: 
+    }
+
+    const structureWeeklyData = () => {
+        // NOTE: Order time is in luxon DateTime
+
+        // Initialize maps
+        const order_count_map = new Map()
+        const visit_count_map = new Map()
+        
+        // Get totals per day
+        for (const order of orders) {
+            const day = order.order_time.toISODate()
+
+            const day_order_count = order_count_map.get(day) || 0
+            order_count_map.set(day, day_order_count + 1)
+        }
+        for (const visit of visits) {
+            const day = visit.visit_time.toISODate()
+
+            const day_visit_count = visit_count_map.get(day) || 0
+            visit_count_map.set(day, day_visit_count + 1)
+        }
+
+        // Create array holding last 7 weekdays from oldest to newest
+        const now = DateTime.now().startOf('day')
+        const week_by_days = Array.from({ length: 7 }).map((_, ind) => 
+            now.minus({ days: 6 - ind })
+        )
+
+        const new_data = week_by_days.map(day => ({
+            name: day.toFormat('cccc'),
+            orders: order_count_map.get(day.toISODate()) || 0,
+            visits: visit_count_map.get(day.toISODate()) || 0,
+        }))
+
+        setGraphData(new_data)
+    }
+
+    useEffect(() => {
+        if(kpi_time_range === KPI_TIME_RANGE.LAST_WEEK) {
+            structureWeeklyData()
+        }
+        else {
+            structureMonthlyData()
+        }
+    }, [orders, visits, kpi_time_range])
+
     return (
         <>
             <section className="analytics_graph">
@@ -51,7 +102,7 @@ const PrimaryChart = ({orders, visits}) => {
                 <LineChart
                   width={500}
                   height={300}
-                  data={data}
+                  data={graph_data}
                   margin={{
                     top: 5,
                     right: 30,
@@ -65,8 +116,8 @@ const PrimaryChart = ({orders, visits}) => {
                   <YAxis yAxisId="right" orientation="right" />
                   <Tooltip />
                   <Legend />
-                  <Line yAxisId="left" type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-                  <Line yAxisId="right" type="monotone" dataKey="uv" stroke="#82ca9d" />
+                  <Line yAxisId="left" type="monotone" dataKey="orders" stroke="#8884d8" activeDot={{ r: 8 }} />
+                  <Line yAxisId="right" type="monotone" dataKey="visits" stroke="#82ca9d" />
                 </LineChart>
               </ResponsiveContainer>
             </section>

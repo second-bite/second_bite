@@ -209,7 +209,7 @@ const Analytics = () => {
             <KpiCards restaurant_id={selected_restaurant.restaurant_id} KPI_TIME_RANGE={KPI_TIME_RANGE} kpi_time_range={kpi_time_range} setKPITimeRange={setKPITimeRange} setOrders={setOrders} setVisits={setVisits} />
 
             {/* Primary Chart */}
-            <PrimaryChart orders={orders} visits={visits}/>
+            <PrimaryChart orders={orders} visits={visits} kpi_time_range={kpi_time_range} KPI_TIME_RANGE={KPI_TIME_RANGE}/>
 
             {/* Secondary Charts */}
             <section className="analytics_supplementary_graph_section">
