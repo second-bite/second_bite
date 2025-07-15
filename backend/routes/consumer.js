@@ -200,8 +200,7 @@ router.post('/reserve/:restaurant_id/:time_zone', check_auth(user_types_check.co
         const prev_order = await prisma.order.findFirst({
             where: {restaurant_id: restaurant_id, consumer_id: consumer_id}
         })
-        let is_first_order = true
-        if (prev_order) is_first_order = false
+        let is_first_order = !prev_order
 
         const order_data = {
             cost: restaurant.avg_cost,
