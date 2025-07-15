@@ -1,27 +1,22 @@
-import React, { useRef, useState, useEffect, PureComponent, useContext } from "react"
+import React, { useRef, useState, useEffect, useContext } from "react"
 
 // Tailwind Imports
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 // Rechart Imports
-import { PieChart, Pie, Cell, ComposedChart, Line, Area, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { PieChart, Pie, Cell, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 // Internal Imports
 import { log_error } from "../../utils/utils"
 import KpiCards from "./KPIs";
 import { AppContext } from "../../context/AppContext";
-import { currency_formatter } from "../../utils/utils"
+import PrimaryChart from "./PrimaryChart"
 
 const Analytics = () => {
     const { base_url } = useContext(AppContext)
 
     // enums
-    const GRAPH_TYPE = {
-        ORDERS: "Orders",
-        REVENUE: "Revenue",
-        PAGE_VISITS: "Page Visits"
-    }
     const KPI_TIME_RANGE = {
         LAST_WEEK: "Last Week",
         LAST_MONTH: "Last Month",
@@ -34,7 +29,6 @@ const Analytics = () => {
     // State Variables
     const [selected_restaurant, setSelectedRestaurant] = useState({})
     const [kpi_time_range, setKPITimeRange] = useState(KPI_TIME_RANGE.LAST_WEEK)
-    const [selected_graph, setSelectedGraph] = useState(GRAPH_TYPE.ORDERS)
     const [owned_restaurants, setOwnedRestaurants] = useState([]) // Array of owned restaurants
     const [orders, setOrders] = useState([]) // Dynamically changed in KPIs.jsx as KPI Time Range changes
     const [visits, setVisits] = useState([]) // Dynamically changed in KPIs.jsx as KPI Time Range changes
@@ -159,16 +153,6 @@ const Analytics = () => {
     const handleRestaurantSelect = (restaurant) => {
         setSelectedRestaurant(restaurant)
     }
-    const handleGraphSelect = async (selection) => {
-        try {
-            const err = new Error(`Invalid graph type selected.`)
-            err.status = 500
-            if(!Object.values(GRAPH_TYPE).includes(selection)) throw err
-            setSelectedGraph(selection)
-        } catch (err) {
-            await log_error(err)
-        }
-    }
 
     // New vs Existing Consumers Pie Chart Attributes
     const RADIAN = Math.PI / 180;
@@ -183,46 +167,6 @@ const Analytics = () => {
             </text>
         );
     };
-
-    // Primary Chart Data
-    const temp_data = [
-    {
-        name: 'Page A',
-        uv: 590,
-        pv: 800,
-        amt: 1400,
-    },
-    {
-        name: 'Page B',
-        uv: 868,
-        pv: 967,
-        amt: 1506,
-    },
-    {
-        name: 'Page C',
-        uv: 1397,
-        pv: 1098,
-        amt: 989,
-    },
-    {
-        name: 'Page D',
-        uv: 1480,
-        pv: 1200,
-        amt: 1228,
-    },
-    {
-        name: 'Page E',
-        uv: 1520,
-        pv: 1108,
-        amt: 1100,
-    },
-    {
-        name: 'Page F',
-        uv: 1400,
-        pv: 680,
-        amt: 1700,
-    },
-    ];
 
 
     return (
@@ -265,31 +209,7 @@ const Analytics = () => {
             <KpiCards restaurant_id={selected_restaurant.restaurant_id} KPI_TIME_RANGE={KPI_TIME_RANGE} kpi_time_range={kpi_time_range} setKPITimeRange={setKPITimeRange} setOrders={setOrders} setVisits={setVisits} />
 
             {/* Primary Chart */}
-            {/* Code largely taken from https://recharts.org/en-US/examples/ComposedChartWithAxisLabels */}
-            <section className="analytics_graph">
-                <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart
-                    width={500}
-                    height={400}
-                    data={temp_data}
-                    margin={{
-                        top: 20,
-                        right: 80,
-                        bottom: 20,
-                        left: 20,
-                    }}
-                    >
-                    <CartesianGrid stroke="#f5f5f5" />
-                    <XAxis dataKey="name" label={{ value: 'Pages', position: 'insideBottomRight', offset: 0 }} scale="band" />
-                    <YAxis label={{ value: 'Index', angle: -90, position: 'insideLeft' }} />
-                    <Tooltip />
-                    <Legend />
-                    <Area type="monotone" dataKey="amt" fill="#8884d8" stroke="#8884d8" />
-                    <Bar dataKey="pv" barSize={20} fill="#413ea0" />
-                    <Line type="monotone" dataKey="uv" stroke="#ff7300" />
-                    </ComposedChart>
-                </ResponsiveContainer>
-            </section>
+            <PrimaryChart orders={orders} visits={visits} kpi_time_range={kpi_time_range} KPI_TIME_RANGE={KPI_TIME_RANGE}/>
 
             {/* Secondary Charts */}
             <section className="analytics_supplementary_graph_section">

@@ -94,7 +94,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
       })
 
       // Get total revenue & stats over last week
-      const revenue_prev_period = orders_prev_period.reduce((net_revenue, order) => net_revenue + order.cost, 0)
+      const revenue_prev_period = orders_prev_period.reduce((net_revenue, order) => net_revenue + Number(order.cost), 0)
       const revenue_prev_prev_period = orders_prev_prev_period.reduce((net_revenue, order) => net_revenue + order.cost, 0)
       let revenue_percent_change
       if (revenue_prev_prev_period === 0) {
@@ -183,6 +183,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
       }
 
       // Set State Variables
+      console.log(revenue_prev_period)
       setKPIPrice([currency_formatter.format(revenue_prev_period).toString(), num_orders_prev_period, num_visits_prev_period, num_new_consumers_prev_period])
       setKPIPercentages([revenue_percent_change, num_orders_percent_change, num_visits_percent_change, num_new_consumers_percent_change])
   }
