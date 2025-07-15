@@ -3,11 +3,12 @@ import React, { useRef, useState, PureComponent } from "react"
 // Tailwind Imports
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { Button, Typography, MenuHandler, MenuList, Card, CardBody } from "@material-tailwind/react";
 
 // Rechart Imports
-import { PieChart, Pie, Sector, Cell, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { PieChart, Pie, Sector, Cell, ComposedChart, Line, Area, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { log_error } from "../../utils/utils"
-
+import KpiCards from "./KPIs";
 
 const Analytics = () => {
     const restaurant_ref = useRef()
@@ -56,6 +57,47 @@ const Analytics = () => {
             </text>
         );
     };
+
+    // Primary Chart Data
+    const temp_data = [
+    {
+        name: 'Page A',
+        uv: 590,
+        pv: 800,
+        amt: 1400,
+    },
+    {
+        name: 'Page B',
+        uv: 868,
+        pv: 967,
+        amt: 1506,
+    },
+    {
+        name: 'Page C',
+        uv: 1397,
+        pv: 1098,
+        amt: 989,
+    },
+    {
+        name: 'Page D',
+        uv: 1480,
+        pv: 1200,
+        amt: 1228,
+    },
+    {
+        name: 'Page E',
+        uv: 1520,
+        pv: 1108,
+        amt: 1100,
+    },
+    {
+        name: 'Page F',
+        uv: 1400,
+        pv: 680,
+        amt: 1700,
+    },
+    ];
+
 
     // Top Consumers Bar Chart Attributes
     const top_consumers_data = [
@@ -143,113 +185,43 @@ const Analytics = () => {
             </MenuItems>
             </Menu>
 
+            {/* KPIs */}
+            <KpiCards />
 
-            <section className="analytics_kpis">
-                <div className="stats shadow">
-                    <div className="stat">
-                        <div className="stat-figure text-blue-600">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            className="inline-block h-8 w-8 stroke-current"
-                        >
-                            <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            ></path>
-                        </svg>
-                        </div>
-                        <div className="stat-title">Orders</div>
-                        <div className="stat-value">31K</div>
-                        <div className="stat-desc">Jan 1st - Feb 1st</div>
-                    </div>
-                    <div className="stat">
-                        <div className="stat-figure text-blue-600">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            className="inline-block h-8 w-8 stroke-current"
-                        >
-                            <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                            ></path>
-                        </svg>
-                        </div>
-                        <div className="stat-title">Revenue</div>
-                        <div className="stat-value">$101,200</div>
-                        <div className="stat-desc">↗︎ $20,000 (22%)</div>
-                    </div>
-                    <div className="stat">
-                        <div className="stat-figure text-blue-600">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            className="inline-block h-8 w-8 stroke-current"
-                        >
-                            <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
-                            ></path>
-                        </svg>
-                        </div>
-                        <div className="stat-title">Page Visits</div>
-                        <div className="stat-value">6,200</div>
-                        <div className="stat-desc">↘︎ 90 (14%)</div>
-                    </div>
-                    <div className="stat">
-                        <div className="stat-figure text-blue-600">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            className="inline-block h-8 w-8 stroke-current"
-                        >
-                            <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                            ></path>
-                        </svg>
-                        </div>
-                        <div className="stat-title">New Consumers</div>
-                        <div className="stat-value">4,200</div>
-                        <div className="stat-desc">↗︎ 400 (22%)</div>
-                    </div>
-                </div>
+            {/* Primary Chart */}
+            {/* Code largely taken from https://recharts.org/en-US/examples/ComposedChartWithAxisLabels */}
+            <section className="analytics_graph">
+                <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart
+                    width={500}
+                    height={400}
+                    data={temp_data}
+                    margin={{
+                        top: 20,
+                        right: 80,
+                        bottom: 20,
+                        left: 20,
+                    }}
+                    >
+                    <CartesianGrid stroke="#f5f5f5" />
+                    <XAxis dataKey="name" label={{ value: 'Pages', position: 'insideBottomRight', offset: 0 }} scale="band" />
+                    <YAxis label={{ value: 'Index', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip />
+                    <Legend />
+                    <Area type="monotone" dataKey="amt" fill="#8884d8" stroke="#8884d8" />
+                    <Bar dataKey="pv" barSize={20} fill="#413ea0" />
+                    <Line type="monotone" dataKey="uv" stroke="#ff7300" />
+                    </ComposedChart>
+                </ResponsiveContainer>
             </section>
 
-
-
-            <section className="analytics_graph_section" ref={graph_ref}>
-                <details className="dropdown">
-                <summary className="btn m-1">{selected_graph}</summary>
-                <ul className="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                    <li><a onClick={() => {handleGraphSelect('Orders')}}>Orders</a></li>
-                    <li><a onClick={() => {handleGraphSelect('Revenue')}}>Revenue</a></li>
-                    <li><a onClick={() => {handleGraphSelect('Page Visits')}}>Page Visits</a></li>
-                </ul>
-                </details>
-                <section className="analytics_graph">
-                    <img src="analytics_graph.png" alt="Sample Analytics Graph" />
-                </section>
-            </section>
-
+            {/* Secondary Charts */}
             <section className="analytics_supplementary_graph_section">
                 {/* New vs Existing Users Pie Chart */}
                 <section className="analytics_supplementary_graph">
                     <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{'New vs Existing Consumers (Past Month)'}</h3>
                     <ResponsiveContainer width="100%" height="100%">
+                        {/* Code largely taken from https://recharts.org/en-US/examples/PieChartWithCustomizedLabel */}
                         <PieChart width={400} height={400}>
                             <Pie
                                 data={new_vs_existing_data}
@@ -273,6 +245,7 @@ const Analytics = () => {
                 {/* Highest Frequency Customers Bar Chart */}
                 <section className="analytics_supplementary_graph">
                     <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{'Highest Frequency Customers (Past Month)'}</h3>
+                    {/* Code largely taken from https://recharts.org/en-US/api/BarChart */}
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                         width={500}
@@ -299,6 +272,7 @@ const Analytics = () => {
                 <section className="analytics_supplementary_graph">
                     <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">{'Orders by Day (Past Month)'}</h3>
                     <ResponsiveContainer width="100%" height="100%">
+                        {/* Code largely taken from https://recharts.org/en-US/examples/PieChartWithCustomizedLabel */}
                         <PieChart width={400} height={400}>
                             <Pie
                                 data={orders_vs_weekday_data}

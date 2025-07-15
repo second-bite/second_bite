@@ -30,7 +30,6 @@ const RatingModal = () => {
         };
         (form_ref.current.elements.rating_text.value) ? (rating_body.msg = form_ref.current.elements.rating_text.value) : null
 
-        // TODO: get restaurant id
         const response = await fetch(base_url + '/restaurant/rating/' + selected_restaurant.restaurant_id, {
             method: 'POST',
             body: JSON.stringify(rating_body),
