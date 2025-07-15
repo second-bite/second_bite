@@ -29,6 +29,7 @@ const restaurant_routes = require('./routes/restaurant')
 const owner_routes = require('./routes/owner')
 const consumer_routes = require('./routes/consumer')
 const error_log_routes = require('./routes/error_log')
+const analytics_routes = require('./routes/analytics')
 const prisma = require('./routes/prisma_client')
 
 app.use('/auth', auth_routes)
@@ -36,6 +37,7 @@ app.use('/restaurant', restaurant_routes)
 app.use('/owner', owner_routes)
 app.use('/consumer', consumer_routes)
 app.use('/error_log', error_log_routes)
+app.use('/analytics', analytics_routes)
 
 // Error Handling Middleware
 app.use(async (err, req, res, next) => {

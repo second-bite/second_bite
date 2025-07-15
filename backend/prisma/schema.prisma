@@ -22,12 +22,14 @@ model Consumer {
   username                  String                  @unique
   password                  String                  
   address                   Address?                @relation("consumer_address")
+  orders                     Order[]                @relation("orders_consumer")
   reserved_restaurant_id    Int?                    // Restaurant ID of currently reserved restaurant
   reservation_expiration    DateTime?               // Expiration of current reservation                           
   friendships_a             Friendship[]            @relation("friendship_a")
   friendships_b             Friendship[]            @relation("friendship_b")
   sent_friend_requests      FriendRequest[]         @relation("sender")
   received_friend_requests  FriendRequest[]         @relation("receiver")
+  restaurant_visits         PageVisit[]             @relation("visits_consumer")
 }
 
 model Friendship {
@@ -111,7 +113,7 @@ model Rating {
 }
 
 model Restaurant {
-  restaurant_id    Int                      @id @default(autoincrement())
+  restaurant_id     Int                      @id @default(autoincrement())
   name              String
   descr             String
   address           Address?                @relation("restaurant_address")
@@ -122,11 +124,35 @@ model Restaurant {
   ratings           Rating[]
   pickup_time       String[]                // Each entry represents a day of the week (Mon-Su)
   time_zone         String                  @default("America/Los_Angeles")
+  orders            Order[]                 @relation("orders_restaurant")
+  page_visits       PageVisit[]             @relation("visits_restaurant")
   owner_id          Int
   owner             Owner                   @relation(fields: [owner_id], references: [owner_id])
 }
 
+/* Analytics */
+// Orders
+model Order {
+  order_id              Int                     @id @default(autoincrement())
+  cost                  Decimal
+  is_first_order        Boolean
+  order_time            DateTime                @default(now())
+  restaurant_id         Int
+  restaurant            Restaurant              @relation("orders_restaurant", fields: [restaurant_id], references: [restaurant_id])
+  consumer_id           Int                     
+  consumer              Consumer                @relation("orders_consumer", fields: [consumer_id], references: [consumer_id])
+}
 
+// Restaurant Site Visits
+model PageVisit {
+  visit_id              Int                     @id @default(autoincrement())
+  is_first_visit        Boolean
+  visit_time            DateTime                @default(now())
+  restaurant_id         Int
+  restaurant            Restaurant              @relation("visits_restaurant", fields: [restaurant_id], references: [restaurant_id])
+  consumer_id           Int                     
+  consumer              Consumer                @relation("visits_consumer", fields: [consumer_id], references: [consumer_id])
+}
 
 /**
  * Other
@@ -138,7 +164,6 @@ model Address {
   state             String
   postal_code       String                      // String to preserve leading 0s
   country           String
-
   address_id        Int                         @id @default(autoincrement())
   consumer_id       Int?                        @unique
   consumer          Consumer?                   @relation("consumer_address", fields:[consumer_id], references: [consumer_id])
