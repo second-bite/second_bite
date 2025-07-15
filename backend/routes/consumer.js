@@ -16,6 +16,10 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
             include: {
                 address: true,
                 favorite_restaurants: true,
+                orders: true,
+                restaurant_visits: true,
+                friendships_a: true,
+                friendships_b: true,
                 sent_friend_requests: true,
                 received_friend_requests: true,
             }

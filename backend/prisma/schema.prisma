@@ -24,13 +24,13 @@ model Consumer {
   address                   Address?                @relation("consumer_address")
   favorite_restaurants      Favorite[]              @relation("consumer_favorites")
   orders                    Order[]                 @relation("orders_consumer")
+  restaurant_visits         PageVisit[]             @relation("visits_consumer")
   reserved_restaurant_id    Int?                    // Restaurant ID of currently reserved restaurant
   reservation_expiration    DateTime?               // Expiration of current reservation                           
   friendships_a             Friendship[]            @relation("friendship_a")
   friendships_b             Friendship[]            @relation("friendship_b")
   sent_friend_requests      FriendRequest[]         @relation("sender")
   received_friend_requests  FriendRequest[]         @relation("receiver")
-  restaurant_visits         PageVisit[]             @relation("visits_consumer")
 }
 
 model Favorite {
