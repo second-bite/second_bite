@@ -29,7 +29,7 @@ const Analytics = () => {
 
     // Colors (for graphs)
     const new_vs_existing_colors = ['#0088FE', '#00C49F']
-    const orders_vs_weekday_colors = ['#0088FE', '#00C49F', '#FF69B4', '#8BC34A', '#FFC107', '#2196F3', '#9C27B0']
+    const orders_grouped_by_weekday_colors = ['#0088FE', '#00C49F', '#FF69B4', '#8BC34A', '#FFC107', '#2196F3', '#9C27B0']
 
     // State Variables
     const [selected_restaurant, setSelectedRestaurant] = useState({})
@@ -40,7 +40,7 @@ const Analytics = () => {
     const [visits, setVisits] = useState([]) // Dynamically changed in KPIs.jsx as KPI Time Range changes
     const [new_vs_existing_data, setNewVsExistingData] = useState([])
     const [top_consumers_data, setTopConsumersData] = useState([])
-    const [orders_vs_weekday_data, setOrdersVsWeekdayData] = useState([])
+    const [orders_grouped_by_weekday_data, setOrdersGroupedByWeekdayData] = useState([])
 
     // Getters
     const getOwnerRestaurants = async () => {
@@ -123,8 +123,8 @@ const Analytics = () => {
         // Update State Variable
         setTopConsumersData(new_top_consumers_data)
     }
-    const getOrdersVsWeekdayData = () => {
-        const new_orders_vs_weekday_data = [
+    const getOrdersGroupedByWeekdayData = () => {
+        const new_orders_grouped_by_weekday_data = [
             { name: 'Monday', value: 0 },
             { name: 'Tuesday', value: 0},
             { name: 'Wednesday', value: 0 },
@@ -136,11 +136,11 @@ const Analytics = () => {
 
         for(const order of orders) {
             const day_ind = order.order_time.weekday - 1 // subtract one to make it zero-indexed
-            new_orders_vs_weekday_data[day_ind].value += 1
+            new_orders_grouped_by_weekday_data[day_ind].value += 1
         }
 
         // Update State Variable
-        setOrdersVsWeekdayData(new_orders_vs_weekday_data)
+        setOrdersGroupedByWeekdayData(new_orders_grouped_by_weekday_data)
     }
 
     // Load Info on Startup
@@ -152,7 +152,7 @@ const Analytics = () => {
     useEffect(() => {
         getNewVsExistingData()
         getTopConsumersData()
-        getOrdersVsWeekdayData()
+        getOrdersGroupedByWeekdayData()
     }, [orders])
 
     // Handlers
@@ -351,7 +351,7 @@ const Analytics = () => {
                         {/* Code largely taken from https://recharts.org/en-US/examples/PieChartWithCustomizedLabel */}
                         <PieChart width={400} height={400}>
                             <Pie
-                                data={orders_vs_weekday_data}
+                                data={orders_grouped_by_weekday_data}
                                 cx="50%"
                                 cy="50%"
                                 labelLine={false}
@@ -360,8 +360,8 @@ const Analytics = () => {
                                 fill="#8884d8"
                                 dataKey="value"
                             >
-                                {orders_vs_weekday_data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={orders_vs_weekday_colors[index % orders_vs_weekday_colors.length]} />
+                                {orders_grouped_by_weekday_data.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={orders_grouped_by_weekday_colors[index % orders_grouped_by_weekday_colors.length]} />
                                 ))}
                             </Pie>
                             <Legend />
