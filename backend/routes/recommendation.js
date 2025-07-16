@@ -5,4 +5,3 @@
 // TODO:
 // - GET (current consumer information)
 // - GET (other consumer information)
-// - GET (recommendations)

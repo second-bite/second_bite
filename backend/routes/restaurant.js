@@ -192,5 +192,85 @@ router.post('/rating/:restaurant_id', check_auth(user_types_check.consumer), asy
     }
 })
 
+/**
+ * Recommendation
+ */
+// Used to get the restaurants from a consumer's page visits
+// NOTE: Consumer View
+router.get('/visit/:consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
+    let {consumer_id} = req.params
+    consumer_id = parseInt(consumer_id)
+
+    try {
+        const restaurants = await prisma.restaurant.findMany({
+            where: {
+                page_visits: {
+                    some: {
+                        consumer_id: {
+                            equals: {consumer_id}
+                        }
+                    }
+                }
+            }
+        })
+        // TODO: Figure out how to handle adding distance_text, distance_value, avg_rating fields
+
+        res.status(200).json(restaurants)
+    } catch (err) {
+        next(err)
+    }
+})
+
+// Used to get the restaurants from a consumer's orders
+// NOTE: Consumer View
+router.get('/order/:consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
+    let {consumer_id} = req.params
+    consumer_id = parseInt(consumer_id)
+
+    try {
+        const restaurants = await prisma.restaurant.findMany({
+            where: {
+                orders: {
+                    some: {
+                        consumer_id: {
+                            equals: {consumer_id}
+                        }
+                    }
+                }
+            }
+        })
+        // TODO: Figure out how to handle adding distance_text, distance_value, avg_rating fields
+
+        res.status(200).json(restaurants)
+    } catch (err) {
+        next(err)
+    }
+})
+
+// Used to get the restaurants from a consumer's favorited restaurants
+// NOTE: Consumer view
+router.get('/favorited/:consumer_id', check_auth(user_types_check.consumer), async (req, res, next) => {
+    let {consumer_id} = req.params
+    consumer_id = parseInt(consumer_id)
+
+    try {
+        const restaurants = await prisma.restaurant.findMany({
+            where: {
+                favorited_by_consumers: {
+                    some: {
+                        consumer_id: consumer_id,
+                        is_favorited: true,
+                    }
+                }
+            }
+        })
+        // TODO: Figure out how to handle adding distance_text, distance_value, avg_rating fields
+
+        res.status(200).json(restaurants)
+    } catch (err) {
+        next(err)
+    }
+})
+
 
 module.exports = router
