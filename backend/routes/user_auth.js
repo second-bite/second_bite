@@ -122,6 +122,7 @@ auth_routes.post('/login/:user_type_param', async (req, res, next) => {
 
 
 // Check if user is logged in (endpoint and internal check)
+// NOTE: Closure idea borrowed from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures
 const check_auth = (user_type) => {
     return function (req, res, next) {
             // Check valid user_type entry

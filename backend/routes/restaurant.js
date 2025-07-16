@@ -8,6 +8,7 @@ const {user_types_check, check_auth} = require('./user_auth')
  * Utilities
  */
 // Used to modularize process of adding rating and distance fields when retrieving restaurants
+// NOTE: Closure idea borrowed from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures
 const add_rating_n_distance_wrapper = (restaurants, all_address_provided, street_address, city, postal_code, state, country) => {
     return async function add_rating_n_distance(req, res, next) {
         // Add ratings field
