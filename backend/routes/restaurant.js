@@ -9,7 +9,7 @@ const {user_types_check, check_auth} = require('./user_auth')
  */
 // Used to modularize process of adding rating and distance fields when retrieving restaurants
 // NOTE: Closure idea borrowed from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures
-const add_rating_n_distance_wrapper = (restaurants, all_address_provided, street_address, city, postal_code, state, country) => {
+const add_rating_n_distance_wrapper = (restaurants, is_full_address_provided, street_address, city, postal_code, state, country) => {
     return async function add_rating_n_distance(req, res, next) {
         // Add ratings field
         const ratings_per_restaurant = await prisma.rating.groupBy({
@@ -74,7 +74,7 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
     // If an address field is provided, all must be provided
     const is_address_provided = [street_address, city, postal_code, state, country].some(elem => elem)
     const all_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
-    if(is_address_provided && !all_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant'})
+    if(is_address_provided && !is_full_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant'})
     
     let filters = {}
     try {
@@ -92,7 +92,7 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
         let restaurants = await prisma.restaurant.findMany(filters)
 
         // Add ratings & distance fields if possible
-        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, all_address_provided, street_address, city, postal_code, state, country)
+        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
         restaurants = await add_rating_n_distance(req, res, next)
 
         res.status(200).json(restaurants)
@@ -219,8 +219,8 @@ router.get('/visit/:consumer_id', check_auth(user_types_check.consumer), async (
 
     // If an address field is provided, all must be provided
     const is_address_provided = [street_address, city, postal_code, state, country].some(elem => elem)
-    const all_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
-    if(is_address_provided && !all_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant/visit'})
+    const is_full_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
+    if(is_address_provided && !is_full_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant/visit'})
 
     try {
         const restaurants = await prisma.restaurant.findMany({
@@ -236,7 +236,7 @@ router.get('/visit/:consumer_id', check_auth(user_types_check.consumer), async (
         })
 
         // Add ratings & distance fields if possible
-        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, all_address_provided, street_address, city, postal_code, state, country)
+        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
         restaurants = await add_rating_n_distance(req, res, next)
 
         res.status(200).json(restaurants)
@@ -253,8 +253,8 @@ router.get('/order/:consumer_id', check_auth(user_types_check.consumer), async (
 
     // If an address field is provided, all must be provided
     const is_address_provided = [street_address, city, postal_code, state, country].some(elem => elem)
-    const all_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
-    if(is_address_provided && !all_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant/order'})
+    const is_full_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
+    if(is_address_provided && !is_full_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant/order'})
 
     try {
         const restaurants = await prisma.restaurant.findMany({
@@ -270,7 +270,7 @@ router.get('/order/:consumer_id', check_auth(user_types_check.consumer), async (
         })
 
         // Add ratings & distance fields if possible
-        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, all_address_provided, street_address, city, postal_code, state, country)
+        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
         restaurants = await add_rating_n_distance(req, res, next)
 
         res.status(200).json(restaurants)
@@ -287,8 +287,8 @@ router.get('/favorited/:consumer_id', check_auth(user_types_check.consumer), asy
 
     // If an address field is provided, all must be provided
     const is_address_provided = [street_address, city, postal_code, state, country].some(elem => elem)
-    const all_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
-    if(is_address_provided && !all_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant/favorited'})
+    const is_full_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
+    if(is_address_provided && !is_full_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant/favorited'})
 
     try {
         const restaurants = await prisma.restaurant.findMany({
@@ -303,7 +303,7 @@ router.get('/favorited/:consumer_id', check_auth(user_types_check.consumer), asy
         })
 
         // Add ratings & distance fields if possible
-        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, all_address_provided, street_address, city, postal_code, state, country)
+        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
         restaurants = await add_rating_n_distance(req, res, next)
 
         res.status(200).json(restaurants)
