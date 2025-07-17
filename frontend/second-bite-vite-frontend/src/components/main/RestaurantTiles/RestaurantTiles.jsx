@@ -54,16 +54,18 @@ const RestaurantTiles = () => {
 
                 // Retrieve recommended restaurants
                 let address_query = ''
-                if(searched_address) { // Non-empty searched address
+                if(searched_address.street_address) { // Non-empty searched address
                     address_query = `?street_address=${encodeURIComponent(searched_address.street_address)}&city=${encodeURIComponent(searched_address.city)}&postal_code=${encodeURIComponent(searched_address.postal_code)}&state=${encodeURIComponent(searched_address.state)}&country=${encodeURIComponent(searched_address.country)}`
                 }
-                const response = await fetch(recommendation_url + `/recommend/${consumer_id}` + address_query, {
+                // Due to vite.config.js, request gets proxied to recommendation_url (needed to transmit cookie for recommendation API calls)
+                const response = await fetch(`/recommend/${consumer_id}` + address_query, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                 })
+                console.log(response)
                 if(!response.ok) {
                     const err = new Error(`Status: ${response.status}. Failed to fetch recommended restaurants`)
                     err.status = response.status
@@ -85,9 +87,9 @@ const RestaurantTiles = () => {
             {is_recommended_visible ? <h3 className="text-xl font-medium tracking-tight text-gray-80 ml-[1.5vw]">Recommended Restaurants</h3> : null}
             {is_recommended_visible ? <section className="recommended_restaurant_titles">
                 {
-                    recommended_restaurants.map((restaurant) => {
+                    recommended_restaurants.map((restaurant) => (
                         <RestaurantTile restaurant={restaurant} />
-                    })
+                    ))
                 }
             </section> : null}
             <h3 className="text-xl font-medium tracking-tight text-gray-80 ml-[1.5vw]">Browse Restaurants</h3>

@@ -4,7 +4,7 @@ export const AppContext = createContext()
 
 export const AppProvider = ({ children }) => {
     const [base_url, setBaseURL] = useState(import.meta.env.VITE_BASE_URL)
-    const [recommendation_url, setRecommendationURL] = useState(import.meta.env.VITE_RECOMMENDATIONURL)
+    const [recommendation_url, setRecommendationURL] = useState(import.meta.env.VITE_RECOMMENDATION_URL)
     const [is_feedback_modal, setIsFeedbackModal] = useState(false)
     const [is_add_restaurant_modal, setIsAddRestaurantModal] = useState(false)
     const [is_restaurant_modal, setIsRestaurantModal] = useState(false)
