@@ -31,7 +31,7 @@ const add_rating_n_distance_wrapper = (restaurants, is_full_address_provided, st
 
 
         // Add distance field
-        if(all_address_provided) {
+        if(is_full_address_provided) {
             const api_key = process.env.GOOGLE_MAPS_API_KEY
             const origin = encodeURIComponent(`${street_address}, ${city}, ${state} ${postal_code}`)
             const destinations = restaurants.map((restaurant) => {
@@ -73,7 +73,7 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
 
     // If an address field is provided, all must be provided
     const is_address_provided = [street_address, city, postal_code, state, country].some(elem => elem)
-    const all_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
+    const is_full_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
     if(is_address_provided && !is_full_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant'})
     
     let filters = {}
@@ -217,6 +217,8 @@ router.get('/visit/:consumer_id', check_auth(user_types_check.consumer), async (
     let {consumer_id} = req.params
     consumer_id = parseInt(consumer_id)
 
+    const {street_address, city, postal_code, state, country} = req.query
+
     // If an address field is provided, all must be provided
     const is_address_provided = [street_address, city, postal_code, state, country].some(elem => elem)
     const is_full_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
@@ -228,10 +230,14 @@ router.get('/visit/:consumer_id', check_auth(user_types_check.consumer), async (
                 page_visits: {
                     some: {
                         consumer_id: {
-                            equals: {consumer_id}
+                            equals: consumer_id
                         }
                     }
                 }
+            },
+            include: { 
+                address: true, 
+                ratings: true 
             }
         })
 
@@ -251,6 +257,8 @@ router.get('/order/:consumer_id', check_auth(user_types_check.consumer), async (
     let {consumer_id} = req.params
     consumer_id = parseInt(consumer_id)
 
+    const {street_address, city, postal_code, state, country} = req.query
+
     // If an address field is provided, all must be provided
     const is_address_provided = [street_address, city, postal_code, state, country].some(elem => elem)
     const is_full_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
@@ -262,10 +270,14 @@ router.get('/order/:consumer_id', check_auth(user_types_check.consumer), async (
                 orders: {
                     some: {
                         consumer_id: {
-                            equals: {consumer_id}
+                            equals: consumer_id
                         }
                     }
                 }
+            },
+            include: { 
+                address: true, 
+                ratings: true 
             }
         })
 
@@ -285,6 +297,8 @@ router.get('/favorited/:consumer_id', check_auth(user_types_check.consumer), asy
     let {consumer_id} = req.params
     consumer_id = parseInt(consumer_id)
 
+    const {street_address, city, postal_code, state, country} = req.query
+
     // If an address field is provided, all must be provided
     const is_address_provided = [street_address, city, postal_code, state, country].some(elem => elem)
     const is_full_address_provided = [street_address, city, postal_code, state, country].every(elem => elem)
@@ -299,6 +313,10 @@ router.get('/favorited/:consumer_id', check_auth(user_types_check.consumer), asy
                         is_favorited: true,
                     }
                 }
+            },
+            include: { 
+                address: true, 
+                ratings: true 
             }
         })
 
