@@ -17,7 +17,7 @@ const Specifiers = ({search_query, setSearchQuery}) => {
         DISTANCE: "Distance",
     }
 
-    const [sort_type, setSortType] = useState(SORT_TYPE.PRICE)
+    const [sort_type, setSortType] = useState(SORT_TYPE.NONE)
     const [is_sort_dropdown, setIsSortDropdown] = useState(false)
     const [selected_filter, setSelectedFilter] = useState('')
 
