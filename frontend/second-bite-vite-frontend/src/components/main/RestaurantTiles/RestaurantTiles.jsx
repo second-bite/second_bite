@@ -65,7 +65,6 @@ const RestaurantTiles = () => {
                         'Content-Type': 'application/json',
                     },
                 })
-                console.log(response)
                 if(!response.ok) {
                     const err = new Error(`Status: ${response.status}. Failed to fetch recommended restaurants`)
                     err.status = response.status
