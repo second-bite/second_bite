@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { AppContext } from '../../../context/AppContext'
 import { log_error } from '../../../utils/utils'
 
-const SpecialSearchResults = ({ setSearchedAddress, handleSearchClear }) => {
-    const { base_url } = useContext(AppContext)
+const SpecialSearchResults = ({ handleSearchClear }) => {
+    const { base_url, setSearchedAddress } = useContext(AppContext)
     const [ consumer_address, setConsumerAddress ] = useState({})
 
     // Add user's saved restaurant here
@@ -51,7 +51,6 @@ const SpecialSearchResults = ({ setSearchedAddress, handleSearchClear }) => {
 }
 
 SpecialSearchResults.propTypes = {
-    setSearchedAddress: PropTypes.func.isRequired,
     handleSearchClear: PropTypes.func.isRequired,
 }
 

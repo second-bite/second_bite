@@ -5,10 +5,10 @@ import { log_error } from "../../../utils/utils"
 import PropTypes from 'prop-types'
 
 
-const Specifiers = ({search_query, setSearchQuery, searched_address}) => {
+const Specifiers = ({search_query, setSearchQuery}) => {
     const search_ref = useRef()
     const sort_dropdown_ref = useRef()
-    const { base_url, restaurants, setRestaurants, displayed_restaurants, setDisplayedRestaurants } = useContext(AppContext)
+    const { base_url, restaurants, setRestaurants, setDisplayedRestaurants, searched_address, setIsRecommendedVisible } = useContext(AppContext)
 
     const SORT_TYPE = {
         NONE: "Best Match",
@@ -36,6 +36,20 @@ const Specifiers = ({search_query, setSearchQuery, searched_address}) => {
             fetchRestaurantsWrapper()
         }
     }, [searched_address])
+
+    useEffect(() => {
+        if(sort_type !== SORT_TYPE.NONE) {
+            setIsRecommendedVisible(false)
+            return
+        }
+        else if (search_query) {
+            setIsRecommendedVisible(false)
+            return
+        }
+        else {
+            setIsRecommendedVisible(true)
+        }
+    }, [searched_address, search_query, sort_type])
 
     // Utility functions
     const fetchRestaurants = async () => {
