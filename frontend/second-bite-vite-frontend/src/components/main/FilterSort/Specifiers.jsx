@@ -42,14 +42,14 @@ const Specifiers = ({search_query, setSearchQuery}) => {
             setIsRecommendedVisible(false)
             return
         }
-        else if (search_query) {
+        else if (search_query || selected_filter) {
             setIsRecommendedVisible(false)
             return
         }
         else {
             setIsRecommendedVisible(true)
         }
-    }, [searched_address, search_query, sort_type])
+    }, [searched_address, search_query, sort_type, selected_filter])
 
     // Utility functions
     const fetchRestaurants = async () => {
