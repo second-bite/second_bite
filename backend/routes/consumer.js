@@ -90,7 +90,7 @@ router.patch('/', check_auth(user_types_check.consumer), async (req, res, next) 
     }
 })
 
-// Used to add restaurant reservation (for currently logged in cosnumer)
+// Used to add restaurant reservation (for currently logged in consumer)
 // NOTE: Consumer View
 router.post('/reserve/:restaurant_id/:time_zone', check_auth(user_types_check.consumer), async (req, res, next) => {
     let {restaurant_id, time_zone} = req.params
