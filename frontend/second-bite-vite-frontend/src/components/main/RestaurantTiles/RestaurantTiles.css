@@ -1,18 +1,33 @@
+.recommended_restaurant_titles {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 1vh 1.5vw 0 1.5vw;
+    overflow-x: auto;
+    margin-bottom: 15px;
+}
+
 .restaurant_tiles {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(350px, 400px));
     align-items: center;
     margin: 1vh 1.5vw 0 1.5vw;
     gap: 20px;
     width: auto;
 }
 
+.loading {
+    padding-left: 3vw;
+}
+
 .restaurant_tile {
     cursor: pointer;
+    width: clamp(350px, 25vw, 400px);
     background-color: gainsboro;
     border-radius: 32px;
     overflow: hidden;
     box-shadow: 4px 4px 10px rgb(0, 0, 0, 0.3);
+    flex: 0 0 auto;
 }
 
 .restaurant_header {
