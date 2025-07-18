@@ -9,8 +9,8 @@ const {user_types_check, check_auth} = require('./user_auth')
  */
 // Used to modularize process of adding rating and distance fields when retrieving restaurants
 // NOTE: Closure idea borrowed from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures
-const add_rating_n_distance_wrapper = (restaurants, is_full_address_provided, street_address, city, postal_code, state, country) => {
-    return async function add_rating_n_distance(req, res, next) {
+const add_rating_distance_n_favorite_wrapper = (restaurants, is_full_address_provided, street_address, city, postal_code, state, country) => {
+    return async function add_rating_distance_n_favorite(req, res, next) {
         // Add ratings field
         const ratings_per_restaurant = await prisma.rating.groupBy({
             by: ['restaurant_id'],
@@ -57,6 +57,36 @@ const add_rating_n_distance_wrapper = (restaurants, is_full_address_provided, st
             }))
         }
 
+        // Retrieve favorited status
+        const consumer_id = req.session.user_id
+        const favorite_relations = await prisma.friendship.findMany({
+            where: {
+                consumer_id: {
+                    equals: consumer_id
+                }
+            }
+        })
+        const id_to_favorite_status = new Map()
+        for (const favorite_relation of favorite_relations) {
+            id_to_favorite_status.set(favorite_relation.restaurant_id, favorite_relation.is_favorited)
+        }
+
+        // Add favorited status to restaurants
+        let is_missing_favorite_status = false
+        restaurants = restaurants.map((restaurant) => {
+            if(!id_to_favorite_status.has(restaurant.restaurant_id)) {
+                is_missing_favorite_status = true
+            }
+
+            return {
+                ...restaurant,
+                is_favorited:  id_to_favorite_status.get(restaurant.restaurant_id),
+            }
+        })
+        if (is_missing_favorite_status) {
+            return next({status: 500, message: "Failed to retrieve favorited status for restaurant", error_source: 'backend', error_route: '/restaurant'})
+        }
+
         return restaurants
     }
 }
@@ -92,8 +122,8 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
         let restaurants = await prisma.restaurant.findMany(filters)
 
         // Add ratings & distance fields if possible
-        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
-        restaurants = await add_rating_n_distance(req, res, next)
+        const add_rating_distance_n_favorite = add_rating_distance_n_favorite_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
+        restaurants = await add_rating_distance_n_favorite(req, res, next)
 
         res.status(200).json(restaurants)
     } catch (err) {
@@ -242,8 +272,8 @@ router.get('/visit/:consumer_id', check_auth(user_types_check.consumer), async (
         })
 
         // Add ratings & distance fields if possible
-        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
-        restaurants = await add_rating_n_distance(req, res, next)
+        const add_rating_distance_n_favorite = await add_rating_distance_n_favorite_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
+        restaurants = await add_rating_distance_n_favorite(req, res, next)
 
         res.status(200).json(restaurants)
     } catch (err) {
@@ -282,8 +312,8 @@ router.get('/order/:consumer_id', check_auth(user_types_check.consumer), async (
         })
 
         // Add ratings & distance fields if possible
-        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
-        restaurants = await add_rating_n_distance(req, res, next)
+        const add_rating_distance_n_favorite = await add_rating_distance_n_favorite_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
+        restaurants = await add_rating_distance_n_favorite(req, res, next)
 
         res.status(200).json(restaurants)
     } catch (err) {
@@ -321,8 +351,8 @@ router.get('/favorited/:consumer_id', check_auth(user_types_check.consumer), asy
         })
 
         // Add ratings & distance fields if possible
-        const add_rating_n_distance = await add_rating_n_distance_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
-        restaurants = await add_rating_n_distance(req, res, next)
+        const add_rating_distance_n_favorite = await add_rating_distance_n_favorite_wrapper(restaurants, is_full_address_provided, street_address, city, postal_code, state, country)
+        restaurants = await add_rating_distance_n_favorite(req, res, next)
 
         res.status(200).json(restaurants)
     } catch (err) {
