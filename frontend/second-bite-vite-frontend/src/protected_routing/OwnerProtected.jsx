@@ -6,7 +6,6 @@ import { FadeLoader } from 'react-spinners'
 const OwnerProtected = () => {
     const {AUTH_STATUS, auth_status, is_loading} = useContext(AuthContext)
 
-    // TODO: Add loading page
     if(is_loading) return <FadeLoader />
 
     if(auth_status !== AUTH_STATUS.OWNER_AUTH) return <Navigate to='/auth' replace={true} />

@@ -1,18 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
-import RestaurantTile from "./RestaurantTile";
-import sample_restaurants from "../../misc/SampleRestaurants";
-import { AppContext } from "../../../context/AppContext";
-import { log_error } from "../../../utils/utils";
+import React, { useContext, useEffect, useState } from "react"
+import RestaurantTile from "./RestaurantTile"
+import { AppContext } from "../../../context/AppContext"
+import { log_error } from "../../../utils/utils"
+import { FadeLoader } from 'react-spinners'
 
 
 const RestaurantTiles = () => {
     const {base_url, recommendation_url, setRestaurants, displayed_restaurants, setDisplayedRestaurants, searched_address, is_recommended_visible} = useContext(AppContext)
     const [recommended_restaurants, setRecommendedRestaurants] = useState([])
+    const [is_recommended_loading, setIsRecommendedLoading] = useState(false) // Used for visual polish while loading in recommended restaurants
+    const [is_initial_loading, setIsInitialLoading] = useState(false) // Used for visual polish while loading in restaurants initially
 
     // Get all restaurants
     useEffect(() => {
         const initialRestaurantFetch = async () => {
             try{
+                setIsInitialLoading(true)
                 const response = await fetch(base_url + '/restaurant', {
                     method: 'GET',
                     credentials: 'include',
@@ -29,6 +32,9 @@ const RestaurantTiles = () => {
             } catch (err) {
                 await log_error(err)
             }
+            finally {
+                setIsInitialLoading(false)
+            }
         }
         initialRestaurantFetch()
     }, [])
@@ -38,6 +44,7 @@ const RestaurantTiles = () => {
         const recommendedRestaurantFetch = async () => {
             try {
                 // Retrieve consumer_id first
+                setIsRecommendedLoading(true)
                 const consumer_response = await fetch(base_url + `/consumer`, {
                     method: 'GET',
                     credentials: 'include',
@@ -75,6 +82,9 @@ const RestaurantTiles = () => {
             } catch (err) {
                 await log_error(err)
             }
+            finally {
+                setIsRecommendedLoading(false)
+            }
         }
         if (is_recommended_visible) {
             recommendedRestaurantFetch()
@@ -84,19 +94,38 @@ const RestaurantTiles = () => {
     return (
         <>
             {is_recommended_visible ? <h3 className="text-xl font-medium tracking-tight text-gray-80 ml-[1.5vw]">Recommended Restaurants</h3> : null}
-            {is_recommended_visible ? <section className="recommended_restaurant_titles">
-                {
-                    recommended_restaurants.map((restaurant) => (
-                        <RestaurantTile restaurant={restaurant} />
-                    ))
-                }
-            </section> : null}
+            {is_recommended_loading ?
+                (
+                    <section className="loading ml-[1.5vw]">
+                        <FadeLoader />
+                    </section>
+                ) 
+                :
+                (is_recommended_visible ? 
+                    <section className="recommended_restaurant_titles">
+                        {
+                            recommended_restaurants.map((restaurant) => (
+                                <RestaurantTile restaurant={restaurant} />
+                            ))
+                        }
+                    </section>
+                    : null
+                )
+            }
             <h3 className="text-xl font-medium tracking-tight text-gray-80 ml-[1.5vw]">Browse Restaurants</h3>
             <section className="restaurant_tiles">
-                {
-                    displayed_restaurants.map((restaurant) => (
-                        <RestaurantTile restaurant={restaurant} />
-                    ))
+                {is_initial_loading ?
+                    (
+                        <section className="loading">
+                            <FadeLoader />
+                        </section>
+                    ) 
+                    :
+                    (
+                        displayed_restaurants.map((restaurant) => (
+                            <RestaurantTile restaurant={restaurant} />
+                        ))
+                    )
                 }
             </section>
         </>

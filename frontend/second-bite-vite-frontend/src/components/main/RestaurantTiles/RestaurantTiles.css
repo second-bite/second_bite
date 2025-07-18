@@ -16,6 +16,10 @@
     width: auto;
 }
 
+.loading {
+    padding-left: 3vw;
+}
+
 .restaurant_tile {
     cursor: pointer;
     width: clamp(350px, 25vw, 400px);
