@@ -8,7 +8,7 @@ const PORT = 3000
 
 app.use(express.json())
 
-const allowed_cors_origins = ['http://localhost:5173', 'http://localhost:3000']
+const allowed_cors_origins = ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:8000']
 app.use(cors({
   origin: allowed_cors_origins,
   credentials: true

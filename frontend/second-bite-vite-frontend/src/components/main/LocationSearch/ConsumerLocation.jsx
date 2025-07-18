@@ -1,16 +1,24 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useContext} from 'react'
 import PropTypes from 'prop-types'
 
 import RegularSearchResults from './RegularSearchResults'
 import SpecialSearchResults from './SpecialSearchResults'
+import { AppContext } from '../../../context/AppContext'
+import { log_error } from '../../../utils/utils'
 
-const ConsumerLocation = ({setSearchedAddress}) => {
+const ConsumerLocation = () => {
     const form_ref = useRef()
+    const {setSearchedAddress} = useContext(AppContext)
 
     const SEARCH_POPUP_STATUS = {
         NONE: 'none',
         REGULAR_SEARCH: 'regular_search',
         SPECIAL_SEARCH: 'special_search',
+    }
+    // NOTE: Distinguishes between the two ways the address search pop-up & address search query may be cleared out
+    const ADDRESS_SEARCH_CLEAR_TYPE = {
+        CLEAR: 'clear',
+        SEARCH: 'search',
     }
     const [search_popup_status, setSearchPopupStatus] = useState(SEARCH_POPUP_STATUS.NONE)
     const [search_query, setSearchQuery] = useState('')
@@ -31,9 +39,19 @@ const ConsumerLocation = ({setSearchedAddress}) => {
             setSearchPopupStatus(SEARCH_POPUP_STATUS.REGULAR_SEARCH)
         }
     }
-    const handleSearchClear = () => {
+    const handleSearchClear = (clear_type) => {
         setSearchQuery('')
         setSearchPopupStatus(SEARCH_POPUP_STATUS.NONE)
+        switch (clear_type) {
+            case ADDRESS_SEARCH_CLEAR_TYPE.CLEAR:
+                setSearchedAddress({})
+            case ADDRESS_SEARCH_CLEAR_TYPE.SEARCH:
+                null
+            default:
+                const err = new Error(`Status: 422. Failed to update account information.`)
+                err.status = 422
+                log_error(err)
+        }
     }
 
     return (
@@ -45,7 +63,7 @@ const ConsumerLocation = ({setSearchedAddress}) => {
             <section className="address_search">
                 <form ref={form_ref} className="address_search_form">
                     <input type="text" value={search_query} onChange={handleSearchQueryChange} placeholder="Enter starting address..." className="address_search_text"/>
-                    <button type="button" id="clear_address_search" className="address_search_btn" onClick={handleSearchClear}>✖</button>
+                    <button type="button" id="clear_address_search" className="address_search_btn" onClick={() => handleSearchClear(ADDRESS_SEARCH_CLEAR_TYPE.CLEAR)}>✖</button>
                     <button type="button" id="submit_address_search" className="address_search_btn">🔍</button>
                     <p className='special_address_dropdown' onClick={(event) => handleSpecialSearch(event)}>▼</p>
                 </form>
@@ -54,17 +72,13 @@ const ConsumerLocation = ({setSearchedAddress}) => {
                         <section className="search_results_popup">
                             {
                                 (search_popup_status === SEARCH_POPUP_STATUS.REGULAR_SEARCH) ?
-                                <RegularSearchResults search_query={search_query} setSearchedAddress={setSearchedAddress} handleSearchClear={handleSearchClear}/> : <SpecialSearchResults setSearchedAddress={setSearchedAddress} handleSearchClear={handleSearchClear}/>
+                                <RegularSearchResults search_query={search_query} handleSearchClear={handleSearchClear} ADDRESS_SEARCH_CLEAR_TYPE={ADDRESS_SEARCH_CLEAR_TYPE}/> : <SpecialSearchResults handleSearchClear={handleSearchClear}/>
                             }
                         </section>
                 }
             </section>
         </section>
     )
-}
-
-ConsumerLocation.propTypes = {
-    setSearchedAddress: PropTypes.func.isRequired,
 }
 
 

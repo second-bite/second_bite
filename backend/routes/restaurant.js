@@ -225,7 +225,7 @@ router.get('/visit/:consumer_id', check_auth(user_types_check.consumer), async (
     if(is_address_provided && !is_full_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant/visit'})
 
     try {
-        const restaurants = await prisma.restaurant.findMany({
+        let restaurants = await prisma.restaurant.findMany({
             where: {
                 page_visits: {
                     some: {
@@ -265,7 +265,7 @@ router.get('/order/:consumer_id', check_auth(user_types_check.consumer), async (
     if(is_address_provided && !is_full_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant/order'})
 
     try {
-        const restaurants = await prisma.restaurant.findMany({
+        let restaurants = await prisma.restaurant.findMany({
             where: {
                 orders: {
                     some: {
@@ -305,7 +305,7 @@ router.get('/favorited/:consumer_id', check_auth(user_types_check.consumer), asy
     if(is_address_provided && !is_full_address_provided) return next({status: 400, message: 'Missing some address fields',  error_source: 'backend', error_route: '/restaurant/favorited'})
 
     try {
-        const restaurants = await prisma.restaurant.findMany({
+        let restaurants = await prisma.restaurant.findMany({
             where: {
                 favorited_by_consumers: {
                     some: {

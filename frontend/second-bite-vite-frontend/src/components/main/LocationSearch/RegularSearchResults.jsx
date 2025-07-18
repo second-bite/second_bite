@@ -1,8 +1,10 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useState, useRef, useEffect, useContext} from 'react'
 import PropTypes from 'prop-types'
 import { log_error } from '../../../utils/utils'
+import { AppContext } from '../../../context/AppContext'
 
-const RegularSearchResults = ({ search_query, setSearchedAddress, handleSearchClear }) => {
+const RegularSearchResults = ({ search_query, handleSearchClear, ADDRESS_SEARCH_CLEAR_TYPE }) => {
+    const {setSearchedAddress} = useContext(AppContext)
     const [search_results, setSearchResults] = useState([])
 
     useEffect(() => {
@@ -40,7 +42,7 @@ const RegularSearchResults = ({ search_query, setSearchedAddress, handleSearchCl
             country: address.countryCode,
         }
         setSearchedAddress(reformatted_address)
-        handleSearchClear()
+        handleSearchClear(ADDRESS_SEARCH_CLEAR_TYPE.SEARCH)
     }
 
     return (
@@ -59,8 +61,8 @@ const RegularSearchResults = ({ search_query, setSearchedAddress, handleSearchCl
 
 RegularSearchResults.propTypes = {
     search_query: PropTypes.string.isRequired,
-    setSearchedAddress: PropTypes.func.isRequired,
     handleSearchClear: PropTypes.func.isRequired,
+    ADDRESS_SEARCH_CLEAR_TYPE: PropTypes.object.isRequired,
 }
 
 

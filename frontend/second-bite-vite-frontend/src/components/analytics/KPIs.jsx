@@ -183,7 +183,6 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
       }
 
       // Set State Variables
-      console.log(revenue_prev_period)
       setKPIPrice([currency_formatter.format(revenue_prev_period).toString(), num_orders_prev_period, num_visits_prev_period, num_new_consumers_prev_period])
       setKPIPercentages([revenue_percent_change, num_orders_percent_change, num_visits_percent_change, num_new_consumers_percent_change])
   }
