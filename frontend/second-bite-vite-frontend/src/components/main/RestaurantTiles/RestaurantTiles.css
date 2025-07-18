@@ -9,6 +9,7 @@
 }
 
 .restaurant_tile {
+    cursor: pointer;
     background-color: gainsboro;
     border-radius: 32px;
     overflow: hidden;

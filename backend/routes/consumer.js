@@ -15,6 +15,7 @@ router.get('/', check_auth(user_types_check.consumer), async (req, res, next) =>
             where: {consumer_id: consumer_id},
             include: {
                 address: true,
+                favorite_restaurants: true,
                 sent_friend_requests: true,
                 received_friend_requests: true,
             }
@@ -220,6 +221,100 @@ router.post('/reserve/:restaurant_id/:time_zone', check_auth(user_types_check.co
     }
 })
 
+/* Favoriting Restaurant */
+// Used to access a restaurant's favorited status
+// NOTE: Consumer View
+router.get('/favorite/:restaurant_id', check_auth(user_types_check.consumer), async (req, res, next) => {
+    // TODO: Replace this
+    const consumer_id = req.session.user_id 
+    let {restaurant_id} = req.params
+    restaurant_id = Number(restaurant_id)
+
+    try {
+        // Extract current favorited status (or create if not yet existent)
+        let consumer_favorite_status = await prisma.favorite.findUnique({
+            where: { 
+                consumer_id_restaurant_id: {
+                    consumer_id: consumer_id,
+                    restaurant_id: restaurant_id
+                }
+            },
+            select: {
+                is_favorited: true
+            }
+        })
+        if(!consumer_favorite_status) {
+            consumer_favorite_status = await prisma.favorite.create({
+                data: {
+                    consumer_id: consumer_id,
+                    restaurant_id: restaurant_id
+                },
+                select: {
+                    is_favorited: true
+                }
+            })
+        }
+
+        res.status(200).send(consumer_favorite_status)
+    } catch (err) {
+        next(err)
+    }
+})
+
+// Used to toggle favorited status on a restaurant
+// NOTE: Consumer View
+router.post('/favorite/:restaurant_id', check_auth(user_types_check.consumer), async (req, res, next) => {
+    const consumer_id = req.session.user_id 
+    let {restaurant_id} = req.params
+    restaurant_id = Number(restaurant_id)
+
+    try {
+        // Extract current favorited status (or create if not yet existent)
+        let consumer_favorite_status = await prisma.favorite.findUnique({
+            where: { 
+                consumer_id_restaurant_id: {
+                    consumer_id: consumer_id,
+                    restaurant_id: restaurant_id
+                }
+            },
+            select: {
+                is_favorited: true
+            }
+        })
+        if(!consumer_favorite_status) {
+            consumer_favorite_status = await prisma.favorite.create({
+                data: {
+                    consumer_id: consumer_id,
+                    restaurant_id: restaurant_id
+                },
+                select: {
+                    is_favorited: true
+                }
+            })
+        }
+
+        // Toggle favorite status
+        const favorite_status = await prisma.favorite.update({
+            where: { 
+                consumer_id_restaurant_id: {
+                    consumer_id: consumer_id,
+                    restaurant_id: restaurant_id
+                }
+            },
+            data: {
+                is_favorited: !consumer_favorite_status.is_favorited
+            },
+            select: {
+                is_favorited: true
+            }
+        })
+
+        res.status(200).send(favorite_status)
+    } catch (err) {
+        next(err)
+    }
+})
+
 /**
  * Friend Feature
  */
@@ -259,6 +354,7 @@ router.get('/all_other', check_auth(user_types_check.consumer), async (req, res,
         const consumer = await prisma.consumer.findUnique({
             where: {consumer_id: consumer_id},
             include: {
+                favorite_restaurants: true,
                 sent_friend_requests: true,
                 received_friend_requests: true,
             }

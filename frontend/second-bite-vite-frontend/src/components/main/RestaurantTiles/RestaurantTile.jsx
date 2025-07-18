@@ -47,6 +47,33 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
         setAvgCostFormatted(formatted_cost)
     }, [avg_cost])
 
+    // Restaurant Favorited Status
+    const [is_favorited, setIsFavorited] = useState(false)
+    const loadFavoriteStatus = async () => {
+        try {
+            const response = await fetch(`${base_url}/consumer/favorite/${restaurant_id}`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+            })
+
+            if(!response.ok) {
+                const err = new Error(`Status: ${response.status}. Failed to retrieve restaurant favorite status from DB`)
+                err.status = response.status
+                throw err
+            }
+
+            const data = await response.json()
+            setIsFavorited(data.is_favorited)
+        } catch (err) {
+            log_error(err)
+        }
+    }
+    useEffect(() => {
+        // Get favorited status initially & maintain internally (to avoid additional API calls)
+        loadFavoriteStatus()
+    }, [])
+
     // Handlers
     const handleRestaurantTileClick = async () => {
         setSelectedRestaurant({restaurant_id, name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value})
@@ -66,11 +93,33 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
             log_error(err)
         }
     }
+    const handleRestaurantFavorite = async (event) => {
+        event.stopPropagation()
+        try {
+            // Toggle favorited status
+            const response = await fetch(`${base_url}/consumer/favorite/${restaurant_id}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+            })
+
+            if(!response.ok) {
+                const err = new Error(`Status: ${response.status}. Failed to toggle restaurant favorite status`)
+                err.status = response.status
+                throw err
+            }
+
+            const data = await response.json()
+            setIsFavorited(data.is_favorited)
+        } catch (err) {
+            log_error(err)
+        }
+    }
 
     return (
         <section className="restaurant_tile" onClick={handleRestaurantTileClick}>
             <section className="restaurant_header" style={restaurant_header_style}>
-                <p className="restaurant_favorite">★</p>
+                <p className="restaurant_favorite" onClick={(event) => handleRestaurantFavorite(event)} style={{color: (is_favorited) ? 'gold': 'gray'}}>★</p>
                 <section className="restaurant_rating">
                     <p className="restaurant_rating_star">★</p>
                     <p className="restaurant_rating_no">{(avg_rating) === -1 ? 'N/A' : avg_rating}</p>
