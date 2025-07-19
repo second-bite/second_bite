@@ -4,14 +4,17 @@ import { AppContext } from "../../../context/AppContext";
 import { log_error } from "../../../utils/utils";
 
 
-const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value, is_favorited_}, setRecommendedRestaurants}) => {
-    const { base_url, setIsRestaurantModal, setSelectedRestaurant, setDisplayedRestaurants } = useContext(AppContext)
+const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value, is_favorited: is_favorited_}, recommended_restaurants, setRecommendedRestaurants}) => {
+    const { base_url, setIsRestaurantModal, setSelectedRestaurant, displayed_restaurants, setDisplayedRestaurants } = useContext(AppContext)
 
     const restaurant_header_style = {
         "background-image": "radial-gradient(circle at center, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7)), url('https://picsum.photos/200/300')",
         "background-size": "cover",
         "background-position": "center"
     }
+
+    // Testing
+        useEffect(() => console.log(is_favorited_))
 
     // Retrieving day of the week index (to retrieve correct pickup_time)
     const [day_idx, setDayIdx] = useState(new Date().getDay())
@@ -48,7 +51,7 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
     }, [avg_cost])
 
     // Restaurant Favorited Status
-    const [is_favorited, setIsFavorited] = useState(false)
+    const [is_favorited, setIsFavorited] = useState(is_favorited_)
     useEffect(() => {
         // Get favorited status initially & maintain internally (to avoid additional API calls)
         setIsFavorited(is_favorited_)
@@ -94,7 +97,7 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
 
             // Ensure this favorite update is reflected for regular & recommended restaurants
             setDisplayedRestaurants(prev_displayed_restaurants => {
-                let index_to_update = prev_displayed_restaurants.findIndex(restaurant => restaurant.restaurant_id === restaurant_id)
+                let index_to_update = recommended_restaurants.findIndex(restaurant => restaurant.restaurant_id === restaurant_id)
                 const new_displayed_restaurants = prev_displayed_restaurants
                 new_displayed_restaurants[index_to_update].is_favorited = data.is_favorited
 
