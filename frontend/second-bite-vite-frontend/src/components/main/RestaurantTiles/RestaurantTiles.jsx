@@ -105,7 +105,7 @@ const RestaurantTiles = () => {
                     <section className="recommended_restaurant_titles">
                         {
                             recommended_restaurants.map((restaurant) => (
-                                <RestaurantTile restaurant={restaurant} />
+                                <RestaurantTile restaurant={restaurant} recommended_restaurants={recommended_restaurants} setRecommendedRestaurants={setRecommendedRestaurants}/>
                             ))
                         }
                     </section>
@@ -123,7 +123,7 @@ const RestaurantTiles = () => {
                     :
                     (
                         displayed_restaurants.map((restaurant) => (
-                            <RestaurantTile restaurant={restaurant} />
+                            <RestaurantTile restaurant={restaurant} recommended_restaurants={recommended_restaurants} setRecommendedRestaurants={setRecommendedRestaurants}/>
                         ))
                     )
                 }

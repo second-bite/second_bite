@@ -24,7 +24,7 @@ const Specifiers = ({search_query, setSearchQuery}) => {
     const sort_dropdown_symbol_style = (is_sort_dropdown) ? {"transform": "translate(0%, -5%)"} : {"transform": "translate(0%, -5%)"}
 
     useEffect(() => {
-        handleSort(sort_type)
+        handleSortNFilter(sort_type)
     }, [restaurants, selected_filter])
 
     useEffect(() => {
@@ -87,7 +87,7 @@ const Specifiers = ({search_query, setSearchQuery}) => {
     const handleSortDropdown = () => {
         setIsSortDropdown((prev_is_sort_dropdown) => !prev_is_sort_dropdown);
     }
-    const handleSort = (sort_type) => {
+    const handleSortNFilter = (sort_type) => {
         const filtered_restaurants = (selected_filter) ? restaurants.filter((restaurant) => restaurant.categories?.includes(selected_filter)) : restaurants
         switch(sort_type) {
             case SORT_TYPE.DISTANCE:
@@ -143,7 +143,7 @@ const Specifiers = ({search_query, setSearchQuery}) => {
                             <section className="sort_dropdown_popup">
                                 {
                                     Object.entries(SORT_TYPE).map(([key, value]) => (
-                                        <p className="sort_dropdown_popup_option" onClick={() => handleSort(value)}>{value}</p>
+                                        <p className="sort_dropdown_popup_option" onClick={() => handleSortNFilter(value)}>{value}</p>
                                     ))
                                 }
                             </section>
