@@ -4,8 +4,8 @@ import { AppContext } from "../../../context/AppContext";
 import { log_error } from "../../../utils/utils";
 
 
-const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value}}) => {
-    const { base_url, setIsRestaurantModal, setSelectedRestaurant } = useContext(AppContext)
+const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value, is_favorited: is_favorited_}, recommended_restaurants, setRecommendedRestaurants}) => {
+    const { base_url, setIsRestaurantModal, setSelectedRestaurant, displayed_restaurants, setDisplayedRestaurants } = useContext(AppContext)
 
     const restaurant_header_style = {
         "background-image": "radial-gradient(circle at center, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7)), url('https://picsum.photos/200/300')",
@@ -48,31 +48,11 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
     }, [avg_cost])
 
     // Restaurant Favorited Status
-    const [is_favorited, setIsFavorited] = useState(false)
-    const loadFavoriteStatus = async () => {
-        try {
-            const response = await fetch(`${base_url}/consumer/favorite/${restaurant_id}`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-            })
-
-            if(!response.ok) {
-                const err = new Error(`Status: ${response.status}. Failed to retrieve restaurant favorite status from DB`)
-                err.status = response.status
-                throw err
-            }
-
-            const data = await response.json()
-            setIsFavorited(data.is_favorited)
-        } catch (err) {
-            log_error(err)
-        }
-    }
+    const [is_favorited, setIsFavorited] = useState(is_favorited_)
     useEffect(() => {
         // Get favorited status initially & maintain internally (to avoid additional API calls)
-        loadFavoriteStatus()
-    }, [])
+        setIsFavorited(is_favorited_)
+    }, [is_favorited_])
 
     // Handlers
     const handleRestaurantTileClick = async () => {
@@ -111,6 +91,23 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
 
             const data = await response.json()
             setIsFavorited(data.is_favorited)
+
+            // Ensure this favorite update is reflected for regular & recommended restaurants
+            setDisplayedRestaurants(prev_displayed_restaurants => {
+                let index_to_update = prev_displayed_restaurants.findIndex(restaurant => restaurant.restaurant_id === restaurant_id)
+                const new_displayed_restaurants = [...prev_displayed_restaurants]
+                new_displayed_restaurants[index_to_update].is_favorited = data.is_favorited
+
+                return new_displayed_restaurants
+            })
+            setRecommendedRestaurants(prev_recommended_restaurants => {
+                let index_to_update = prev_recommended_restaurants.findIndex(restaurant => restaurant.restaurant_id === restaurant_id)
+                const new_recommended_restaurants = [...prev_recommended_restaurants]
+                new_recommended_restaurants[index_to_update].is_favorited = data.is_favorited
+                
+                return new_recommended_restaurants     
+            })
+
         } catch (err) {
             log_error(err)
         }
@@ -158,7 +155,9 @@ RestaurantTile.propTypes = {
     pickup_time: PropTypes.arrayOf(PropTypes.string).isRequired,
     distance_text:  PropTypes.string,
     distance_value: PropTypes.number,
+    is_favorited_: PropTypes.bool,
   }).isRequired,
+  setRecommendedRestaurants: PropTypes.func,
 };
 
 
