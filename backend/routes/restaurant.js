@@ -59,7 +59,7 @@ const add_rating_distance_n_favorite_wrapper = (restaurants, is_full_address_pro
 
         // Retrieve favorited status
         const consumer_id = req.session.user_id
-        const favorite_relations = await prisma.friendship.findMany({
+        const favorite_relations = await prisma.favorite.findMany({
             where: {
                 consumer_id: {
                     equals: consumer_id

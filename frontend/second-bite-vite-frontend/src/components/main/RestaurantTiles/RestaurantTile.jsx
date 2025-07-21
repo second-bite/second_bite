@@ -13,9 +13,6 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
         "background-position": "center"
     }
 
-    // Testing
-        useEffect(() => console.log(is_favorited_))
-
     // Retrieving day of the week index (to retrieve correct pickup_time)
     const [day_idx, setDayIdx] = useState(new Date().getDay())
     useEffect(() => {
@@ -55,7 +52,7 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
     useEffect(() => {
         // Get favorited status initially & maintain internally (to avoid additional API calls)
         setIsFavorited(is_favorited_)
-    }, [])
+    }, [is_favorited_])
 
     // Handlers
     const handleRestaurantTileClick = async () => {
@@ -97,15 +94,15 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
 
             // Ensure this favorite update is reflected for regular & recommended restaurants
             setDisplayedRestaurants(prev_displayed_restaurants => {
-                let index_to_update = recommended_restaurants.findIndex(restaurant => restaurant.restaurant_id === restaurant_id)
-                const new_displayed_restaurants = prev_displayed_restaurants
+                let index_to_update = prev_displayed_restaurants.findIndex(restaurant => restaurant.restaurant_id === restaurant_id)
+                const new_displayed_restaurants = [...prev_displayed_restaurants]
                 new_displayed_restaurants[index_to_update].is_favorited = data.is_favorited
 
                 return new_displayed_restaurants
             })
             setRecommendedRestaurants(prev_recommended_restaurants => {
                 let index_to_update = prev_recommended_restaurants.findIndex(restaurant => restaurant.restaurant_id === restaurant_id)
-                const new_recommended_restaurants = prev_recommended_restaurants
+                const new_recommended_restaurants = [...prev_recommended_restaurants]
                 new_recommended_restaurants[index_to_update].is_favorited = data.is_favorited
                 
                 return new_recommended_restaurants     
