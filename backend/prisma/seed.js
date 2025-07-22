@@ -13,7 +13,28 @@ async function main() {
     const NUM_VISITS = 100000
     const NUM_ORDERS = 50000
     const START_DATE = new Date().setFullYear(new Date().getFullYear() - 3) // 3 years ago
-    const END_DATE = new Date()
+    const END_DATE = new Date.setDate((new Date()) - 2) // To avoid time zone issues with current day's operations
+
+    // Utilities
+    const generatePickupTimes = (num_times) => {
+        const pickup_times = []
+
+        for (let i = 0; i < num_times; i++) {
+            if (Math.random() < 0.2) {
+                pickup_times.push('N/A')
+            } else {
+                const hr = String(Math.floor(Math.random() * 24)).padStart(2, '0')
+                const min = String(Math.floor(Math.random() * 60)).padStart(2, '0')
+                pickup_times.push(`${hr}:${min}`)
+            }
+        }
+
+        return pickup_times
+    }
+    const generateRandomPastISODate = () => {
+        const rand_date = faker.date.between({ from: START_DATE, to: END_DATE })
+        return rand_date.toISOString()
+    }
 
     // Generate Consumers
     const consumers = []
@@ -93,21 +114,6 @@ async function main() {
     // Generate Restaurants
     const categories = cuisine_filters_react_select.map(category => category.value)
     const restaurants = []
-    const generatePickupTimes = (num_times) => {
-        const pickup_times = []
-
-        for (let i = 0; i < num_times; i++) {
-            if (Math.random() < 0.2) {
-                pickup_times.push('N/A')
-            } else {
-                const hr = String(Math.floor(Math.random() * 24)).padStart(2, '0')
-                const min = String(Math.floor(Math.random() * 60)).padStart(2, '0')
-                pickup_times.push(`${hr}:${min}`)
-            }
-        }
-
-        return pickup_times
-    }
     for (let i = 0; i < NUM_RESTAURANTS; i++) {
         const owner = faker.helpers.arrayElement(owners)
         const num_categories = faker.datatype.number({ min: 1, max: 4 })
@@ -147,7 +153,6 @@ async function main() {
 
 
     // Generate Ratings
-    const ratings = []
     for(let i = 0; i < NUM_RATINGS; i++) {
         const consumer = faker.helpers.arrayElement(consumers)
         const restaurant = faker.helpers.arrayElement(restaurants)
@@ -161,7 +166,6 @@ async function main() {
         const rating = await prisma.rating.create({
             data: data
         })
-        ratings.push(rating)
     }
 
 
@@ -185,7 +189,61 @@ async function main() {
 
 
     // Generate PageVisits
+    for (let i = 0; i < NUM_VISITS; i++) {
+        const restaurant = faker.helpers.arrayElement(restaurants)
+        const consumer = faker.helpers.arrayElement(consumers)
+
+        const page_visit = await prisma.pageVisit.findFirst({
+            where: {
+                restaurant_id: restaurant_id,
+                consumer_id: consumer_id,
+            }
+        })
+
+        const is_first_visit = !page_visit
+
+        // TODO: Add Visit Time
+
+        const data = {
+            is_first_visit: is_first_visit,
+            restaurant_id: restaurant.restaurant_id,
+            consumer_id: consumer.consumer_id,
+            visit_time: generateRandomPastISODate(),
+        }
+
+        const visit = await prisma.pageVisit.create({
+            data: data
+        })
+    }
 
 
     // Generate Orders
+    for (let i = 0; i < NUM_ORDERS; i++) {
+        const restaurant = faker.helpers.arrayElement(restaurants)
+        const consumer = faker.helpers.arrayElement(consumers)
+
+        const order = await prisma.order.findFirst({
+            where: {
+                restaurant_id: restaurant_id,
+                consumer_id: consumer_id,
+            }
+        })
+
+        const is_first_order = !order
+
+        const data = {
+            consumer:     { connect: { consumer_id:consumer.consumer_id } },
+            restaurant:   { connect: { restaurant_id:restaurant.restaurant_id } },
+            cost:         faker.finance.amount(5, 18, 2),
+            is_first_order: is_first_order,
+            order_time: generateRandomPastISODate(),
+        }
+
+        await prisma.order.create({
+            data: data
+        })
+    }
 }
+
+
+main()
