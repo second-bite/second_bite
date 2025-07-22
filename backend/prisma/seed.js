@@ -1,5 +1,6 @@
 const prisma = require('../routes/prisma_client')
 import { faker } from '@faker-js/faker/locale/en_US'
+import { cuisine_filters_react_select } from '../../frontend/second-bite-vite-frontend/src/components/misc/FilterTypes'
 const argon2 = require('argon2')
 
 async function main() {
@@ -7,6 +8,7 @@ async function main() {
     const NUM_CONSUMERS = 8000
     const NUM_OWNERS = 400
     const NUM_RESTAURANTS = 1200
+    const NUM_RATINGS = 6000
     const NUM_FAVORITES = 12000
     const NUM_VISITS = 100000
     const NUM_ORDERS = 50000
@@ -89,9 +91,97 @@ async function main() {
     }
 
     // Generate Restaurants
+    const categories = cuisine_filters_react_select.map(category => category.value)
+    const restaurants = []
+    const generatePickupTimes = (num_times) => {
+        const pickup_times = []
+
+        for (let i = 0; i < num_times; i++) {
+            if (Math.random() < 0.2) {
+                pickup_times.push('N/A')
+            } else {
+                const hr = String(Math.floor(Math.random() * 24)).padStart(2, '0')
+                const min = String(Math.floor(Math.random() * 60)).padStart(2, '0')
+                pickup_times.push(`${hr}:${min}`)
+            }
+        }
+
+        return pickup_times
+    }
+    for (let i = 0; i < NUM_RESTAURANTS; i++) {
+        const owner = faker.helpers.arrayElement(owners)
+        const num_categories = faker.datatype.number({ min: 1, max: 4 })
+        const restaurant_categories = faker.helpers.arrayElements(categories, num_categories)
+
+        const data = {
+            name: faker.company.name() + ' ' + faker.random.word(),,
+            descr: faker.lorem.sentence(),
+            address: {
+                create: {
+                    street_address: faker.address.streetAddress(),
+                    city:           faker.address.city(),
+                    state:          faker.address.stateAbbr(),
+                    postal_code:    faker.address.zipCode(),
+                    country:        faker.address.country()
+                }
+            },
+            categories: restaurant_categories,
+            img_url: faker.image.food(640, 480, true),
+            img_alt: 'Food Image',
+            avg_cost: faker.finance.amount(5, 18, 2),
+            pickup_time: generatePickupTimes(7),
+            time_zone: 'America/Los_Angeles',
+            owner_id: {
+                connect: {
+                    owner_id: owner.owner_id
+                }
+            },
+        }
+
+        const restaurant = await prisma.restaurant.create({
+            data: data
+        })
+
+        restaurants.push(restaurant)
+    }
 
 
-    // Generate Favorites
+    // Generate Ratings
+    const ratings = []
+    for(let i = 0; i < NUM_RATINGS; i++) {
+        const consumer = faker.helpers.arrayElement(consumers)
+        const restaurant = faker.helpers.arrayElement(restaurants)
+
+        const data = {
+            num_stars: Math.floor((Math.random() * 5) + 1),
+            consumer_id: consumer.consumer_id,
+            restaurant_id: restaurant.restaurant_id,
+        }
+
+        const rating = await prisma.rating.create({
+            data: data
+        })
+        ratings.push(rating)
+    }
+
+
+    // Generate Favorites (specifically, toggle favorited statuses num favorites times)
+    for (let i = 0; i < NUM_FAVORITES; i++) {
+        const consumer = faker.helpers.arrayElement(consumers)
+        const restaurant = faker.helpers.arrayElement(restaurants)
+
+        await prisma.favorite.update({
+            where: {
+                consumer_id_restaurant_id: {
+                    consumer_id:   consumer.consumer_id,
+                    restaurant_id: restaurant.restaurant_id
+                }
+            },
+            data: {
+                is_favorited: !consumer_favorite_status.is_favorited
+            },
+        })
+    }
 
 
     // Generate PageVisits
