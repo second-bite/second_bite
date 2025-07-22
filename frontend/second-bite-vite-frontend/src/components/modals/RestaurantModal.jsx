@@ -69,6 +69,13 @@ const RestaurantModal = () => {
         setAvgCostFormatted(formatted_cost)
     }, [selected_restaurant.avg_cost])
 
+    // Formatting Average Rating
+    const [avg_rating_formatted, setAvgRatingFormatted] = useState(0)
+    useEffect(() => {
+        const formatted_rating = parseFloat(selected_restaurant.avg_rating).toFixed(2)
+        setAvgRatingFormatted(formatted_rating)
+    }, [selected_restaurant.avg_rating])
+
     // Handlers
     const handleRestaurantClickoff = (event) => {
         if(event.target === event.currentTarget) handleClose();
@@ -119,7 +126,7 @@ const RestaurantModal = () => {
                         <p><span style={{ fontWeight: 550 }}>Address</span>: {selected_restaurant.address?.street_address}, {selected_restaurant.address?.city}, {selected_restaurant.address?.state} {selected_restaurant.address?.postal_code}, {selected_restaurant.address?.country}</p>
                         <p><span style={{ fontWeight: 550 }}>Categories</span>: {selected_restaurant.categories?.join(', ')}</p>
                         <p><span style={{ fontWeight: 550 }}>Avg. Cost</span>: {avg_cost_formatted} | 
-                            <span style={{ fontWeight: 550 }}> Avg. Rating</span>: {(selected_restaurant.avg_rating) === -1 ? 'N/A' : selected_restaurant.avg_rating} | 
+                            <span style={{ fontWeight: 550 }}> Avg. Rating</span>: {(selected_restaurant.avg_rating) === -1 ? 'N/A' : avg_rating_formatted} | 
                             <span style={{ fontWeight: 550 }}> Distance</span>: {selected_restaurant.distance_text ? selected_restaurant.distance_text: '??.??mi'} | 
                             <span style={{ fontWeight: 550 }}> Pickup Time</span>: {Array.isArray(selected_restaurant.pickup_time) ? selected_restaurant.pickup_time[day_idx] : 'N/A'}</p>
                         <section className="restaurant_modal_btns">
