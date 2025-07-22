@@ -74,18 +74,11 @@ const add_rating_distance_n_favorite_wrapper = (restaurants, is_full_address_pro
         // Add favorited status to restaurants
         let is_missing_favorite_status = false
         restaurants = restaurants.map((restaurant) => {
-            if(!id_to_favorite_status.has(restaurant.restaurant_id)) {
-                is_missing_favorite_status = true
-            }
-
             return {
                 ...restaurant,
-                is_favorited:  id_to_favorite_status.get(restaurant.restaurant_id),
+                is_favorited:  id_to_favorite_status.get(restaurant.restaurant_id) ?? false,
             }
         })
-        if (is_missing_favorite_status) {
-            return next({status: 500, message: "Failed to retrieve favorited status for restaurant", error_source: 'backend', error_route: '/restaurant'})
-        }
 
         return restaurants
     }
