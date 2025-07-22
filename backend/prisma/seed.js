@@ -1,5 +1,5 @@
 const prisma = require('../routes/prisma_client')
-import { faker } from '@faker-js/faker/locale/en_US'
+const { faker } = require('@faker-js/faker/locale/en_US')
 import { cuisine_filters_react_select } from '../../frontend/second-bite-vite-frontend/src/components/misc/FilterTypes'
 const argon2 = require('argon2')
 
@@ -12,8 +12,10 @@ async function main() {
     const NUM_FAVORITES = 12000
     const NUM_VISITS = 100000
     const NUM_ORDERS = 50000
-    const START_DATE = new Date().setFullYear(new Date().getFullYear() - 3) // 3 years ago
-    const END_DATE = new Date.setDate((new Date()) - 2) // To avoid time zone issues with current day's operations
+    const START_DATE = new Date()
+    START_DATE.setFullYear(START_DATE.getFullYear() - 3) // 3 years ago
+    const END_DATE = new Date()
+    END_DATE.setDate(END_DATE.getDate() - 2) // To avoid time zone issues with current day's operations
 
     // Utilities
     const generatePickupTimes = (num_times) => {
@@ -43,14 +45,14 @@ async function main() {
         let is_username_already_exists = true
         let username = null
         while (is_username_already_exists) {
-            username = faker.internet.username
+            username = faker.internet.username()
             if(!consumer_username_set.has(username)) {
                 consumer_username_set.add(username)
                 is_username_already_exists = false
             }
         }
 
-        const hashed_pwd = await argon2.hash(faker.internet.password)
+        const hashed_pwd = await argon2.hash(faker.internet.password())
 
         const data = {
             username: username,
@@ -81,14 +83,14 @@ async function main() {
         let is_username_already_exists = true
         let username = null
         while (is_username_already_exists) {
-            username = faker.internet.username
+            username = faker.internet.username()
             if(!owner_username_set.has(username)) {
                 owner_username_set.add(username)
                 is_username_already_exists = false
             }
         }
 
-        const hashed_pwd = await argon2.hash(faker.internet.password)
+        const hashed_pwd = await argon2.hash(faker.internet.password())
 
         const data = {
             username: username,
@@ -120,7 +122,7 @@ async function main() {
         const restaurant_categories = faker.helpers.arrayElements(categories, num_categories)
 
         const data = {
-            name: faker.company.name() + ' ' + faker.random.word(),,
+            name: faker.company.name() + ' ' + faker.random.word(),
             descr: faker.lorem.sentence(),
             address: {
                 create: {
@@ -137,7 +139,7 @@ async function main() {
             avg_cost: faker.finance.amount(5, 18, 2),
             pickup_time: generatePickupTimes(7),
             time_zone: 'America/Los_Angeles',
-            owner_id: {
+            owner: {
                 connect: {
                     owner_id: owner.owner_id
                 }
@@ -174,6 +176,30 @@ async function main() {
         const consumer = faker.helpers.arrayElement(consumers)
         const restaurant = faker.helpers.arrayElement(restaurants)
 
+        // Extract current favorited status (or create if not yet existent)
+        let consumer_favorite_status = await prisma.favorite.findUnique({
+            where: { 
+                consumer_id_restaurant_id: {
+                    consumer_id: consumer_id,
+                    restaurant_id: restaurant_id
+                }
+            },
+            select: {
+                is_favorited: true
+            }
+        })
+        if(!consumer_favorite_status) {
+            consumer_favorite_status = await prisma.favorite.create({
+                data: {
+                    consumer_id: consumer_id,
+                    restaurant_id: restaurant_id
+                },
+                select: {
+                    is_favorited: true
+                }
+            })
+        }
+
         await prisma.favorite.update({
             where: {
                 consumer_id_restaurant_id: {
@@ -195,8 +221,8 @@ async function main() {
 
         const page_visit = await prisma.pageVisit.findFirst({
             where: {
-                restaurant_id: restaurant_id,
-                consumer_id: consumer_id,
+                restaurant_id: restaurant.restaurant_id,
+                consumer_id: consumer.consumer_id,
             }
         })
 
@@ -224,16 +250,24 @@ async function main() {
 
         const order = await prisma.order.findFirst({
             where: {
-                restaurant_id: restaurant_id,
-                consumer_id: consumer_id,
+                restaurant_id: restaurant.restaurant_id,
+                consumer_id: consumer.consumer_id,
             }
         })
 
         const is_first_order = !order
 
         const data = {
-            consumer:     { connect: { consumer_id:consumer.consumer_id } },
-            restaurant:   { connect: { restaurant_id:restaurant.restaurant_id } },
+            consumer:   { 
+                connect: { 
+                    consumer_id: consumer.consumer_id 
+                } 
+            },
+            restaurant:   { 
+                connect: { 
+                    restaurant_id: restaurant.restaurant_id 
+                } 
+            },
             cost:         faker.finance.amount(5, 18, 2),
             is_first_order: is_first_order,
             order_time: generateRandomPastISODate(),
