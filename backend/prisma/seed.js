@@ -1,6 +1,6 @@
 const prisma = require('../routes/prisma_client')
 const { faker } = require('@faker-js/faker/locale/en_US')
-import { cuisine_filters_react_select } from '../../frontend/second-bite-vite-frontend/src/components/misc/FilterTypes'
+const { cuisine_filters_react_select } = require('../../frontend/second-bite-vite-frontend/src/components/misc/FilterTypes')
 const argon2 = require('argon2')
 
 async function main() {
@@ -61,9 +61,9 @@ async function main() {
                 create: {
                     street_address: faker.address.streetAddress(),
                     city:           faker.address.city(),
-                    state:          faker.address.stateAbbr(),
+                    state:          faker.address.state(),
                     postal_code:    faker.address.zipCode(),
-                    country:        faker.address.country()
+                    country:        faker.address.countryCode()
                 }
             }
         }
@@ -99,9 +99,9 @@ async function main() {
                 create: {
                     street_address: faker.address.streetAddress(),
                     city:           faker.address.city(),
-                    state:          faker.address.stateAbbr(),
+                    state:          faker.address.state(),
                     postal_code:    faker.address.zipCode(),
-                    country:        faker.address.country()
+                    country:        faker.address.countryCode()
                 }
             }
         }
@@ -118,25 +118,25 @@ async function main() {
     const restaurants = []
     for (let i = 0; i < NUM_RESTAURANTS; i++) {
         const owner = faker.helpers.arrayElement(owners)
-        const num_categories = faker.datatype.number({ min: 1, max: 4 })
+        const num_categories = faker.number.int({ min: 1, max: 4 })
         const restaurant_categories = faker.helpers.arrayElements(categories, num_categories)
 
         const data = {
-            name: faker.company.name() + ' ' + faker.random.word(),
+            name: faker.company.name() + ' ' + faker.lorem.word(),
             descr: faker.lorem.sentence(),
             address: {
                 create: {
                     street_address: faker.address.streetAddress(),
                     city:           faker.address.city(),
-                    state:          faker.address.stateAbbr(),
+                    state:          faker.address.state(),
                     postal_code:    faker.address.zipCode(),
-                    country:        faker.address.country()
+                    country:        faker.address.countryCode()
                 }
             },
             categories: restaurant_categories,
-            img_url: faker.image.food(640, 480, true),
+            img_url: faker.image.urlPicsumPhotos(),
             img_alt: 'Food Image',
-            avg_cost: faker.finance.amount(5, 18, 2),
+            avg_cost: faker.number.float({ min: 5, max: 18, precision: 0.01 }),
             pickup_time: generatePickupTimes(7),
             time_zone: 'America/Los_Angeles',
             owner: {
@@ -180,8 +180,8 @@ async function main() {
         let consumer_favorite_status = await prisma.favorite.findUnique({
             where: { 
                 consumer_id_restaurant_id: {
-                    consumer_id: consumer_id,
-                    restaurant_id: restaurant_id
+                    consumer_id: consumer.consumer_id,
+                    restaurant_id: restaurant.restaurant_id
                 }
             },
             select: {
@@ -191,8 +191,8 @@ async function main() {
         if(!consumer_favorite_status) {
             consumer_favorite_status = await prisma.favorite.create({
                 data: {
-                    consumer_id: consumer_id,
-                    restaurant_id: restaurant_id
+                    consumer_id: consumer.consumer_id,
+                    restaurant_id: restaurant.restaurant_id
                 },
                 select: {
                     is_favorited: true
@@ -268,7 +268,7 @@ async function main() {
                     restaurant_id: restaurant.restaurant_id 
                 } 
             },
-            cost:         faker.finance.amount(5, 18, 2),
+            cost:         faker.number.float({ min: 5, max: 18, precision: 0.01 }),
             is_first_order: is_first_order,
             order_time: generateRandomPastISODate(),
         }
