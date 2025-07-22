@@ -76,6 +76,8 @@ const PrimaryHeader = () => {
                                 active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                             }`}
                             >
+                            {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-user */}
+                            <i className="fa fa-user text-lg"></i>
                             Account Details
                             </a>
                         )}
@@ -91,7 +93,7 @@ const PrimaryHeader = () => {
                                             active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                                         }`}
                                         >
-                                        Favorited
+                                        ❤Favorited
                                         </a>
                                     )}
                                     </Menu.Item>
@@ -103,6 +105,8 @@ const PrimaryHeader = () => {
                                             active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                                         }`}
                                         >
+                                        {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-shopping-cart */}
+                                        <i className="fa fa-shopping-cart text-lg"></i>
                                         Shopped
                                         </a>
                                     )}
@@ -118,10 +122,13 @@ const PrimaryHeader = () => {
                                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                                     }`}
                                     >
+                                    {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-bar-chart */}
+                                    <i className="fa fa-bar-chart text-lg"></i>
                                     Analytics
                                     </a>
                                 )}
                                 </Menu.Item>
+                                
                             ) : null
                         }
                         <Menu.Item>
@@ -133,6 +140,8 @@ const PrimaryHeader = () => {
                                 active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                             }`}
                             >
+                            {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-sign-out */}
+                            <i className="fa fa-sign-out text-lg"></i>
                             Sign out
                             </a>
                         )}
@@ -146,7 +155,11 @@ const PrimaryHeader = () => {
                                 active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                             }`}
                             >
-                            Feedback
+                            {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_google-feedback*/}
+                            <section className="tooltip_custom">
+                                Feedback
+                                <span className="tooltip_custom_text">ceilbjcngbvhebgliktvkbfcffnbenfu</span>
+                            </section>            
                             </a>
                         )}
                         </Menu.Item>
