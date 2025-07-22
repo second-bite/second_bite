@@ -126,7 +126,7 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
                 <p className="restaurant_favorite" onClick={(event) => handleRestaurantFavorite(event)} style={{color: (is_favorited) ? 'gold': 'gray'}}>★</p>
                 <section className="restaurant_rating">
                     <p className="restaurant_rating_star">★</p>
-                    <p className="restaurant_rating_no">{(avg_rating_formatted) === -1.00 ? 'N/A' : avg_rating_formatted}</p>
+                    <p className="restaurant_rating_no">{(avg_rating) === -1 ? 'N/A' : avg_rating_formatted}</p>
                 </section>
             </section>
             <section className="restaurant_tile_separator">{}</section>
