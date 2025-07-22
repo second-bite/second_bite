@@ -65,7 +65,7 @@ const PrimaryHeader = () => {
                     <Bars3Icon className="h-6 w-6 text-gray-700" />
                     </Menu.Button>
 
-                    <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none z-10">
+                    <Menu.Items className="absolute right-0 mt-2 w-15 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none z-10">
                     <div className="py-1">
                         <Menu.Item>
                         {({ active }) => (
@@ -76,9 +76,11 @@ const PrimaryHeader = () => {
                                 active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                             }`}
                             >
-                            {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-user */}
-                            <i className="fa fa-user text-lg"></i>
-                            Account Details
+                            {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-user */}                
+                            <section className="tooltip_custom">
+                                <i className="fa fa-user text-lg"></i>
+                                <span className="tooltip_custom_text">Account Details</span>
+                            </section>
                             </a>
                         )}
                         </Menu.Item>
@@ -93,7 +95,11 @@ const PrimaryHeader = () => {
                                             active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                                         }`}
                                         >
-                                        ❤Favorited
+                                        
+                                        <section className="tooltip_custom">
+                                            ❤
+                                            <span className="tooltip_custom_text">Favorited</span>
+                                        </section>
                                         </a>
                                     )}
                                     </Menu.Item>
@@ -106,8 +112,10 @@ const PrimaryHeader = () => {
                                         }`}
                                         >
                                         {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-shopping-cart */}
-                                        <i className="fa fa-shopping-cart text-lg"></i>
-                                        Shopped
+                                        <section className="tooltip_custom">
+                                            <i className="fa fa-shopping-cart text-lg"></i>
+                                            <span className="tooltip_custom_text">Shopped</span>
+                                        </section>
                                         </a>
                                     )}
                                     </Menu.Item>
@@ -123,8 +131,10 @@ const PrimaryHeader = () => {
                                     }`}
                                     >
                                     {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-bar-chart */}
-                                    <i className="fa fa-bar-chart text-lg"></i>
-                                    Analytics
+                                    <section className="tooltip_custom">
+                                        <i className="fa fa-bar-chart text-lg"></i>
+                                        <span className="tooltip_custom_text">Analytics</span>
+                                    </section>
                                     </a>
                                 )}
                                 </Menu.Item>
@@ -141,8 +151,10 @@ const PrimaryHeader = () => {
                             }`}
                             >
                             {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-sign-out */}
-                            <i className="fa fa-sign-out text-lg"></i>
-                            Sign out
+                            <section className="tooltip_custom">
+                                <i className="fa fa-sign-out text-lg"></i>
+                                <span className="tooltip_custom_text">Sign out</span>
+                            </section>
                             </a>
                         )}
                         </Menu.Item>
@@ -157,8 +169,8 @@ const PrimaryHeader = () => {
                             >
                             {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_google-feedback*/}
                             <section className="tooltip_custom">
-                                Feedback
-                                <span className="tooltip_custom_text">ceilbjcngbvhebgliktvkbfcffnbenfu</span>
+                                <i className="material-icons">feedback</i>
+                                <span className="tooltip_custom_text">Feedback</span>
                             </section>            
                             </a>
                         )}
