@@ -109,37 +109,36 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
 
       const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-      // Isolate orders from the last week
+      // Isolate orders from the desired period
       const orders = await orders_response.json()
       const orders_owner_time = to_owner_time_zone(orders, "order_time", time_zone)
       const { curr_period_data: orders_curr_period, prev_period_data: orders_prev_period } = get_relevant_time_periods(orders_owner_time, "order_time", date_time_period_limit, date_time_prev_period_limit)
       setOrders(orders_curr_period)
 
-      // Get total revenue & stats over last week
+      // Get site visits from the desired period
+      const visits = await visits_response.json()
+      const visits_owner_time = to_owner_time_zone(visits, "visit_time", time_zone)
+      const { curr_period_data: visits_curr_period, prev_period_data: visits_prev_period } = get_relevant_time_periods(visits_owner_time, "visit_time", date_time_period_limit, date_time_prev_period_limit)
+      setVisits(visits_curr_period)
+
+      // Get total revenue & stats
       const revenue_curr_period = orders_curr_period.reduce((net_revenue, order) => net_revenue + Number(order.cost), 0)
       const revenue_prev_period = orders_prev_period.reduce((net_revenue, order) => net_revenue + order.cost, 0)
       let revenue_percent_change = percent_change(revenue_curr_period, revenue_prev_period)
 
-      // Get total orders & stats over last week
+      // Get total orders & stats 
       const num_orders_curr_period = orders_curr_period.length
       const num_orders_prev_period = orders_prev_period.length
       let num_orders_percent_change = percent_change(num_orders_curr_period, num_orders_prev_period)
 
-      // Get total & stats new consumers
-      const first_time_orders_curr_period = orders_prev_period.filter((order) => order.is_first_order)
+      // Get total new consumers & stats 
+      const first_time_orders_curr_period = orders_curr_period.filter((order) => order.is_first_order)
       const first_time_orders_prev_period = orders_prev_period.filter((order) => order.is_first_order)
       const num_new_consumers_curr_period = first_time_orders_curr_period.length
       const num_new_consumers_prev_period = first_time_orders_prev_period.length
       let num_new_consumers_percent_change = percent_change(num_new_consumers_curr_period, num_new_consumers_prev_period)
 
-      // Get total page visits
-      const visits = await visits_response.json()
-      const visits_owner_time = to_owner_time_zone(visits, "visit_time", time_zone)
-
-      // Get total & stats page visits
-      const { curr_period_data: visits_curr_period, prev_period_data: visits_prev_period } = get_relevant_time_periods(visits_owner_time, "visit_time", date_time_period_limit, date_time_prev_period_limit)
-      setVisits(visits_curr_period)
-
+      // Get total visits & stats
       const num_visits_curr_period = visits_curr_period.length
       const num_visits_prev_period = visits_prev_period.length
       let num_visits_percent_change = percent_change(num_visits_curr_period, num_visits_prev_period)
