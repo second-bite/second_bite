@@ -138,7 +138,6 @@ const linear_regression = (processed_data) => {
 const linear_regression_prediction = (processed_data, num_forecast_days) => {
     const { slope, y_intercept } = linear_regression(processed_data)
 
-    // TODO: Find start index for prediction & then just add from there
     let pred_x_value = processed_data[processed_data.length - 1][0] + 1
 
     let prediction_total_value = 0
@@ -213,8 +212,6 @@ const data_preprocessing = (data, prediction_target_type, time_period, time_var,
             isolated_arr[day_ind][1] = entry[1]
         }
     }
-
-    console.log(isolated_arr)
 
     // Add num days of forecast (7 for week, 30/31 for month) to ease linear regression prediction
     const date_forecast_end = (time_period === TIME_PERIOD.WEEK) ? now.plus({weeks: 1}) : now.plus({months: 1})
