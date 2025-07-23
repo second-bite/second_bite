@@ -66,6 +66,15 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
           [time_var]: DateTime.fromISO(entry[time_var], {zone: "utc"}).setZone(time_zone)
       }))
   )
+  const percent_change = (curr_period, prev_period) => {
+      if(prev_period === 0) {
+          return (curr_period === 0) ? "0%" : "New"
+      }
+      else {
+          const percent_change = Math.floor( ( (curr_period - prev_period ) / prev_period ) * 100)
+          return `${percent_change}`
+      }
+  }
 
   const getKPIValues = async (date_time_period_limit, date_time_prev_period_limit) => {
       // Fetch orders data from the DB
@@ -97,28 +106,12 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
       // Get total revenue & stats over last week
       const revenue_prev_period = orders_prev_period.reduce((net_revenue, order) => net_revenue + Number(order.cost), 0)
       const revenue_prev_prev_period = orders_prev_prev_period.reduce((net_revenue, order) => net_revenue + order.cost, 0)
-      let revenue_percent_change
-      if (revenue_prev_prev_period === 0) {
-          if(revenue_prev_period === 0) revenue_percent_change = "0%"
-          else revenue_percent_change = "New"
-      }
-      else {
-          revenue_percent_change = Math.floor( (  ( revenue_prev_period - revenue_prev_prev_period ) / revenue_prev_prev_period ) * 100 )
-          revenue_percent_change = (revenue_percent_change >= 0) ? `${revenue_percent_change}%` :  `${revenue_percent_change}%`
-      }
+      let revenue_percent_change = percent_change(revenue_prev_period, revenue_prev_prev_period)
 
       // Get total orders & stats over last week
       const num_orders_prev_period = orders_prev_period.length
       const num_orders_prev_prev_period = orders_prev_prev_period.length
-      let num_orders_percent_change
-      if (num_orders_prev_prev_period === 0) {
-          if(num_orders_prev_period === 0) num_orders_percent_change = "0%"
-          else num_orders_percent_change = "New"
-      }
-      else {
-          num_orders_percent_change = Math.floor( (  ( num_orders_prev_period - num_orders_prev_prev_period ) / num_orders_prev_prev_period ) * 100 )
-          num_orders_percent_change = (num_orders_percent_change >= 0) ? `${num_orders_percent_change}%` :  `${num_orders_percent_change}%`
-      }
+      let num_orders_percent_change = percent_change(num_orders_prev_period, num_orders_prev_prev_period)
 
       // Get total & stats new consumers
       const first_time_orders_one_week_ago = orders_prev_period.filter((order) => {
@@ -129,15 +122,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
       })
       const num_new_consumers_prev_period = first_time_orders_one_week_ago.length
       const num_new_consumers_prev_prev_period = first_time_orders_prev_prev_period.length
-      let num_new_consumers_percent_change
-      if(num_new_consumers_prev_prev_period === 0) {
-          if(num_new_consumers_prev_period === 0) num_new_consumers_percent_change = "0%"
-          else num_new_consumers_percent_change = "New"
-      }
-      else {
-          num_new_consumers_percent_change = Math.floor( (  ( num_new_consumers_prev_period - num_new_consumers_prev_prev_period ) / num_new_consumers_prev_prev_period ) * 100 )
-          num_new_consumers_percent_change = (num_new_consumers_percent_change >= 0) ? `${num_new_consumers_percent_change}%` :  `${num_new_consumers_percent_change}%`
-      }
+      let num_new_consumers_percent_change = percent_change(num_new_consumers_prev_period, num_new_consumers_prev_prev_period)
 
       // Fetch visits from the DB
       const visits_response = await fetch(base_url + `/analytics/visits/${restaurant_id}`, {
@@ -167,15 +152,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
 
       const num_visits_prev_period = visits_prev_period.length
       const num_visits_prev_prev_period = visits_prev_prev_period.length
-      let num_visits_percent_change
-      if (num_visits_prev_prev_period === 0) {
-          if(num_visits_prev_period === 0) num_visits_percent_change = "0%"
-          else num_visits_percent_change = "New"
-      }
-      else {
-          num_visits_percent_change = Math.floor( (  ( num_visits_prev_period - num_visits_prev_prev_period ) / num_visits_prev_prev_period ) * 100 )
-          num_visits_percent_change = (num_visits_percent_change >= 0) ? `${num_visits_percent_change}%` :  `${num_visits_percent_change}%`
-      }
+      let num_visits_percent_change = percent_change(num_visits_prev_period, num_visits_prev_prev_period)
 
       // Set State Variables
       setKPIPrice([currency_formatter.format(revenue_prev_period).toString(), num_orders_prev_period, num_visits_prev_period, num_new_consumers_prev_period])
