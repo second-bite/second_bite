@@ -5,44 +5,11 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, X
 
 const PrimaryChart = ({ orders, visits, kpi_time_range, KPI_TIME_RANGE }) => {
     const [graph_data, setGraphData] = useState([])
-    // Primary Chart Data
-    const data = [
-      {
-        name: 'Page A',
-        uv: 4000, // TODO: Site Visits
-        pv: 2400, // TODO: Num Orders
-      },
-      {
-        name: 'Page B',
-        uv: 3000,
-        pv: 1398,
-      },
-      {
-        name: 'Page C',
-        uv: 2000,
-        pv: 9800,
-      },
-      {
-        name: 'Page D',
-        uv: 2780,
-        pv: 3908,
-      },
-      {
-        name: 'Page E',
-        uv: 1890,
-        pv: 4800,
-      },
-      {
-        name: 'Page F',
-        uv: 2390,
-        pv: 3800,
-      },
-      {
-        name: 'Page G',
-        uv: 3490,
-        pv: 4300,
-      },
-    ];
+
+    // TODO: Future prediction based on mean
+    const add_prediction_point = () => {
+
+    }
 
     const structureMonthlyData = () => {
         // Initialize maps
@@ -73,6 +40,8 @@ const PrimaryChart = ({ orders, visits, kpi_time_range, KPI_TIME_RANGE }) => {
                 key: `${week.weekNumber} ${week.weekYear}`   
             }
         })
+
+        // TODO: Add next week prediction
 
         const new_data = weeks.map(week => {
             const start_of_week = DateTime.fromObject({
@@ -113,9 +82,12 @@ const PrimaryChart = ({ orders, visits, kpi_time_range, KPI_TIME_RANGE }) => {
 
         // Create array holding last 7 weekdays from oldest to newest
         const now = DateTime.now().startOf('day')
-        const week_by_days = Array.from({ length: 7 }).map((_, ind) => 
-            now.minus({ days: 6 - ind })
-        )
+        const week_by_days = Array.from({ length: 7 }).map((_, ind) => {
+          return now.minus({ days: 6 - ind })
+        })
+
+        // TODO: Add next day prediction
+        
 
         const new_data = week_by_days.map(day => ({
             name: day.toFormat('cccc'),
