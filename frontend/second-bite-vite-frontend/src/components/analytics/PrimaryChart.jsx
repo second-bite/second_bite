@@ -41,8 +41,6 @@ const PrimaryChart = ({ orders, visits, kpi_time_range, KPI_TIME_RANGE }) => {
             }
         })
 
-        // TODO: Add next week prediction
-
         const new_data = weeks.map(week => {
             const start_of_week = DateTime.fromObject({
                 weekYear: week.weekYear,
@@ -55,6 +53,17 @@ const PrimaryChart = ({ orders, visits, kpi_time_range, KPI_TIME_RANGE }) => {
                 visits: visit_count_map.get(week.key) || 0,  
             }
         })
+
+        // TODO: Add next week prediction
+        const predicted_week = now.plus({ weeks: 1 })
+        const start_of_predicted_week = DateTime.fromObject({
+            weekYear: predicted_week.weekYear,
+            weekNumber: predicted_week.weekNumber
+        }).startOf("week")
+        const predicted_name = `Week of ${start_of_predicted_week.toFormat("MMM d")}`
+        const predicted_order = Array.from(order_count_map.values()).reduce((accumulator, val) => accumulator + val, 0) / 7
+        const predicted_visit = Array.from(visit_count_map.values()).reduce((accumulator, val) => accumulator + val, 0) / 7
+        new_data.push({name: predicted_name, orders: predicted_order, visits: predicted_visit})
 
         setGraphData(new_data)
     }
@@ -86,14 +95,17 @@ const PrimaryChart = ({ orders, visits, kpi_time_range, KPI_TIME_RANGE }) => {
           return now.minus({ days: 6 - ind })
         })
 
-        // TODO: Add next day prediction
-        
-
         const new_data = week_by_days.map(day => ({
             name: day.toFormat('cccc'),
             orders: order_count_map.get(day.toISODate()) || 0,
             visits: visit_count_map.get(day.toISODate()) || 0,
         }))
+
+        // TODO: Add next day prediction
+        const predicted_name = now.plus({ days: 1 }).toFormat('cccc')
+        const predicted_order = Array.from(order_count_map.values()).reduce((accumulator, val) => accumulator + val, 0) / 7
+        const predicted_visit = Array.from(visit_count_map.values()).reduce((accumulator, val) => accumulator + val, 0) / 7
+        new_data.push({name: predicted_name, orders: predicted_order, visits: predicted_visit})
 
         setGraphData(new_data)
     }
