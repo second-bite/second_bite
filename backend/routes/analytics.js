@@ -122,7 +122,7 @@ const linear_regression = (processed_data) => {
     let variance = 0
     for(const [day_ind, val] of processed_data) {
         covariance += (day_ind - day_ind_mean) * (val - value_mean)
-        variance +=  (sum_value - value_mean) ** 2
+        variance +=  (day_ind - day_ind_mean) ** 2
     }
 
     let slope = covariance / variance
@@ -154,11 +154,12 @@ const linear_regression_prediction = (processed_data, num_forecast_days) => {
 
 // Performs data preprocessing -> condense data into only previous week's/month's data & remove outliers
 const data_preprocessing = (data, prediction_target_type, time_period, time_var, time_zone) => {
+
     // Filter out to fit into desired time period
     const now = DateTime.now().setZone(time_zone).startOf('day')
     const date_window_start = (time_period === TIME_PERIOD.WEEK) ? now.minus({weeks: 1}) : now.minus({months: 1})
     const date_filtered_data =  data.filter(entry => {
-        const luxon_entry_date = DateTime.fromISO(entry[time_var], { zone: "utc" }).setZone(time_zone).startOf('day')
+        const luxon_entry_date = DateTime.fromJSDate(entry[time_var], { zone: "utc" }).setZone(time_zone).startOf('day')
         return ((luxon_entry_date  > date_window_start) && (luxon_entry_date <= now))
     })
 
@@ -167,9 +168,7 @@ const data_preprocessing = (data, prediction_target_type, time_period, time_var,
     let temp = date_window_start
     let day_ind = 0
     while(temp <= now) {
-        if(!date_to_day_ind.has(temp.toISODate())) {
-            date_to_day_ind.set(temp.toISODate(), day_ind++)
-        }
+        date_to_day_ind.set(temp.toISODate(), day_ind++)
         temp = temp.plus({days: 1})
     }
 
@@ -184,22 +183,22 @@ const data_preprocessing = (data, prediction_target_type, time_period, time_var,
     let aggregated = null
     if([PREDICTION_TARGET.FIRST_TIME_CONSUMER, PREDICTION_TARGET.ORDER, PREDICTION_TARGET.REVENUE].includes(prediction_target_type)) {
         aggregated = date_filtered_data.reduce((accumulator, entry) => {
-            const formatted_date = DateTime.fromISO(entry[time_var], { zone: "utc" }).setZone(time_zone).startOf('day').toISODate()
-            if(accumulator[formatted_date]) {
-                accumulator[formatted_date] += (prediction_target_type === PREDICTION_TARGET.REVENUE) ? entry.cost : 1
+            const formatted_date = DateTime.fromJSDate(entry[time_var], { zone: "utc" }).setZone(time_zone).startOf('day').toISODate()
+            if(accumulator[formatted_date] !== undefined) {
+                accumulator[formatted_date] += (prediction_target_type === PREDICTION_TARGET.REVENUE) ? Number(entry.cost) : 1
             } else { // First time encountering this date
-                accumulator[formatted_date] = (prediction_target_type === PREDICTION_TARGET.REVENUE) ? entry.cost : 1
+                accumulator[formatted_date] =  (prediction_target_type === PREDICTION_TARGET.REVENUE) ? Number(entry.cost) : 1
             }
             return accumulator
         }, {})
     }
     else {
         aggregated = date_filtered_data.reduce((accumulator, entry) => {
-            const formatted_date = DateTime.fromISO(entry[time_var], { zone: "utc" }).setZone(time_zone).startOf('day').toISODate()
-            if(accumulator[formatted_date]) {
+            const formatted_date = DateTime.fromJSDate(entry[time_var], { zone: "utc" }).setZone(time_zone).startOf('day').toISODate()
+            if(accumulator[formatted_date] !== undefined) {
                 accumulator[formatted_date] += 1
             } else { // First time encountering this date
-                accumulator[formatted_date] = 1
+                accumulator[formatted_date] =  1
             }
             return accumulator
         }, {})
@@ -215,9 +214,11 @@ const data_preprocessing = (data, prediction_target_type, time_period, time_var,
         }
     }
 
+    console.log(isolated_arr)
+
     // Add num days of forecast (7 for week, 30/31 for month) to ease linear regression prediction
     const date_forecast_end = (time_period === TIME_PERIOD.WEEK) ? now.plus({weeks: 1}) : now.plus({months: 1})
-    const num_forecast_days = Math.round(date_forecast_end.diff(now, 'days').days)
+    const num_forecast_days = Math.ceil(date_forecast_end.diff(now, 'days').days)
     return {isolated_arr, num_forecast_days}
 }
 
@@ -283,18 +284,18 @@ router.post('/predict/:restaurant_id/:time_period', check_auth(user_types_check.
 
         // Perform data preprocessing & predictions
         let num_forecast_days = null
-        let processed_visits = null, processed_orders = null, processed_revenue = null, processed_first_time_consumers = null
-        ({ isolated_arr: processed_visits, num_forecast_days} = data_preprocessing(visits, PREDICTION_TARGET.VISIT, time_period, "visit_time", time_zone))
-        const predicted_visits = linear_regression_prediction(processed_visits, num_forecast_days)
-        ({isolated_arr: processed_orders, num_forecast_days} = data_preprocessing(orders, PREDICTION_TARGET.ORDER, time_period, "order_time", time_zone))
-        const predicted_orders = linear_regression_prediction(processed_orders, num_forecast_days)
-        ({isolated_arr: processed_revenue, num_forecast_days} = data_preprocessing(orders, PREDICTION_TARGET.REVENUE, time_period, "order_time", time_zone))
-        const predicted_revenue = linear_regression_prediction(processed_revenue, num_forecast_days)
-        ({isolated_arr: processed_first_time_consumers, num_forecast_days} = data_preprocessing(first_time_orders, PREDICTION_TARGET.FIRST_TIME_CONSUMER, time_period, "order_time", time_zone))
-        const predicted_first_time_consumers = linear_regression_prediction(processed_first_time_consumers, num_forecast_days)           
+        let processed_visits = null, processed_orders = null, processed_revenue = null, processed_first_time_consumers = null;
+        ({ isolated_arr: processed_visits, num_forecast_days} = data_preprocessing(visits, PREDICTION_TARGET.VISIT, time_period, "visit_time", time_zone));
+        const predicted_visits = linear_regression_prediction(processed_visits, num_forecast_days);
+        ({isolated_arr: processed_orders, num_forecast_days} = data_preprocessing(orders, PREDICTION_TARGET.ORDER, time_period, "order_time", time_zone));
+        const predicted_orders = linear_regression_prediction(processed_orders, num_forecast_days);
+        ({isolated_arr: processed_revenue, num_forecast_days} = data_preprocessing(orders, PREDICTION_TARGET.REVENUE, time_period, "order_time", time_zone));
+        const predicted_revenue = linear_regression_prediction(processed_revenue, num_forecast_days);
+        ({isolated_arr: processed_first_time_consumers, num_forecast_days} = data_preprocessing(first_time_orders, PREDICTION_TARGET.FIRST_TIME_CONSUMER, time_period, "order_time", time_zone));
+        const predicted_first_time_consumers = linear_regression_prediction(processed_first_time_consumers, num_forecast_days);      
 
         // Return Prediction
-        res.status(200).json({visits: predicted_visits, orders: predicted_orders, revenue: predicted_revenue, first_time_consumers: predicted_first_time_consumers})
+        res.status(200).json({visits: Math.round(predicted_visits), orders: Math.round(predicted_orders), revenue: predicted_revenue, first_time_consumers: Math.round(predicted_first_time_consumers)})
 
     } catch (err) {
         next(err)
