@@ -59,6 +59,14 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
   const [kpi_percentages, setKPIPercentages] = useState(new Array(4).fill("0%"))
   const [kpi_price, setKPIPrice] = useState(new Array(4).fill("0"))
 
+  // getKPIValues Helpers
+  const to_owner_time_zone = (data, time_var, time_zone) => (
+      data.map(entry => ({
+          ...entry,
+          [time_var]: DateTime.fromISO(entry[time_var], {zone: "utc"}).setZone(time_zone)
+      }))
+  )
+
   const getKPIValues = async (date_time_period_limit, date_time_prev_period_limit) => {
       // Fetch orders data from the DB
       const orders_response = await fetch(base_url + `/analytics/orders/${restaurant_id}`, {
@@ -76,20 +84,13 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
       const orders = await orders_response.json()
       const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
       
-      const orders_in_owner_time = orders.map((order) => {
-          const order_utc_time = DateTime.fromISO(order.order_time, { zone: "utc" })
-          const order_owner_time = order_utc_time.setZone(time_zone)
-          return {
-              ...order,
-              order_time: order_owner_time,
-          }
-      })
+      const orders_owner_time = to_owner_time_zone(orders, "order_time", time_zone)
 
-      const orders_prev_period = orders_in_owner_time.filter((order) => {
+      const orders_prev_period = orders_owner_time.filter((order) => {
           return order.order_time  >= date_time_period_limit
       })
       setOrders(orders_prev_period)
-      const orders_prev_prev_period = orders_in_owner_time.filter((order) => {
+      const orders_prev_prev_period = orders_owner_time.filter((order) => {
           return ((order.order_time  < date_time_period_limit) && (order.order_time >= date_time_prev_period_limit))
       })
 
@@ -152,14 +153,8 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
 
       // Get total page visits
       const visits = await visits_response.json()
-      const visits_owner_time = visits.map((visit) => {
-          const visit_utc_time = DateTime.fromISO(visit.visit_time, { zone: "utc" })
-          const visit_owner_time = visit_utc_time.setZone(time_zone)
-          return {
-              ...visit,
-              visit_time: visit_owner_time,
-          }
-      })
+
+      const visits_owner_time = to_owner_time_zone(visits, "visit_time", time_zone)
 
       // Get total & stats page visits
       const visits_prev_period = visits_owner_time.filter((visit) => {
