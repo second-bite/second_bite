@@ -86,4 +86,25 @@ router.get('/orders/:restaurant_id', check_auth(user_types_check.owner), async (
     }
 })
 
+// Allows the owner to retrieve the linear regression prediction for next week's orders, number of first time visitors, revenue, etc
+// NOTE: Business Owner View
+// TODO:
+const linear_regression = () => {
+
+}
+
+const data_preprocessing = () => {
+    
+}
+
+router.get('/predict/:restaurant_id', check_auth(user_types_check.owner), async (req, res, next) => {
+    try {
+        let { restaurant_id } = req.params
+        restaurant_id = parseInt(restaurant_id)
+
+    } catch (err) {
+        next(err)
+    }
+})
+
 module.exports = router
