@@ -1,5 +1,6 @@
  import React, { useContext, useState, useEffect } from "react"
  import { DateTime } from 'luxon'
+ import { log_error } from "../../utils/utils";
 
  {/* Components largely borrowed from: https://www.material-tailwind.com/blocks/kpi-cards */}
 
@@ -52,12 +53,35 @@ export function KpiCard({ title, percentage, price, color, icon,}) {
 }
 
 function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRange, setOrders, setVisits } ) {
-  const { base_url } = useContext(AppContext)
+    const { base_url } = useContext(AppContext)
 
-  // State Variables
-  const [kpi_titles, setKPITitles] = useState(["Revenue", "Orders", "Page Visits", "New Consumers"])
-  const [kpi_percentages, setKPIPercentages] = useState(new Array(4).fill("0%"))
-  const [kpi_price, setKPIPrice] = useState(new Array(4).fill("0"))
+    // State Variables
+    const [kpi_titles, setKPITitles] = useState(["Revenue", "Orders", "Page Visits", "New Consumers"])
+    const [kpi_percentages, setKPIPercentages] = useState(new Array(4).fill("0%"))
+    const [kpi_price, setKPIPrice] = useState(new Array(4).fill("0"))
+
+    // getKPIValues Helpers
+    const to_owner_time_zone = (data, time_var, time_zone) => (
+        data.map(entry => ({
+            ...entry,
+            [time_var]: DateTime.fromISO(entry[time_var], {zone: "utc"}).setZone(time_zone)
+        }))
+    )
+    const percent_change = (curr_period, prev_period) => {
+        if(prev_period === 0) {
+            return (curr_period === 0) ? "0%" : "New"
+        }
+        else {
+            const percent_change = Math.floor( ( (curr_period - prev_period ) / prev_period ) * 100)
+            return `${percent_change}`
+        }
+    }
+    const get_relevant_time_periods = (data, time_var, curr_period_limit, prev_period_limit) => {
+        const curr_period_data = data.filter(entry => entry[time_var] >= curr_period_limit)
+        const prev_period_data = data.filter(entry => (entry[time_var]  < curr_period_limit) && (entry[time_var] >= prev_period_limit))
+        return {curr_period_data, prev_period_data}
+    }
+
 
   const getKPIValues = async (date_time_period_limit, date_time_prev_period_limit) => {
       // Fetch orders data from the DB
@@ -72,72 +96,6 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
           throw err
       }
 
-      // Isolate orders from the last week
-      const orders = await orders_response.json()
-      const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
-      
-      const orders_in_owner_time = orders.map((order) => {
-          const order_utc_time = DateTime.fromISO(order.order_time, { zone: "utc" })
-          const order_owner_time = order_utc_time.setZone(time_zone)
-          return {
-              ...order,
-              order_time: order_owner_time,
-          }
-      })
-
-      const orders_prev_period = orders_in_owner_time.filter((order) => {
-          return order.order_time  >= date_time_period_limit
-      })
-      setOrders(orders_prev_period)
-      const orders_prev_prev_period = orders_in_owner_time.filter((order) => {
-          return ((order.order_time  < date_time_period_limit) && (order.order_time >= date_time_prev_period_limit))
-      })
-
-      // Get total revenue & stats over last week
-      const revenue_prev_period = orders_prev_period.reduce((net_revenue, order) => net_revenue + Number(order.cost), 0)
-      const revenue_prev_prev_period = orders_prev_prev_period.reduce((net_revenue, order) => net_revenue + order.cost, 0)
-      let revenue_percent_change
-      if (revenue_prev_prev_period === 0) {
-          if(revenue_prev_period === 0) revenue_percent_change = "0%"
-          else revenue_percent_change = "New"
-      }
-      else {
-          revenue_percent_change = Math.floor( (  ( revenue_prev_period - revenue_prev_prev_period ) / revenue_prev_prev_period ) * 100 )
-          revenue_percent_change = (revenue_percent_change >= 0) ? `${revenue_percent_change}%` :  `${revenue_percent_change}%`
-      }
-
-      // Get total orders & stats over last week
-      const num_orders_prev_period = orders_prev_period.length
-      const num_orders_prev_prev_period = orders_prev_prev_period.length
-      let num_orders_percent_change
-      if (num_orders_prev_prev_period === 0) {
-          if(num_orders_prev_period === 0) num_orders_percent_change = "0%"
-          else num_orders_percent_change = "New"
-      }
-      else {
-          num_orders_percent_change = Math.floor( (  ( num_orders_prev_period - num_orders_prev_prev_period ) / num_orders_prev_prev_period ) * 100 )
-          num_orders_percent_change = (num_orders_percent_change >= 0) ? `${num_orders_percent_change}%` :  `${num_orders_percent_change}%`
-      }
-
-      // Get total & stats new consumers
-      const first_time_orders_one_week_ago = orders_prev_period.filter((order) => {
-          return order.is_first_order
-      })
-      const first_time_orders_prev_prev_period = orders_prev_prev_period.filter((order) => {
-          return order.is_first_order
-      })
-      const num_new_consumers_prev_period = first_time_orders_one_week_ago.length
-      const num_new_consumers_prev_prev_period = first_time_orders_prev_prev_period.length
-      let num_new_consumers_percent_change
-      if(num_new_consumers_prev_prev_period === 0) {
-          if(num_new_consumers_prev_period === 0) num_new_consumers_percent_change = "0%"
-          else num_new_consumers_percent_change = "New"
-      }
-      else {
-          num_new_consumers_percent_change = Math.floor( (  ( num_new_consumers_prev_period - num_new_consumers_prev_prev_period ) / num_new_consumers_prev_prev_period ) * 100 )
-          num_new_consumers_percent_change = (num_new_consumers_percent_change >= 0) ? `${num_new_consumers_percent_change}%` :  `${num_new_consumers_percent_change}%`
-      }
-
       // Fetch visits from the DB
       const visits_response = await fetch(base_url + `/analytics/visits/${restaurant_id}`, {
           method: 'GET',
@@ -150,45 +108,50 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
           throw err
       }
 
-      // Get total page visits
+      const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+      // Isolate orders from the desired period
+      const orders = await orders_response.json()
+      const orders_owner_time = to_owner_time_zone(orders, "order_time", time_zone)
+      const { curr_period_data: orders_curr_period, prev_period_data: orders_prev_period } = get_relevant_time_periods(orders_owner_time, "order_time", date_time_period_limit, date_time_prev_period_limit)
+      setOrders(orders_curr_period)
+
+      // Get site visits from the desired period
       const visits = await visits_response.json()
-      const visits_owner_time = visits.map((visit) => {
-          const visit_utc_time = DateTime.fromISO(visit.visit_time, { zone: "utc" })
-          const visit_owner_time = visit_utc_time.setZone(time_zone)
-          return {
-              ...visit,
-              visit_time: visit_owner_time,
-          }
-      })
+      const visits_owner_time = to_owner_time_zone(visits, "visit_time", time_zone)
+      const { curr_period_data: visits_curr_period, prev_period_data: visits_prev_period } = get_relevant_time_periods(visits_owner_time, "visit_time", date_time_period_limit, date_time_prev_period_limit)
+      setVisits(visits_curr_period)
 
-      // Get total & stats page visits
-      const visits_prev_period = visits_owner_time.filter((visit) => {
-          return visit.visit_time  >= date_time_period_limit
-      })
-      setVisits(visits_prev_period)
-      const visits_prev_prev_period = visits_owner_time.filter((visit) => {
-          return ((visit.visit_time  < date_time_period_limit) && (visit.visit_time >= date_time_prev_period_limit))
-      })
+      // Get total revenue & stats
+      const revenue_curr_period = orders_curr_period.reduce((net_revenue, order) => net_revenue + Number(order.cost), 0)
+      const revenue_prev_period = orders_prev_period.reduce((net_revenue, order) => net_revenue + order.cost, 0)
+      let revenue_percent_change = percent_change(revenue_curr_period, revenue_prev_period)
 
+      // Get total orders & stats 
+      const num_orders_curr_period = orders_curr_period.length
+      const num_orders_prev_period = orders_prev_period.length
+      let num_orders_percent_change = percent_change(num_orders_curr_period, num_orders_prev_period)
+
+      // Get total new consumers & stats 
+      const first_time_orders_curr_period = orders_curr_period.filter((order) => order.is_first_order)
+      const first_time_orders_prev_period = orders_prev_period.filter((order) => order.is_first_order)
+      const num_new_consumers_curr_period = first_time_orders_curr_period.length
+      const num_new_consumers_prev_period = first_time_orders_prev_period.length
+      let num_new_consumers_percent_change = percent_change(num_new_consumers_curr_period, num_new_consumers_prev_period)
+
+      // Get total visits & stats
+      const num_visits_curr_period = visits_curr_period.length
       const num_visits_prev_period = visits_prev_period.length
-      const num_visits_prev_prev_period = visits_prev_prev_period.length
-      let num_visits_percent_change
-      if (num_visits_prev_prev_period === 0) {
-          if(num_visits_prev_period === 0) num_visits_percent_change = "0%"
-          else num_visits_percent_change = "New"
-      }
-      else {
-          num_visits_percent_change = Math.floor( (  ( num_visits_prev_period - num_visits_prev_prev_period ) / num_visits_prev_prev_period ) * 100 )
-          num_visits_percent_change = (num_visits_percent_change >= 0) ? `${num_visits_percent_change}%` :  `${num_visits_percent_change}%`
-      }
+      let num_visits_percent_change = percent_change(num_visits_curr_period, num_visits_prev_period)
 
       // Set State Variables
-      setKPIPrice([currency_formatter.format(revenue_prev_period).toString(), num_orders_prev_period, num_visits_prev_period, num_new_consumers_prev_period])
+      setKPIPrice([currency_formatter.format(revenue_curr_period).toString(), num_orders_curr_period, num_visits_curr_period, num_new_consumers_curr_period])
       setKPIPercentages([revenue_percent_change, num_orders_percent_change, num_visits_percent_change, num_new_consumers_percent_change])
   }
 
   // NOTE: Calls getKPIValues in a versatile way based on selected time period
   const getKPIValuesWrapper = async () => {
+    const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
     switch(kpi_time_range) {
         case KPI_TIME_RANGE.LAST_WEEK: 
             const date_time_one_week_ago = DateTime.now().minus({ weeks: 1 })
@@ -202,6 +165,45 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
           const date_time_two_months_ago = DateTime.now().minus({ months: 2 })
 
           await getKPIValues(date_time_one_month_ago, date_time_two_months_ago)
+          break
+      case KPI_TIME_RANGE.NEXT_WEEK:
+          try {
+              const response = await fetch(base_url + `/analytics/predict/${restaurant_id}/week`, {
+                  method: 'POST',
+                  credentials: 'include',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({time_zone: time_zone}),
+              })
+              const err = new Error(`Status: ${response.status}. Failed to weekly prediction info from DB`)
+              err.status = response.status
+              if(!response.ok) throw err
+              
+              const {visits: predicted_visits_week, orders: predicted_orders_week, revenue: predicted_revenue_week, first_time_consumers: predicted_first_time_consumers_week} = await response.json()
+              setKPIPrice([currency_formatter.format(predicted_revenue_week).toString(), predicted_orders_week, predicted_visits_week, predicted_first_time_consumers_week])
+              setKPIPercentages(["-", "-", "-", "-"])
+          } catch (err) {
+              await log_error(err)
+          }
+          break
+      case KPI_TIME_RANGE.NEXT_MONTH:
+          try {
+              const response = await fetch(base_url + `/analytics/predict/${restaurant_id}/month`, {
+                  method: 'POST',
+                  credentials: 'include',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({time_zone: time_zone}),
+              })
+
+              const err = new Error(`Status: ${response.status}. Failed to monthly prediction info from DB`)
+              err.status = response.status
+              if(!response.ok) throw err
+
+              const {visits: predicted_visits_month, orders: predicted_orders_month, revenue: predicted_revenue_month, first_time_consumers: predicted_first_time_consumers_month} = await response.json()
+              setKPIPrice([currency_formatter.format(predicted_revenue_month).toString(), predicted_orders_month, predicted_visits_month, predicted_first_time_consumers_month])
+              setKPIPercentages(["-", "-", "-", "-"])
+          } catch (err) {
+              await log_error(err)
+          }
           break
     }
   }
@@ -239,6 +241,8 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
             <MenuList>
               <MenuItem onClick={() => setKPITimeRange(KPI_TIME_RANGE.LAST_WEEK)}>Last Week</MenuItem>
               <MenuItem onClick={() => setKPITimeRange(KPI_TIME_RANGE.LAST_MONTH)}>Last Month</MenuItem>
+              <MenuItem onClick={() => setKPITimeRange(KPI_TIME_RANGE.NEXT_WEEK)}>Next Week</MenuItem>
+              <MenuItem onClick={() => setKPITimeRange(KPI_TIME_RANGE.NEXT_MONTH)}>Next Month</MenuItem>
             </MenuList>
           </Menu>
         </div>

@@ -20,6 +20,8 @@ const Analytics = () => {
     const KPI_TIME_RANGE = {
         LAST_WEEK: "Last Week",
         LAST_MONTH: "Last Month",
+        NEXT_WEEK: "Next Week",
+        NEXT_MONTH: "Next Month",
     }
 
     // Colors (for graphs)

@@ -228,8 +228,6 @@ async function main() {
 
         const is_first_visit = !page_visit
 
-        // TODO: Add Visit Time
-
         const data = {
             is_first_visit: is_first_visit,
             restaurant_id: restaurant.restaurant_id,
