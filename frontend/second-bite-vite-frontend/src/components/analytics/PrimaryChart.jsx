@@ -6,7 +6,6 @@ import { CartesianGrid, Legend, Line, Area, ComposedChart, ResponsiveContainer, 
 const PrimaryChart = ({ orders, visits, kpi_time_range, KPI_TIME_RANGE }) => {
     const [graph_data, setGraphData] = useState([])
 
-    // TODO: Get standard deviation
     // Credit: https://www.indeed.com/career-advice/career-development/how-to-calculate-standard-deviation
     const get_standard_deviation = (data) => {
         const mean = data.reduce((accumulator, val) => accumulator + val, 0) / data.length
