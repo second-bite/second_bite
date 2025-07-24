@@ -224,7 +224,6 @@ router.post('/reserve/:restaurant_id/:time_zone', check_auth(user_types_check.co
 // Used to access a restaurant's favorited status
 // NOTE: Consumer View
 router.get('/favorite/:restaurant_id', check_auth(user_types_check.consumer), async (req, res, next) => {
-    // TODO: Replace this
     const consumer_id = req.session.user_id 
     let {restaurant_id} = req.params
     restaurant_id = Number(restaurant_id)

@@ -1,5 +1,6 @@
  import React, { useContext, useState, useEffect } from "react"
  import { DateTime } from 'luxon'
+ import { log_error } from "../../utils/utils";
 
  {/* Components largely borrowed from: https://www.material-tailwind.com/blocks/kpi-cards */}
 
@@ -150,6 +151,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
 
   // NOTE: Calls getKPIValues in a versatile way based on selected time period
   const getKPIValuesWrapper = async () => {
+    const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
     switch(kpi_time_range) {
         case KPI_TIME_RANGE.LAST_WEEK: 
             const date_time_one_week_ago = DateTime.now().minus({ weeks: 1 })
@@ -163,6 +165,45 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
           const date_time_two_months_ago = DateTime.now().minus({ months: 2 })
 
           await getKPIValues(date_time_one_month_ago, date_time_two_months_ago)
+          break
+      case KPI_TIME_RANGE.NEXT_WEEK:
+          try {
+              const response = await fetch(base_url + `/analytics/predict/${restaurant_id}/week`, {
+                  method: 'POST',
+                  credentials: 'include',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({time_zone: time_zone}),
+              })
+              const err = new Error(`Status: ${response.status}. Failed to weekly prediction info from DB`)
+              err.status = response.status
+              if(!response.ok) throw err
+              
+              const {visits: predicted_visits_week, orders: predicted_orders_week, revenue: predicted_revenue_week, first_time_consumers: predicted_first_time_consumers_week} = await response.json()
+              setKPIPrice([currency_formatter.format(predicted_revenue_week).toString(), predicted_orders_week, predicted_visits_week, predicted_first_time_consumers_week])
+              setKPIPercentages(["-", "-", "-", "-"])
+          } catch (err) {
+              await log_error(err)
+          }
+          break
+      case KPI_TIME_RANGE.NEXT_MONTH:
+          try {
+              const response = await fetch(base_url + `/analytics/predict/${restaurant_id}/month`, {
+                  method: 'POST',
+                  credentials: 'include',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({time_zone: time_zone}),
+              })
+
+              const err = new Error(`Status: ${response.status}. Failed to monthly prediction info from DB`)
+              err.status = response.status
+              if(!response.ok) throw err
+
+              const {visits: predicted_visits_month, orders: predicted_orders_month, revenue: predicted_revenue_month, first_time_consumers: predicted_first_time_consumers_month} = await response.json()
+              setKPIPrice([currency_formatter.format(predicted_revenue_month).toString(), predicted_orders_month, predicted_visits_month, predicted_first_time_consumers_month])
+              setKPIPercentages(["-", "-", "-", "-"])
+          } catch (err) {
+              await log_error(err)
+          }
           break
     }
   }
@@ -200,6 +241,8 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
             <MenuList>
               <MenuItem onClick={() => setKPITimeRange(KPI_TIME_RANGE.LAST_WEEK)}>Last Week</MenuItem>
               <MenuItem onClick={() => setKPITimeRange(KPI_TIME_RANGE.LAST_MONTH)}>Last Month</MenuItem>
+              <MenuItem onClick={() => setKPITimeRange(KPI_TIME_RANGE.NEXT_WEEK)}>Next Week</MenuItem>
+              <MenuItem onClick={() => setKPITimeRange(KPI_TIME_RANGE.NEXT_MONTH)}>Next Month</MenuItem>
             </MenuList>
           </Menu>
         </div>
