@@ -30,11 +30,11 @@ const Stars = ({is_stars_displayed, setNumStars}) => {
 
     return(
         <section className="stars">
-            <p className="star" name="rating_star1" onClick={() => toggleStar(0)} style={{color: stars_color[0]}}>★</p>
-            <p className="star" name="rating_star2" onClick={() => toggleStar(1)} style={{color: stars_color[1]}}>★</p>
-            <p className="star" name="rating_star3" onClick={() => toggleStar(2)} style={{color: stars_color[2]}}>★</p>
-            <p className="star" name="rating_star4" onClick={() => toggleStar(3)} style={{color: stars_color[3]}}>★</p>
-            <p className="star" name="rating_star5" onClick={() => toggleStar(4)} style={{color: stars_color[4]}}>★</p>
+            <p className="rating_star one" name="rating_star one" onClick={() => toggleStar(0)} style={{color: stars_color[0]}}>★</p>
+            <p className="rating_star two" name="rating_star two" onClick={() => toggleStar(1)} style={{color: stars_color[1]}}>★</p>
+            <p className="rating_star three" name="rating_star three" onClick={() => toggleStar(2)} style={{color: stars_color[2]}}>★</p>
+            <p className="rating_star four" name="rating_star four" onClick={() => toggleStar(3)} style={{color: stars_color[3]}}>★</p>
+            <p className="rating_star five" name="rating_star five" onClick={() => toggleStar(4)} style={{color: stars_color[4]}}>★</p>
         </section>
     )
 }

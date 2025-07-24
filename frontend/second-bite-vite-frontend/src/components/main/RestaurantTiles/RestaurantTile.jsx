@@ -47,6 +47,13 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
         setAvgCostFormatted(formatted_cost)
     }, [avg_cost])
 
+    // Formatting Average Rating
+    const [avg_rating_formatted, setAvgRatingFormatted] = useState(0)
+    useEffect(() => {
+        const formatted_rating = parseFloat(avg_rating).toFixed(2)
+        setAvgRatingFormatted(formatted_rating)
+    }, [avg_rating])
+
     // Restaurant Favorited Status
     const [is_favorited, setIsFavorited] = useState(is_favorited_)
     useEffect(() => {
@@ -119,7 +126,7 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
                 <p className="restaurant_favorite" onClick={(event) => handleRestaurantFavorite(event)} style={{color: (is_favorited) ? 'gold': 'gray'}}>★</p>
                 <section className="restaurant_rating">
                     <p className="restaurant_rating_star">★</p>
-                    <p className="restaurant_rating_no">{(avg_rating) === -1 ? 'N/A' : avg_rating}</p>
+                    <p className="restaurant_rating_no">{(avg_rating) === -1 ? 'N/A' : avg_rating_formatted}</p>
                 </section>
             </section>
             <section className="restaurant_tile_separator">{}</section>

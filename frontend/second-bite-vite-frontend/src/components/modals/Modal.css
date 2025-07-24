@@ -7,8 +7,13 @@
     padding: 3%;
 }
 
-.star {
-    all: unset;
+.stars {
+    display: flex;
+    flex-direction: row;
+}
+
+.rating_star {
+    /* all: unset; */
     cursor: pointer;
     font-size: clamp(28px, 5vw, 50px);
 }
@@ -194,3 +199,60 @@ textarea.rating_text {
 .reject_friend_request_btn {
     background-color: #E34234	;
 }
+
+/* Custom Visual Styling */
+@keyframes pop_in {
+    0% { 
+        opacity: 0; 
+        transform: scale(0.2)
+    }
+     
+    100% { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+.modal_star_custom {
+    animation: pop_in 1s;
+}
+
+@keyframes star_bounce {
+    from {
+        transform: translateY(0px);
+    }
+    to {
+      transform: translateY(var(--bounce-offset));
+    }
+}
+
+.rating_star {
+    animation: star_bounce alternate infinite;
+}
+
+.rating_star.one {
+    --bounce-offset: -10px;
+    animation-duration: 400ms;
+}
+
+.rating_star.two {
+    --bounce-offset: -17px;
+    animation-duration: 500ms;
+}
+
+.rating_star.three {
+    --bounce-offset: -24px;
+    animation-duration: 600ms;
+}
+
+.rating_star.four {
+    --bounce-offset: -31px;
+    animation-duration: 700ms;
+}
+
+.rating_star.five {
+    --bounce-offset: -38px;
+    animation-duration: 800ms;
+}
+
+
