@@ -20,6 +20,11 @@ export default ({ mode }) => {
           target: env.VITE_RECOMMENDATION_URL,
           changeOrigin: true,
           secure: false,
+        },
+        '/forecast': {
+          target: env.VITE_FORECAST_URL,
+          changeOrigin: true,
+          secure: false
         }
       }
     },
