@@ -19,7 +19,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Create a root storage reference
-const storage = getStorage()
+const storage = getStorage(app)
 
 // Create an images directory to store restaurant images
 export const images_ref = ref(storage, 'images')

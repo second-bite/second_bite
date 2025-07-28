@@ -8,7 +8,7 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
     const { base_url, setIsRestaurantModal, setSelectedRestaurant, displayed_restaurants, setDisplayedRestaurants } = useContext(AppContext)
 
     const restaurant_header_style = {
-        "background-image": "radial-gradient(circle at center, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7)), url('https://picsum.photos/200/300')",
+        "background-image": `radial-gradient(circle at center, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7)), url('${img_url}')`,
         "background-size": "cover",
         "background-position": "center"
     }
@@ -54,7 +54,7 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
         setAvgRatingFormatted(formatted_rating)
     }, [avg_rating])
 
-    // Restaurant Favorited Status
+    // Restaurant Favorited Statusx
     const [is_favorited, setIsFavorited] = useState(is_favorited_)
     useEffect(() => {
         // Get favorited status initially & maintain internally (to avoid additional API calls)
@@ -64,6 +64,7 @@ const RestaurantTile = ({restaurant: {restaurant_id, name, descr, address, categ
     // Handlers
     const handleRestaurantTileClick = async () => {
         setSelectedRestaurant({restaurant_id, name, descr, address, categories, img_url, img_alt, avg_cost, avg_rating, pickup_time, distance_text, distance_value})
+        console.log(img_url)
         setIsRestaurantModal(true)
         try {
             const response = await fetch(base_url + '/analytics/visit/' + restaurant_id, {

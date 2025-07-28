@@ -37,8 +37,8 @@ const LoginForm = ({auth_form_title}) => {
 
         // Ensure all required fields are filled
         const form = form_ref.current.elements
-        if(!form.login_username.value) await setUsernameMsg('Please enter username.')
-        if(!form.login_password.value) await setPasswordMsg('Please enter password.')
+        if(!form.login_username.value) setUsernameMsg('Please enter username.')
+        if(!form.login_password.value) setPasswordMsg('Please enter password.')
         if(!form.login_username.value || !form.login_password.value) return; // Done like this to prevent issues with async
 
         try {
@@ -53,22 +53,24 @@ const LoginForm = ({auth_form_title}) => {
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'
             })
-            if(response.status === 400 || response.status === 401) {
+            if(response.status === 400) {
                 const err_msg = await response.json().message
-                await setServerErrorMsg(`Error Status: ${response.status}. Error: ${err_msg}`)
+                setServerErrorMsg(`${err_msg}`)
+            } else if (response.status === 401) {
+                setServerErrorMsg('Invalid username or password')
             } else {
-                await setServerErrorMsg('')
+                setServerErrorMsg('')
             }
             const err = new Error(`Failed to log into account. Status: ${response.status}`)
             err.status = response.status
             if(!response.ok) throw err
 
             // Sucess! Direct to main page (with useEffect)
-            await setAuthStatus(is_account_type_toggled ? AUTH_STATUS.OWNER_AUTH : AUTH_STATUS.CONSUMER_AUTH)
+            setAuthStatus(is_account_type_toggled ? AUTH_STATUS.OWNER_AUTH : AUTH_STATUS.CONSUMER_AUTH)
         } catch (err) {
             await log_error(err)
         } finally {
-            await setIsLoading(false)
+            setIsLoading(false)
         }
     }
     const handleAccountTypeToggle = (event) => {
