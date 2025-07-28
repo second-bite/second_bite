@@ -6,8 +6,11 @@ import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import Select from 'react-select';
 
 // Firebase Imports
-import { ref, uploadBytes } from "firebase/storage"
-import { imagesRef } from "../../utils/firebase"
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
+import { images_ref } from "../../utils/firebase"
+
+// Unique Identifier Appending to Images
+import { v4 as uuidv4 } from 'uuid'
 
 // Context Import
 import { AppContext } from '../../context/AppContext'
@@ -90,8 +93,19 @@ const AddRestaurantModal = () => {
           setInputImgFile(file)
       }
   }
-  const handleImageUpload = () => {
-      // TODO: 
+  const handleImageUpload = async () => {
+      if(input_img_file) {
+          // Upload image
+          const image_file_name = `${uuidv4()}_${input_img_file.name}`
+          const image_file_ref = ref(images_ref, image_file_name)
+          await uploadBytes(image_file_ref, input_img_file)
+
+          // Get image url
+          const img_url = await getDownloadURL(image_file_ref)
+
+          setInputImgURL(img_url)
+          return img_url
+      }
   }
   const handleAddRestaurantSubmit = async (event) => {
     event.preventDefault();
@@ -148,6 +162,9 @@ const AddRestaurantModal = () => {
         return
     }
 
+    // Upload the actual image to Firebase
+    const img_url = await handleImageUpload()
+
     try {
         
         const body = {
@@ -161,7 +178,7 @@ const AddRestaurantModal = () => {
                 country: form.country.value,
             },
             categories: selected_categories.map((category) => category.value),
-            img_url: input_img_url,
+            img_url: img_url,
             img_alt: `${form.name.value} Banner`,
             avg_cost: form.avg_cost.value,
             pickup_time: [(closedStates[`is_sun_closed`]) ? 'N/A' : form.sun_time.value, 

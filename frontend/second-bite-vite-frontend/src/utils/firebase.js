@@ -22,7 +22,4 @@ const app = initializeApp(firebaseConfig);
 const storage = getStorage()
 
 // Create an images directory to store restaurant images
-const imagesRef = ref(storage, 'images')
-
-
-export default imagesRef
+export const images_ref = ref(storage, 'images')
