@@ -9,7 +9,7 @@
 @import './components/auth/Auth.css';
 
 /* Main Page */
-@import './components/main/LocationSearch/LocationSearch.css';
+@import './components/main/Search/Search.css';
 @import './components/main/FilterSort/Specifiers.css';
 @import './components/main/RestaurantTiles/RestaurantTiles.css';
 
