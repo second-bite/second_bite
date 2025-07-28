@@ -1,16 +1,21 @@
 import React, { useContext, useRef, useState } from 'react'
-import { AppContext } from '../../context/AppContext'
 
-
+// React/Tailwind Imports
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
-
 import Select from 'react-select';
+
+// Firebase Imports
+import { ref, uploadBytes } from "firebase/storage"
+import { imagesRef } from "../../utils/firebase"
+
+// Context Import
+import { AppContext } from '../../context/AppContext'
+
+// File Imports
 import { cuisine_filters_react_select } from '../misc/FilterTypes'
 import states from '../misc/States'
-import { time_validation, address_validation, money_validation } from '../../utils/utils';
-import { log_error } from '../../utils/utils'
-
+import { address_validation, money_validation, log_error } from '../../utils/utils';
 
 const AddRestaurantModal = () => {
   const form_ref = useRef();
@@ -18,6 +23,7 @@ const AddRestaurantModal = () => {
 
   const [ selected_categories, setSelectedCategories ] = useState([])
   const [ input_img_url, setInputImgURL ] = useState('')
+  const [ input_img_file, setInputImgFile ] = useState(null)
 
   const weekdays = ["mon","tue","wed","thu","fri","sat","sun"]
   const weekday_labels = {
@@ -44,18 +50,6 @@ const AddRestaurantModal = () => {
   const [state_msg, setStateMsg] = useState('')
   const [postal_msg, setPostalMsg] = useState('')
   const [country_msg, setCountryMsg] = useState('')
-
-  // Take user image file input & convert to usable <img> link
-  function previewImage(event) {
-        const [file] = event.target.files;
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(){
-                setInputImgURL(reader.result)
-            };
-            reader.readAsDataURL(file);
-        }
-  }
 
   // Utility Functions
   const clearAllErrMsgs = () => {
@@ -84,6 +78,20 @@ const AddRestaurantModal = () => {
       ...prev_closed_states,
       [is_closed_str]: !prev_closed_states[is_closed_str], // toggle the closed state for a specific day
     }))
+  }
+  const handlePreviewImage = (event) =>  {
+      const [file] = event.target.files;
+      if (file) {
+          const reader = new FileReader();
+          reader.onload = function(){
+              setInputImgURL(reader.result)
+          };
+          reader.readAsDataURL(file);
+          setInputImgFile(file)
+      }
+  }
+  const handleImageUpload = () => {
+      // TODO: 
   }
   const handleAddRestaurantSubmit = async (event) => {
     event.preventDefault();
@@ -281,7 +289,7 @@ const AddRestaurantModal = () => {
                         className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-indigo-500"
                         >
                         <span>Upload a file</span>
-                        <input id="file-upload" name="file-upload" type="file" accept="image/*" className="sr-only" onChange={previewImage} />
+                        <input id="file-upload" name="file-upload" type="file" accept="image/*" className="sr-only" onChange={handlePreviewImage} />
                         </label>
                         <p className="pl-1">or drag and drop</p>
                     </div>
