@@ -1,16 +1,24 @@
 import React, { useContext, useRef, useState } from 'react'
-import { AppContext } from '../../context/AppContext'
 
-
+// React/Tailwind Imports
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
-
 import Select from 'react-select';
+
+// Firebase Imports
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
+import { images_ref } from "../../utils/firebase"
+
+// Unique Identifier Appending to Images
+import { v4 as uuidv4 } from 'uuid'
+
+// Context Import
+import { AppContext } from '../../context/AppContext'
+
+// File Imports
 import { cuisine_filters_react_select } from '../misc/FilterTypes'
 import states from '../misc/States'
-import { time_validation, address_validation, money_validation } from '../../utils/utils';
-import { log_error } from '../../utils/utils'
-
+import { address_validation, money_validation, log_error } from '../../utils/utils';
 
 const AddRestaurantModal = () => {
   const form_ref = useRef();
@@ -18,6 +26,7 @@ const AddRestaurantModal = () => {
 
   const [ selected_categories, setSelectedCategories ] = useState([])
   const [ input_img_url, setInputImgURL ] = useState('')
+  const [ input_img_file, setInputImgFile ] = useState(null)
 
   const weekdays = ["mon","tue","wed","thu","fri","sat","sun"]
   const weekday_labels = {
@@ -44,18 +53,6 @@ const AddRestaurantModal = () => {
   const [state_msg, setStateMsg] = useState('')
   const [postal_msg, setPostalMsg] = useState('')
   const [country_msg, setCountryMsg] = useState('')
-
-  // Take user image file input & convert to usable <img> link
-  function previewImage(event) {
-        const [file] = event.target.files;
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(){
-                setInputImgURL(reader.result)
-            };
-            reader.readAsDataURL(file);
-        }
-  }
 
   // Utility Functions
   const clearAllErrMsgs = () => {
@@ -84,6 +81,31 @@ const AddRestaurantModal = () => {
       ...prev_closed_states,
       [is_closed_str]: !prev_closed_states[is_closed_str], // toggle the closed state for a specific day
     }))
+  }
+  const handlePreviewImage = (event) =>  {
+      const [file] = event.target.files;
+      if (file) {
+          const reader = new FileReader();
+          reader.onload = function(){
+              setInputImgURL(reader.result)
+          };
+          reader.readAsDataURL(file);
+          setInputImgFile(file)
+      }
+  }
+  const handleImageUpload = async () => {
+      if(input_img_file) {
+          // Upload image
+          const image_file_name = `${uuidv4()}_${input_img_file.name}`
+          const image_file_ref = ref(images_ref, image_file_name)
+          await uploadBytes(image_file_ref, input_img_file)
+
+          // Get image url
+          const img_url = await getDownloadURL(image_file_ref)
+
+          setInputImgURL(img_url)
+          return img_url
+      }
   }
   const handleAddRestaurantSubmit = async (event) => {
     event.preventDefault();
@@ -140,6 +162,9 @@ const AddRestaurantModal = () => {
         return
     }
 
+    // Upload the actual image to Firebase
+    const img_url = await handleImageUpload()
+
     try {
         
         const body = {
@@ -153,7 +178,7 @@ const AddRestaurantModal = () => {
                 country: form.country.value,
             },
             categories: selected_categories.map((category) => category.value),
-            img_url: input_img_url,
+            img_url: img_url,
             img_alt: `${form.name.value} Banner`,
             avg_cost: form.avg_cost.value,
             pickup_time: [(closedStates[`is_sun_closed`]) ? 'N/A' : form.sun_time.value, 
@@ -281,7 +306,7 @@ const AddRestaurantModal = () => {
                         className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-indigo-500"
                         >
                         <span>Upload a file</span>
-                        <input id="file-upload" name="file-upload" type="file" accept="image/*" className="sr-only" onChange={previewImage} />
+                        <input id="file-upload" name="file-upload" type="file" accept="image/*" className="sr-only" onChange={handlePreviewImage} />
                         </label>
                         <p className="pl-1">or drag and drop</p>
                     </div>
