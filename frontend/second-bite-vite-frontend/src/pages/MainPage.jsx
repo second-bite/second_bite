@@ -1,19 +1,19 @@
 import React, {useState} from 'react'
 
 import PrimaryHeader from '../header/PrimaryHeader';
-import ConsumerLocation from '../components/main/LocationSearch/ConsumerLocation';
+import Search from '../components/main/Search/Search';
 import Specifiers from '../components/main/FilterSort/Specifiers';
 import RestaurantTiles from '../components/main/RestaurantTiles/RestaurantTiles';
 
 const MainPage = () => {
-    const [search_query, setSearchQuery] = useState('')
+    const [restaurant_search_query, setRestaurantSearchQuery] = useState('')
 
     return (
         <>
             <PrimaryHeader />
             <main>
-                <ConsumerLocation />
-                <Specifiers search_query={search_query} setSearchQuery={setSearchQuery}/>
+                <Search restaurant_search_query={restaurant_search_query} setRestaurantSearchQuery={setRestaurantSearchQuery}/>
+                <Specifiers restaurant_search_query={restaurant_search_query} />
                 <RestaurantTiles />
             </main>
         </>

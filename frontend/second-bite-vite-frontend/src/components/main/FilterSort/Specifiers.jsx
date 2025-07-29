@@ -5,8 +5,7 @@ import { log_error } from "../../../utils/utils"
 import PropTypes from 'prop-types'
 
 
-const Specifiers = ({search_query, setSearchQuery}) => {
-    const search_ref = useRef()
+const Specifiers = ({restaurant_search_query}) => {
     const sort_dropdown_ref = useRef()
     const { base_url, restaurants, setRestaurants, setDisplayedRestaurants, searched_address, setIsRecommendedVisible } = useContext(AppContext)
 
@@ -42,14 +41,14 @@ const Specifiers = ({search_query, setSearchQuery}) => {
             setIsRecommendedVisible(false)
             return
         }
-        else if (search_query || selected_filter) {
+        else if (restaurant_search_query || selected_filter) {
             setIsRecommendedVisible(false)
             return
         }
         else {
             setIsRecommendedVisible(true)
         }
-    }, [searched_address, search_query, sort_type, selected_filter])
+    }, [searched_address, restaurant_search_query, sort_type, selected_filter])
 
     // Utility functions
     const fetchRestaurants = async () => {
@@ -57,7 +56,7 @@ const Specifiers = ({search_query, setSearchQuery}) => {
         if(searched_address) {
             address_query = `&street_address=${encodeURIComponent(searched_address.street_address)}&city=${encodeURIComponent(searched_address.city)}&postal_code=${encodeURIComponent(searched_address.postal_code)}&state=${encodeURIComponent(searched_address.state)}&country=${encodeURIComponent(searched_address.country)}`
         }
-        const response = await fetch(base_url + `/restaurant?search_query=${search_query}` + address_query, {
+        const response = await fetch(base_url + `/restaurant?search_query=${restaurant_search_query}` + address_query, {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -74,15 +73,6 @@ const Specifiers = ({search_query, setSearchQuery}) => {
     // Handlers
     const handleFilterClick = (filter_type) => {
         setSelectedFilter((prev_selected_filter) => (selected_filter === filter_type) ? '' : filter_type)
-    }
-    const handleSearch = async () => {
-        try{
-            const search_query = search_ref.current.elements.search_query.value
-            setSearchQuery(search_query)
-            await fetchRestaurants()
-        } catch (err) {
-            await log_error(err)
-        }
     }
     const handleSortDropdown = () => {
         setIsSortDropdown((prev_is_sort_dropdown) => !prev_is_sort_dropdown);
@@ -128,36 +118,27 @@ const Specifiers = ({search_query, setSearchQuery}) => {
                     ))
                 }
             </section>
-            <section className="search_n_sort">
-                <section className="search">
-                    <form className="search_form" ref={search_ref}>
-                        <span className="restaurant_search_icon" onClick={handleSearch}>🔍</span>
-                        <input type="text" className="restaurant_search_input" name="search_query" placeholder="Search for restaurants..."/>
-                    </form>
-                </section>
-                <section className="sort">
-                    <p><span style={{fontWeight: "550"}}>Sort By</span> | {sort_type}</p>
-                    <p className="sort_dropdown" onClick={handleSortDropdown}>{(is_sort_dropdown) ? "⌃" : "⌄"}</p>
-                    {
-                        is_sort_dropdown && 
-                            <section className="sort_dropdown_popup">
-                                {
-                                    Object.entries(SORT_TYPE).map(([key, value]) => (
-                                        <p className="sort_dropdown_popup_option" onClick={() => handleSortNFilter(value)}>{value}</p>
-                                    ))
-                                }
-                            </section>
-                    }
-                </section>
+            <section className="sort">
+                <p><span style={{fontWeight: "550"}}>Sort By</span> | {sort_type}</p>
+                <p className="sort_dropdown" onClick={handleSortDropdown}>▼</p>
+                {
+                    is_sort_dropdown && 
+                        <section className="sort_dropdown_popup">
+                            {
+                                Object.entries(SORT_TYPE).map(([key, value]) => (
+                                    <p className="sort_dropdown_popup_option" onClick={() => handleSortNFilter(value)}>{value}</p>
+                                ))
+                            }
+                        </section>
+                }
             </section>
         </section>
     )
 }
 
+
 Specifiers.propTypes = {
-    search_query: PropTypes.string.isRequired,
-    setSearchQuery: PropTypes.func.isRequired,
-    searched_address: PropTypes.object.isRequired,
+    restaurant_search_query: PropTypes.string.isRequired,
 };
 
 

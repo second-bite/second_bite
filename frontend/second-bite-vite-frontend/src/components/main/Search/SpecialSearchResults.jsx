@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { AppContext } from '../../../context/AppContext'
 import { log_error } from '../../../utils/utils'
 
-const SpecialSearchResults = ({ handleSearchClear }) => {
+const SpecialSearchResults = ({ handleAddressSearchClear }) => {
     const { base_url, setSearchedAddress } = useContext(AppContext)
     const [ consumer_address, setConsumerAddress ] = useState({})
 
@@ -34,7 +34,7 @@ const SpecialSearchResults = ({ handleSearchClear }) => {
     // Handlers
     const handleSelectSearchAddress = (address) => {
         setSearchedAddress(address)
-        handleSearchClear()
+        handleAddressSearchClear()
     }
 
     return (
@@ -51,7 +51,7 @@ const SpecialSearchResults = ({ handleSearchClear }) => {
 }
 
 SpecialSearchResults.propTypes = {
-    handleSearchClear: PropTypes.func.isRequired,
+    handleAddressSearchClear: PropTypes.func.isRequired,
 }
 
 

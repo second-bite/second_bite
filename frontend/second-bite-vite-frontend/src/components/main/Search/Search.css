@@ -1,14 +1,17 @@
-.consumer_location {
-    height: 7vh;
+.search {
+    width: 100%;
     background-color: var(--secondary-header-bolor);
-    color: white;
+    color: black;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    padding: 4px 0px;
 }
 
 .location_img {
     height: 3rem;
+    width: 4rem;
 }
 
 .starting_address {
@@ -24,7 +27,12 @@
     margin-right: 2%;
 }
 
-/* Search Ribbon */
+/* Address Search Ribbon */
+.address_search_wrap {
+    display: flex;
+    flex-direction: row;
+}
+
 .address_search_form {
     display: flex;
     flex-direction: row;
@@ -34,8 +42,11 @@
 
 input[type="text"].address_search_text {
     border-radius: 0%;
-    height: 40%;
-    width: 30vw;
+    height: 75%;
+    padding-left: 3px;
+    width: clamp(300px, 30vw, 350px);
+    border: 1px solid gray;
+    border-radius: 5px;
 }
 
 #clear_address_search {
@@ -56,7 +67,7 @@ input[type="text"].address_search_text {
     cursor: pointer
 }
 
-/* Search Results Pop-Up */
+/* Address Search Results Pop-Up */
 .search_results_popup {
     z-index: 1;
     color: black;
@@ -98,4 +109,26 @@ input[type="text"].address_search_text {
 
 .search_other_address_field {
     color: dimgray;
+}
+
+/* Restaurant Search */
+.restaurant_search_form {
+    position: relative;
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+}
+
+.restaurant_search_icon {
+    position: absolute;
+    left: 10px;
+}
+
+.restaurant_search_input {
+    background-color: whitesmoke;
+    height: 3vh;
+    width: clamp(300px, 30vw, 350px);
+    padding: 5px 0px 5px 30px;
+    border: 1px solid gray;
+    border-radius: 16px;
 }
