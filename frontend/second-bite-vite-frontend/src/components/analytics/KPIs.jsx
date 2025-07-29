@@ -1,6 +1,7 @@
  import React, {useContext, useState, useEffect} from 'react'
  import { DateTime } from 'luxon'
  import { log_error } from "../../utils/utils";
+ import { FadeLoader } from 'react-spinners'
 
  {/* Components largely borrowed from: https://www.material-tailwind.com/blocks/kpi-cards */}
 
@@ -66,6 +67,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
     const [kpi_percentages, setKPIPercentages] = useState(new Array(4).fill("0%"))
     const [kpi_price, setKPIPrice] = useState(new Array(4).fill("0"))
     const [forecast_model_type, SetForecastModelType] = useState(FORECAST_MODEL_TYPE.LIN_REG)
+    const [is_kpi_loading, setIsKPILoading] = useState(false)
 
     // getPastKPIValues Helpers
     const to_owner_time_zone = (data, time_var, time_zone) => (
@@ -221,6 +223,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
       if (kpi_time_range === KPI_TIME_RANGE.NEXT_WEEK) sarima_time_period = 'week'
       else sarima_time_period = 'month'
       try {
+          setIsKPILoading(true)
           const response = await fetch(`/forecast/${restaurant_id}/${sarima_time_period}`, {
               method: 'GET',
               credentials: 'include',
@@ -239,6 +242,8 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
           setKPIPercentages(["-", "-", "-", "-"])
       } catch (err) {
           log_error(err)
+      } finally {
+          setIsKPILoading(false)
       }
   }
 
@@ -312,10 +317,18 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
           </Menu>
         </div>
       </div>
-      <div className="mt-6 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 items-center md:gap-2.5 gap-4">
-        {kpi_titles.map((title, ind) => (
-          <KpiCard title={title} percentage={kpi_percentages[ind]} price={kpi_price[ind]} color={(kpi_percentages[ind].charAt(0) === '-') ? 'red' : 'green'} icon={(kpi_percentages[ind].charAt(0) === '-') ? (<ChevronDownIcon strokeWidth={4} className="w-3 h-3 text-red-500"/>) : (<ChevronUpIcon strokeWidth={4} className="w-3 h-3 text-green-500"/>) }/>
-        ))}
+      <div className="flex justify-center w-full">
+          {(is_kpi_loading) ?
+              <section className="loading">
+                  <FadeLoader />
+              </section>
+              :
+              <div className="mt-6 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 items-center md:gap-2.5 gap-4 w-full">
+                {kpi_titles.map((title, ind) => (
+                  <KpiCard title={title} percentage={kpi_percentages[ind]} price={kpi_price[ind]} color={(kpi_percentages[ind].charAt(0) === '-') ? 'red' : 'green'} icon={(kpi_percentages[ind].charAt(0) === '-') ? (<ChevronDownIcon strokeWidth={4} className="w-3 h-3 text-red-500"/>) : (<ChevronUpIcon strokeWidth={4} className="w-3 h-3 text-green-500"/>) }/>
+                ))}
+              </div>
+          }
       </div>
     </section>
   );

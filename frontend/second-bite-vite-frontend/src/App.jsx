@@ -23,7 +23,6 @@ import ConsumerProtected from './protected_routing/ConsumerProtected'
 import RestaurantModal from './components/modals/RestaurantModal'
 import RatingModal from './components/modals/RatingModal'
 import FriendModal from './components/modals/FriendModal'
-import SARIMA_Forecast from './components/analytics/SARIMA_Forecast'
 
 function App() {
 
@@ -54,7 +53,6 @@ function App() {
             <RestaurantModal />
             <RatingModal />
             <FriendModal />
-            <SARIMA_Forecast />
           </div>
         </AuthProvider>
       </AppProvider>
