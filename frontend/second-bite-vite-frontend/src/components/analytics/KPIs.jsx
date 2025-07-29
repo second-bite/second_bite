@@ -1,4 +1,4 @@
- import React, { useContext, useState, useEffect } from "react"
+ import React, {useContext, useState, useEffect} from 'react'
  import { DateTime } from 'luxon'
  import { log_error } from "../../utils/utils";
 
@@ -55,10 +55,17 @@ export function KpiCard({ title, percentage, price, color, icon,}) {
 function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRange, setOrders, setVisits } ) {
     const { base_url } = useContext(AppContext)
 
+    // enums
+    const FORECAST_MODEL_TYPE = {
+        LIN_REG: "Linear Regression",
+        SARIMA: "SARIMA",
+    }
+
     // State Variables
     const [kpi_titles, setKPITitles] = useState(["Revenue", "Orders", "Page Visits", "New Consumers"])
     const [kpi_percentages, setKPIPercentages] = useState(new Array(4).fill("0%"))
     const [kpi_price, setKPIPrice] = useState(new Array(4).fill("0"))
+    const [forecast_model_type, SetForecastModelType] = useState(FORECAST_MODEL_TYPE.LIN_REG)
 
     // getKPIValues Helpers
     const to_owner_time_zone = (data, time_var, time_zone) => (
@@ -214,7 +221,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
 
   return (
     <section className="container mx-auto py-20 px-8">
-      <div className="flex justify-between md:items-center">
+      <div className="flex flex-row justify-between md:items-center">
         <div>
           <Typography className="font-bold">Overall Performance</Typography>
           <Typography
@@ -223,6 +230,32 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
           >
           </Typography>
         </div>
+        {/* Model Selector */}
+        {(kpi_time_range === KPI_TIME_RANGE.NEXT_WEEK || kpi_time_range === KPI_TIME_RANGE.NEXT_MONTH) ?
+            <div className="shrink-0">
+              <Menu>
+                <MenuHandler>
+                  <Button
+                    color="gray"
+                    variant="outlined"
+                    className="flex items-center gap-1 !border-gray-300"
+                  >
+                    {forecast_model_type}
+                    <ChevronDownIcon
+                      strokeWidth={4}
+                      className="w-3 h-3 text-gray-900"
+                    />
+                  </Button>
+                </MenuHandler>
+                <MenuList>
+                  <MenuItem onClick={() => SetForecastModelType(FORECAST_MODEL_TYPE.LIN_REG)}>Linear Regression</MenuItem>
+                  <MenuItem onClick={() => SetForecastModelType(FORECAST_MODEL_TYPE.SARIMA)}>SARIMA</MenuItem>
+                </MenuList>
+              </Menu>
+            </div>
+            : null
+        }
+        {/* KPI Time Range Selector */}      
         <div className="shrink-0">
           <Menu>
             <MenuHandler>
