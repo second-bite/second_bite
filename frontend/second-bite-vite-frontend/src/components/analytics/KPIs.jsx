@@ -1,6 +1,7 @@
- import React, { useContext, useState, useEffect } from "react"
+ import React, {useContext, useState, useEffect} from 'react'
  import { DateTime } from 'luxon'
  import { log_error } from "../../utils/utils";
+ import { FadeLoader } from 'react-spinners'
 
  {/* Components largely borrowed from: https://www.material-tailwind.com/blocks/kpi-cards */}
 
@@ -55,12 +56,20 @@ export function KpiCard({ title, percentage, price, color, icon,}) {
 function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRange, setOrders, setVisits } ) {
     const { base_url } = useContext(AppContext)
 
+    // enums
+    const FORECAST_MODEL_TYPE = {
+        LIN_REG: "Linear Regression",
+        SARIMA: "SARIMA",
+    }
+
     // State Variables
     const [kpi_titles, setKPITitles] = useState(["Revenue", "Orders", "Page Visits", "New Consumers"])
     const [kpi_percentages, setKPIPercentages] = useState(new Array(4).fill("0%"))
     const [kpi_price, setKPIPrice] = useState(new Array(4).fill("0"))
+    const [forecast_model_type, SetForecastModelType] = useState(FORECAST_MODEL_TYPE.LIN_REG)
+    const [is_kpi_loading, setIsKPILoading] = useState(false)
 
-    // getKPIValues Helpers
+    // getPastKPIValues Helpers
     const to_owner_time_zone = (data, time_var, time_zone) => (
         data.map(entry => ({
             ...entry,
@@ -83,7 +92,7 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
     }
 
 
-  const getKPIValues = async (date_time_period_limit, date_time_prev_period_limit) => {
+  const getPastKPIValues = async (date_time_period_limit, date_time_prev_period_limit) => {
       // Fetch orders data from the DB
       const orders_response = await fetch(base_url + `/analytics/orders/${restaurant_id}`, {
           method: 'GET',
@@ -149,22 +158,22 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
       setKPIPercentages([revenue_percent_change, num_orders_percent_change, num_visits_percent_change, num_new_consumers_percent_change])
   }
 
-  // NOTE: Calls getKPIValues in a versatile way based on selected time period
-  const getKPIValuesWrapper = async () => {
+  // NOTE: Gets KPI values (calls getPastKPIValues for past KPI values or uses linear regression for prediction)
+  const getRegKPIValuesWrapper = async () => {
     const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
     switch(kpi_time_range) {
         case KPI_TIME_RANGE.LAST_WEEK: 
             const date_time_one_week_ago = DateTime.now().minus({ weeks: 1 })
             const date_time_two_weeks_ago = DateTime.now().minus({ weeks: 2 })
             
-            await getKPIValues(date_time_one_week_ago, date_time_two_weeks_ago)
+            await getPastKPIValues(date_time_one_week_ago, date_time_two_weeks_ago)
 
             break
       case KPI_TIME_RANGE.LAST_MONTH:
           const date_time_one_month_ago  = DateTime.now().minus({ months: 1 })
           const date_time_two_months_ago = DateTime.now().minus({ months: 2 })
 
-          await getKPIValues(date_time_one_month_ago, date_time_two_months_ago)
+          await getPastKPIValues(date_time_one_month_ago, date_time_two_months_ago)
           break
       case KPI_TIME_RANGE.NEXT_WEEK:
           try {
@@ -208,13 +217,48 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
     }
   }
 
+  // NOTE: Gets KPI values for SARIMA forecasting
+  const getSarimaKPIValues = async () => {
+      let sarima_time_period = null
+      if (kpi_time_range === KPI_TIME_RANGE.NEXT_WEEK) sarima_time_period = 'week'
+      else sarima_time_period = 'month'
+      try {
+          setIsKPILoading(true)
+          const response = await fetch(`/forecast/${restaurant_id}/${sarima_time_period}`, {
+              method: 'GET',
+              credentials: 'include',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          })
+          if(!response.ok) {
+              const err = new Error(`Status: ${response.status}. Failed to retrieve SARIMA forecast`)
+              err.status = response.status
+              throw err
+          }
+          const data = await response.json()
+          console.log(data)
+          setKPIPrice([currency_formatter.format(data.revenue).toString(), Math.floor(parseFloat(data.orders)), Math.floor(parseFloat(data.visits)), Math.floor(parseFloat(data.first_time_consumers))])
+          setKPIPercentages(["-", "-", "-", "-"])
+      } catch (err) {
+          log_error(err)
+      } finally {
+          setIsKPILoading(false)
+      }
+  }
+
   useEffect(() => {
-      getKPIValuesWrapper()
-  }, [restaurant_id, kpi_time_range])
+      if(kpi_time_range === KPI_TIME_RANGE.LAST_MONTH || kpi_time_range === KPI_TIME_RANGE.LAST_WEEK || forecast_model_type === FORECAST_MODEL_TYPE.LIN_REG) {
+          getRegKPIValuesWrapper()
+      }
+      else {
+          getSarimaKPIValues()
+      }
+  }, [restaurant_id, kpi_time_range, forecast_model_type])
 
   return (
     <section className="container mx-auto py-20 px-8">
-      <div className="flex justify-between md:items-center">
+      <div className="flex flex-row justify-between md:items-center">
         <div>
           <Typography className="font-bold">Overall Performance</Typography>
           <Typography
@@ -223,6 +267,32 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
           >
           </Typography>
         </div>
+        {/* Model Selector */}
+        {(kpi_time_range === KPI_TIME_RANGE.NEXT_WEEK || kpi_time_range === KPI_TIME_RANGE.NEXT_MONTH) ?
+            <div className="shrink-0">
+              <Menu>
+                <MenuHandler>
+                  <Button
+                    color="gray"
+                    variant="outlined"
+                    className="flex items-center gap-1 !border-gray-300"
+                  >
+                    {forecast_model_type}
+                    <ChevronDownIcon
+                      strokeWidth={4}
+                      className="w-3 h-3 text-gray-900"
+                    />
+                  </Button>
+                </MenuHandler>
+                <MenuList>
+                  <MenuItem onClick={() => SetForecastModelType(FORECAST_MODEL_TYPE.LIN_REG)}>Linear Regression</MenuItem>
+                  <MenuItem onClick={() => SetForecastModelType(FORECAST_MODEL_TYPE.SARIMA)}>SARIMA</MenuItem>
+                </MenuList>
+              </Menu>
+            </div>
+            : null
+        }
+        {/* KPI Time Range Selector */}      
         <div className="shrink-0">
           <Menu>
             <MenuHandler>
@@ -247,10 +317,18 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
           </Menu>
         </div>
       </div>
-      <div className="mt-6 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 items-center md:gap-2.5 gap-4">
-        {kpi_titles.map((title, ind) => (
-          <KpiCard title={title} percentage={kpi_percentages[ind]} price={kpi_price[ind]} color={(kpi_percentages[ind].charAt(0) === '-') ? 'red' : 'green'} icon={(kpi_percentages[ind].charAt(0) === '-') ? (<ChevronDownIcon strokeWidth={4} className="w-3 h-3 text-red-500"/>) : (<ChevronUpIcon strokeWidth={4} className="w-3 h-3 text-green-500"/>) }/>
-        ))}
+      <div className="flex justify-center w-full">
+          {(is_kpi_loading) ?
+              <section className="loading">
+                  <FadeLoader />
+              </section>
+              :
+              <div className="mt-6 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 items-center md:gap-2.5 gap-4 w-full">
+                {kpi_titles.map((title, ind) => (
+                  <KpiCard title={title} percentage={kpi_percentages[ind]} price={kpi_price[ind]} color={(kpi_percentages[ind].charAt(0) === '-') ? 'red' : 'green'} icon={(kpi_percentages[ind].charAt(0) === '-') ? (<ChevronDownIcon strokeWidth={4} className="w-3 h-3 text-red-500"/>) : (<ChevronUpIcon strokeWidth={4} className="w-3 h-3 text-green-500"/>) }/>
+                ))}
+              </div>
+          }
       </div>
     </section>
   );
