@@ -217,8 +217,11 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
 
   // NOTE: Gets KPI values for SARIMA forecasting
   const getSarimaKPIValues = async () => {
+      let sarima_time_period = null
+      if (kpi_time_range === KPI_TIME_RANGE.NEXT_WEEK) sarima_time_period = 'week'
+      else sarima_time_period = 'month'
       try {
-          const response = await fetch(`/forecast/${restaurant_id}`, {
+          const response = await fetch(`/forecast/${restaurant_id}/${sarima_time_period}`, {
               method: 'GET',
               credentials: 'include',
               headers: {

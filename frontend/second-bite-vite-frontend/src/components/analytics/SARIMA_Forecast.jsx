@@ -4,7 +4,7 @@
 const SARIMA_Forecast = () => {
     const handleClick = async () => {
         // Due to vite.config.js, request gets proxied to recommendation_url (needed to transmit cookie for recommendation API calls)
-        const response = await fetch(`/forecast/${1311}`, {
+        const response = await fetch(`/forecast/${1309}/month`, {
             method: 'GET',
             credentials: 'include',
             headers: {
