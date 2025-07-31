@@ -12,14 +12,15 @@ import { AppProvider } from './context/AppContext'
 // Pages
 import AuthPage from './pages/AuthPage'
 import MainPage from './pages/MainPage'
-import FeedbackModal from './components/modals/FeedbackModal'
+import OwnerInfoPage from './pages/OwnerInfoPage'
+import ChatPage from './pages/ChatPage'
 import AccountInfoPage from './pages/AccountInfoPage'
 import AnalyticsPage from './pages/AnalyticsPage'
-import OwnerInfoPage from './pages/OwnerInfoPage'
-import AddRestaurantModal from './components/modals/AddRestaurantModal'
 import { AuthProvider } from './context/AuthContext'
 import OwnerProtected from './protected_routing/OwnerProtected'
 import ConsumerProtected from './protected_routing/ConsumerProtected'
+import FeedbackModal from './components/modals/FeedbackModal'
+import AddRestaurantModal from './components/modals/AddRestaurantModal'
 import RestaurantModal from './components/modals/RestaurantModal'
 import RatingModal from './components/modals/RatingModal'
 import FriendModal from './components/modals/FriendModal'
@@ -39,6 +40,7 @@ function App() {
                 <Route element={<ConsumerProtected />}>
                   <Route path='/main' element={<MainPage />} />
                   <Route path='/account' element={<AccountInfoPage />} />
+                  <Route path='/chat' element={<ChatPage />} />
                 </Route>
 
                 {/* Owner Routes */}

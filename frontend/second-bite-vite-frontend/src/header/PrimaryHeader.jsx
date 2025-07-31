@@ -1,7 +1,10 @@
 import React, {useState, useContext} from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import { Menu } from '@headlessui/react'
 import { Bars3Icon } from '@heroicons/react/24/solid'
-import { useNavigate } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCommentDots } from '@fortawesome/free-regular-svg-icons';
 
 import { AppContext } from '../context/AppContext'
 import { AuthContext } from '../context/AuthContext'
@@ -22,6 +25,9 @@ const PrimaryHeader = () => {
         else if(auth_status === AUTH_STATUS.CONSUMER_AUTH) {
             navigate('/account')
         }
+    }
+    const handleChatClick = () => {
+        navigate('/chat')
     }
     const handleAnalyticsClick = () => {
         navigate('/analytics')
@@ -91,30 +97,15 @@ const PrimaryHeader = () => {
                                     {({ active }) => (
                                         <a
                                         href="#"
-                                        className={`block px-4 py-2 text-sm ${
-                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                                        }`}
-                                        >
-                                        
-                                        <section className="tooltip_custom">
-                                            ❤
-                                            <span className="tooltip_custom_text">Favorited</span>
-                                        </section>
-                                        </a>
-                                    )}
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                    {({ active }) => (
-                                        <a
-                                        href="#"
+                                        onClick={handleChatClick}
                                         className={`block px-4 py-2 text-sm ${
                                             active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                                         }`}
                                         >
                                         {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-shopping-cart */}
                                         <section className="tooltip_custom">
-                                            <i className="fa fa-shopping-cart text-lg"></i>
-                                            <span className="tooltip_custom_text">Shopped</span>
+                                            <FontAwesomeIcon icon={faCommentDots} className="text-base" />
+                                            <span className="tooltip_custom_text">Chat</span>
                                         </section>
                                         </a>
                                     )}
@@ -132,7 +123,7 @@ const PrimaryHeader = () => {
                                     >
                                     {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-bar-chart */}
                                     <section className="tooltip_custom">
-                                        <i className="fa fa-bar-chart text-lg"></i>
+                                        <i style='font-size:24px' className='far'>&#xf4ad;</i>
                                         <span className="tooltip_custom_text">Analytics</span>
                                     </section>
                                     </a>

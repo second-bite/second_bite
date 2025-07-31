@@ -1,0 +1,4 @@
+.messaging_parent {
+    display: grid;
+    grid-template-columns: 3fr 7fr;
+}

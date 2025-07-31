@@ -23,6 +23,9 @@
 /* Analytics */
 @import './components/analytics/Analytics.css';
 
+/* Chat */
+@import './components/messaging/Messaging.css';
+
 .App {
   height: 100vh;
   width: 100vw;
