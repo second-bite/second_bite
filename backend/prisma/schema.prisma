@@ -31,6 +31,8 @@ model Consumer {
   friendships_b             Friendship[]            @relation("friendship_b")
   sent_friend_requests      FriendRequest[]         @relation("sender")
   received_friend_requests  FriendRequest[]         @relation("receiver")
+  sent_messages             Message[]               @relation("sender")
+  received_messages         Message[]               @relation("receiver")
 }
 
 model Favorite {
@@ -64,6 +66,16 @@ model FriendRequest {
   created_at              DateTime                @default(now())
 
   @@unique([sender_consumer_id, receiver_consumer_id])
+}
+
+model Message {
+    message_id              Int                     @id @unique @default(autoincrement())
+    message                 String
+    sender_consumer_id      Int
+    sender_consumer         Consumer                @relation("sender", fields: [sender_consumer_id], references: [consumer_id])
+    receiver_consumer_id    Int
+    receiver_consumer       Consumer                @relation("receiver", fields: [receiver_consumer_id], references: [consumer_id])
+    created_at              DateTime                @default(now())
 }
 
 /**
