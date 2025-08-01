@@ -1,13 +1,11 @@
 import React, { useRef, useState, useContext, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import io from 'socket.io-client'
 
 import { log_error } from '../../utils/utils'
 import { AppContext } from '../../context/AppContext'
 
-const Chat = () => {
+const Chat = ({ socket }) => {
     const form_ref = useRef()
-    const socket_ref = useRef()
     const {base_url, message_receiver_consumer_id} = useContext(AppContext)
     const [messages, setMessages] = useState([])
 
@@ -19,7 +17,7 @@ const Chat = () => {
                 alert('Message must have a message body')
             }
 
-            socket_ref.current.emit('send_message', {
+            socket.emit('send_message', {
                 receiver_consumer_id: message_receiver_consumer_id, 
                 message: form.message.value,
                 time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -41,31 +39,22 @@ const Chat = () => {
         })
         const data = await response.json()
         setMessages(data)
-        console.log(data)
-        console.log('Successfully fetched chat history')
     }
 
     useEffect(() => {
+        if(!socket) return
+
         // Get chat history
         handleChatHistoryFetch()
 
-        // Set up socket to listen for sent/received messages
-        socket_ref.current = io(base_url, {
-            withCredentials: true,
-        })
-
-        const socket = socket_ref.current
-
         // Add sent or received messages
         socket.on('new_incoming_message', (message) => {
-            console.log(message)
             setMessages((prev_messages) => [
                 message,
                 ...prev_messages,
             ])
         })
         socket.on('new_sent_message', (message) => {
-            console.log(message)
             setMessages((prev_messages) => [
                 message,
                 ...prev_messages,
@@ -75,9 +64,8 @@ const Chat = () => {
         return () => {
             socket.off('new_incoming_message')
             socket.off('new_sent_message')
-            socket.disconnect()
         }
-    }, [message_receiver_consumer_id])
+    }, [socket, message_receiver_consumer_id])
 
     // Scroll to bottom
     // TODO: 

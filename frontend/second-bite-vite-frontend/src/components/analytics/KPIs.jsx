@@ -237,7 +237,6 @@ function KpiCards( { restaurant_id, KPI_TIME_RANGE, kpi_time_range, setKPITimeRa
               throw err
           }
           const data = await response.json()
-          console.log(data)
           setKPIPrice([currency_formatter.format(data.revenue).toString(), Math.floor(parseFloat(data.orders)), Math.floor(parseFloat(data.visits)), Math.floor(parseFloat(data.first_time_consumers))])
           setKPIPercentages(["-", "-", "-", "-"])
       } catch (err) {

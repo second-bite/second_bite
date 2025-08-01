@@ -40,8 +40,6 @@ module.exports = (io) => {
                 const created_message = await prisma.message.create({
                     data: message_data
                 })
-                console.log('Created message')
-                console.log(created_message)
 
                 // Notify receiver
                 io.to(`consumer:${receiver_consumer_id}`).emit('new_incoming_message', {
@@ -129,9 +127,12 @@ module.exports = (io) => {
                     friend_consumer_id: friend_consumer_id,
                     friend_username: friend_username,
                     latest_message: (messages.length === 0) ? 'No messages exchanged yet' : messages[0].message,
-                    created_at: (messages.length === 0) ? '' : DateTime.fromISO(messages[0].created_at, { zone: 'utc' }).setZone(time_zone).toFormat('HH:mm'),
+                    created_at: (messages.length === 0) ? '' : DateTime.fromJSDate(messages[0].created_at, { zone: 'utc' }).setZone(time_zone).toFormat('HH:mm'),
+                    creation_date_time: (messages.length === 0) ? DateTime.utc(1900, 1, 1, 0, 0, 0) : DateTime.fromJSDate(messages[0].created_at, { zone: 'utc' })
                 }
             }))
+
+            friendships.sort((a, b) => b.creation_date_time.toMillis() - a.creation_date_time.toMillis())
 
             res.status(200).json(friendships)
         } catch (err) {
@@ -171,7 +172,6 @@ module.exports = (io) => {
                 },
                 orderBy: { created_at: 'desc' },
             })
-            console.log(messages)
 
             messages = messages.map((message) => ({
                 ...message,

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { AppContext } from '../../context/AppContext'
 
-const FriendSearch = () => {
+const FriendSearch = ({ socket }) => {
     const navigate = useNavigate()
     const [chat_list, setChatList] = useState([])
     const [displayed_chat_list, setDisplayedChatList] = useState([])
@@ -18,25 +18,41 @@ const FriendSearch = () => {
         if(message_receiver_consumer_id !== friend_consumer_id) setMessageReceiverConsumerID(friend_consumer_id)
     }
 
-    useEffect(() => {
-        const fetchFriendsChatList = async () => {
-            try {
-                console.log
-                const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
-                const response = await fetch(base_url + `/message/friends/${encodeURIComponent(time_zone)}`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
-                })
-                const data = await response.json()
-
-                setChatList(data)
-            } catch (err) {
-                console.error('Failed to fetch friends chat list')
-            }
+    const fetchFriendsChatList = async () => {
+        try {
+            const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
+            const response = await fetch(base_url + `/message/friends/${encodeURIComponent(time_zone)}`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            const data = await response.json()
+            setChatList(data)
+        } catch (err) {
+            console.error('Failed to fetch friends chat list')
         }
+    }
+
+    useEffect(() => {
         fetchFriendsChatList()
     }, [])
+
+    useEffect(() => {
+        if(!socket) return
+
+        // Add sent or received messages
+        socket.on('new_incoming_message', (message) => {
+            fetchFriendsChatList()
+        })
+        socket.on('new_sent_message', (message) => {
+            fetchFriendsChatList()
+        })
+
+        return () => {
+            socket.off('new_incoming_message')
+            socket.off('new_sent_message')
+        }
+    })
 
     useEffect(() => {
         if(friend_search_query) {
@@ -79,7 +95,7 @@ const FriendSearch = () => {
                                     <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
                                         <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                                     </div>
-                                    <section className="pl-3">
+                                    <section className="pl-3 flex-1 min-w-0">
                                         <p className="font-semibold">{element.friend_username}</p>
                                         <p className="text-gray-500 text-[15px] truncate">{element.latest_message}</p>
                                     </section>
