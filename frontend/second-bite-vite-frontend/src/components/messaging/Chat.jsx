@@ -60,15 +60,15 @@ const Chat = () => {
         socket.on('new_incoming_message', (message) => {
             console.log(message)
             setMessages((prev_messages) => [
+                message,
                 ...prev_messages,
-                message
             ])
         })
         socket.on('new_sent_message', (message) => {
             console.log(message)
             setMessages((prev_messages) => [
-                ...prev_messages,
                 message,
+                ...prev_messages,
             ])
         })
 
@@ -78,6 +78,9 @@ const Chat = () => {
             socket.disconnect()
         }
     }, [message_receiver_consumer_id])
+
+    // Scroll to bottom
+    // TODO: 
 
     return (
         <>
@@ -91,8 +94,8 @@ const Chat = () => {
                 src="https://unpkg.com/flowbite@1.4.0/dist/flowbite.js"
                 />
             </Helmet>
-            <section className="chat">
-                <section className="messages flex flex-col gap-2 overflow-y-auto max-h-[92vh] px-4 py-2">
+            <section id="chat">
+                <section id="messages" className="flex flex-col-reverse gap-2 overflow-y-auto max-h-[92vh] px-4 py-2">
                     {/* Credit to: https://daisyui.com/components/chat/?lang=en */}
                     {
                         messages.map((message) => (

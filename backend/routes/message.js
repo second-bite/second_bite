@@ -169,7 +169,7 @@ module.exports = (io) => {
                         {sender_consumer_id: other_consumer_id, receiver_consumer_id: consumer_id},
                     ]
                 },
-                orderBy: { created_at: 'asc' },
+                orderBy: { created_at: 'desc' },
             })
             console.log(messages)
 

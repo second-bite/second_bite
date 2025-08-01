@@ -6,15 +6,13 @@ import { AppContext } from '../../context/AppContext'
 const FriendSearch = () => {
     const navigate = useNavigate()
     const [chat_list, setChatList] = useState([])
+    const [displayed_chat_list, setDisplayedChatList] = useState([])
+    const [friend_search_query, setFriendSearchQuery] = useState('')
     const {base_url, message_receiver_consumer_id, setMessageReceiverConsumerID} = useContext(AppContext)
 
     // Handlers
     const handleAccountReturn = () => {
         navigate('/main')
-    }
-    const handleFriendSearch = (event) => {
-        event.preventDefault()
-        // TODO:
     }
     const handleOpenFriendChat = (friend_consumer_id) => {
         if(message_receiver_consumer_id !== friend_consumer_id) setMessageReceiverConsumerID(friend_consumer_id)
@@ -40,13 +38,22 @@ const FriendSearch = () => {
         fetchFriendsChatList()
     }, [])
 
+    useEffect(() => {
+        if(friend_search_query) {
+            const filtered_chat_list = chat_list.filter(friend_chat => friend_chat.friend_username.includes(friend_search_query))
+            setDisplayedChatList(filtered_chat_list)
+        } else {
+            setDisplayedChatList(chat_list)
+        }
+    }, [chat_list, friend_search_query])
+
     return (
         <section className="friend_search_sidebar h-screen overflow-y-auto">
             <button type="button" className="account_return_btn" onClick={handleAccountReturn}>←</button>
             <h3 className="flex justify-center font-sans text-gray-600 text-xl font-semibold leading-snug mb-4 mt-8">
                 Messages
             </h3>
-            <form className="flex w-3/4 justify-center mx-auto mt-6" onSubmit={event => {handleFriendSearch(event)}}>
+            <form className="flex w-3/4 justify-center mx-auto mt-6">
                 <label htmlFor="friend-search" className="sr-only">Search friends</label>
                 <div className="relative w-full">
                     {/* LEFT: now a clickable submit button */}
@@ -59,13 +66,13 @@ const FriendSearch = () => {
                     </div>
 
                     {/* INPUT: extra left-padding to separate text & buttom */}
-                    <input type="search" id="friend-search" className="block w-full p-3 ps-16 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50" placeholder="Search Friends..." />
+                    <input type="search" id="friend-search" value={friend_search_query} onChange={(event) => setFriendSearchQuery(event.target.value)} className="block w-full p-3 ps-16 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50" placeholder="Search Friends..." />
                 </div>
             </form>
 
             <section className="friend_chat_searches">
                 {
-                    chat_list.map((element) => (
+                    displayed_chat_list.map((element) => (
                         <section className="friend_chat_search" onClick={() => handleOpenFriendChat(element.friend_consumer_id)}>
                             <section className="flex flex-col pl-[10px] gap=[10px]"> 
                                 <div className="flex px-4 py-2">
