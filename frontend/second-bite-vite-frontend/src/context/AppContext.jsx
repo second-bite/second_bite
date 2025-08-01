@@ -15,9 +15,10 @@ export const AppProvider = ({ children }) => {
     const [displayed_restaurants, setDisplayedRestaurants] = useState([])
     const [searched_address, setSearchedAddress] = useState({})
     const [is_recommended_visible, setIsRecommendedVisible] = useState(true)  
+    const [message_receiver_consumer_id, setMessageReceiverConsumerID] = useState(null)
 
     return (
-        <AppContext.Provider value={{base_url, recommendation_url, is_feedback_modal, setIsFeedbackModal, is_add_restaurant_modal, setIsAddRestaurantModal, is_restaurant_modal, setIsRestaurantModal, is_rating_modal, setIsRatingModal, is_friend_modal, setIsFriendModal, selected_restaurant, setSelectedRestaurant, restaurants, setRestaurants, displayed_restaurants, setDisplayedRestaurants, searched_address, setSearchedAddress, is_recommended_visible, setIsRecommendedVisible}}>
+        <AppContext.Provider value={{base_url, recommendation_url, is_feedback_modal, setIsFeedbackModal, is_add_restaurant_modal, setIsAddRestaurantModal, is_restaurant_modal, setIsRestaurantModal, is_rating_modal, setIsRatingModal, is_friend_modal, setIsFriendModal, selected_restaurant, setSelectedRestaurant, restaurants, setRestaurants, displayed_restaurants, setDisplayedRestaurants, searched_address, setSearchedAddress, is_recommended_visible, setIsRecommendedVisible, message_receiver_consumer_id, setMessageReceiverConsumerID}}>
             {children}
         </AppContext.Provider>
     )

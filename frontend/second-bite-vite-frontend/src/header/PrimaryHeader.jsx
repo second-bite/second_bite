@@ -123,7 +123,7 @@ const PrimaryHeader = () => {
                                     >
                                     {/* Icon Credit: https://www.w3schools.com/icons/tryit.asp?filename=tryicons_fa-bar-chart */}
                                     <section className="tooltip_custom">
-                                        <i style='font-size:24px' className='far'>&#xf4ad;</i>
+                                        <i style={{ fontSize: '20px' }} className='fa fa-bar-chart-o' />
                                         <span className="tooltip_custom_text">Analytics</span>
                                     </section>
                                     </a>

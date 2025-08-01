@@ -193,7 +193,7 @@ const FriendModal = () => {
                 {
                     (form_status === FORM_TYPE.CURRENT_FRIENDS) ? 
                     (
-                        <section className="current_friends_section">
+                        <section className="current_friends_section overflow-y-auto" style={{ maxHeight: '60vh' }}>
                             {
                                 friends.map((friend) => (
                                     <section className="current_friend">
@@ -214,7 +214,7 @@ const FriendModal = () => {
                     ) : 
                     (
                         <section className="add_friend_section">
-                            <section className="incoming_friend_requests_section">
+                            <section className="incoming_friend_requests_section overflow-y-auto" style={{ maxHeight: '25vh' }}>
                                 <h3 className="text-xl font-bold dark:text-white">Incoming Friend Requests</h3>
                                 {
                                     incoming_friend_requests.map((user) => (
@@ -238,7 +238,7 @@ const FriendModal = () => {
                                 }
                             </section>
                             <hr class="h-px my-8 bg-gray-200 border-0.5 dark:bg-gray-400"></hr>
-                            <section className="available_users_section">
+                            <section className="available_users_section overflow-y-auto" style={{ maxHeight: '30vh' }}>
                                 <h3 className="text-xl font-bold dark:text-white">Users</h3>
                                 
                                 {

@@ -5,13 +5,13 @@ const argon2 = require('argon2')
 
 async function main() {
     // Configuration Params
-    const NUM_CONSUMERS = 8000
-    const NUM_OWNERS = 400
-    const NUM_RESTAURANTS = 1200
-    const NUM_RATINGS = 6000
-    const NUM_FAVORITES = 12000
-    const NUM_VISITS = 100000
-    const NUM_ORDERS = 50000
+    const NUM_CONSUMERS = 50
+    const NUM_OWNERS = 20
+    const NUM_RESTAURANTS = 50
+    const NUM_RATINGS = 400
+    const NUM_FAVORITES = 1000
+    const NUM_VISITS = 50000
+    const NUM_ORDERS = 20000
     const START_DATE = new Date()
     START_DATE.setFullYear(START_DATE.getFullYear() - 3) // 3 years ago
     const END_DATE = new Date()
@@ -75,6 +75,8 @@ async function main() {
         consumers.push(consumer)
     }
 
+    console.log('Done generating consumers!')
+
 
     // Generate Owners
     const owners = []
@@ -113,6 +115,8 @@ async function main() {
         owners.push(owner)
     }
 
+    console.log('Done generating owners!')
+
     // Generate Restaurants
     const categories = cuisine_filters_react_select.map(category => category.value)
     const restaurants = []
@@ -120,6 +124,10 @@ async function main() {
         const owner = faker.helpers.arrayElement(owners)
         const num_categories = faker.number.int({ min: 1, max: 4 })
         const restaurant_categories = faker.helpers.arrayElements(categories, num_categories)
+
+        const heroku_food_img = await fetch(`https://foodish-api.com/api/`)
+        const heroku_food_img_response = await heroku_food_img.json()
+        const img_url = heroku_food_img_response.image
 
         const data = {
             name: faker.company.name() + ' ' + faker.lorem.word(),
@@ -134,9 +142,9 @@ async function main() {
                 }
             },
             categories: restaurant_categories,
-            img_url: faker.image.urlPicsumPhotos(),
+            img_url: img_url,
             img_alt: 'Food Image',
-            avg_cost: faker.number.float({ min: 5, max: 18, precision: 0.01 }),
+            avg_cost: faker.number.float({ min: 5, max: 18, precision: 0.01 }).toFixed(2),
             pickup_time: generatePickupTimes(7),
             time_zone: 'America/Los_Angeles',
             owner: {
@@ -153,6 +161,7 @@ async function main() {
         restaurants.push(restaurant)
     }
 
+    console.log('Done generating restaurants!')
 
     // Generate Ratings
     for(let i = 0; i < NUM_RATINGS; i++) {
@@ -169,6 +178,8 @@ async function main() {
             data: data
         })
     }
+
+    console.log('Done generating ratings!')
 
 
     // Generate Favorites (specifically, toggle favorited statuses num favorites times)
@@ -214,6 +225,9 @@ async function main() {
     }
 
 
+    console.log('Done generating favorites!')
+
+
     // Generate PageVisits
     for (let i = 0; i < NUM_VISITS; i++) {
         const restaurant = faker.helpers.arrayElement(restaurants)
@@ -239,6 +253,8 @@ async function main() {
             data: data
         })
     }
+
+    console.log('Done generating visits!')
 
 
     // Generate Orders
@@ -275,6 +291,8 @@ async function main() {
             data: data
         })
     }
+
+    console.log('Done generating orders!')
 }
 
 

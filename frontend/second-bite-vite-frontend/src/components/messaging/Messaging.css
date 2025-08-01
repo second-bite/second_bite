@@ -2,3 +2,32 @@
     display: grid;
     grid-template-columns: 3fr 7fr;
 }
+
+/* Search Sidebar */
+.friend_search_sidebar {
+    background-color: whitesmoke;
+    overflow-y: auto;
+    position: relative;
+}
+
+.account_return_btn {
+    all: unset;
+    cursor: pointer;
+    font-size: 36px;
+    font-weight: 500;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+/* Chat Section */
+.chat {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.messages {
+    flex: 1;
+    overflow-y: auto;
+}
