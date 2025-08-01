@@ -34,7 +34,7 @@ const Specifiers = ({restaurant_search_query}) => {
             }
             fetchRestaurantsWrapper()
         }
-    }, [searched_address])
+    }, [searched_address, restaurant_search_query])
 
     useEffect(() => {
         if(sort_type !== SORT_TYPE.NONE) {
@@ -63,10 +63,14 @@ const Specifiers = ({restaurant_search_query}) => {
                 'Content-Type': 'application/json',
             },
         })
-        const err = new Error(`Status: ${response.status}. Failed to initially fetch restaurants`)
-        err.status = response.status
-        if(!response.ok) throw err
+        console.log(response)
+        if(!response.ok) {
+            const err = new Error(`Status: ${response.status}. Failed to initially fetch restaurants`)
+            err.status = response.status
+            throw err
+        }
         const restaurant_data = await response.json()
+        console.log(restaurant_data)
         setRestaurants(restaurant_data)
     }
 

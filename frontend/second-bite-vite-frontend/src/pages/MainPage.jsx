@@ -12,7 +12,7 @@ const MainPage = () => {
         <>
             <PrimaryHeader />
             <main>
-                <Search restaurant_search_query={restaurant_search_query} setRestaurantSearchQuery={setRestaurantSearchQuery}/>
+                <Search setRestaurantSearchQuery={setRestaurantSearchQuery}/>
                 <Specifiers restaurant_search_query={restaurant_search_query} />
                 <RestaurantTiles />
             </main>

@@ -39,16 +39,19 @@ const add_rating_distance_n_favorite_wrapper = (restaurants, is_full_address_pro
                 return (encodeURIComponent(`${a.street_address}, ${a.city}, ${a.state} ${a.postal_code}`))
             }).join('|')
             // NOTE: units only seems to apply to distance.text, not value (which is fine for my use case)
+            // console.log(`Origin: ${origin}. Destination: ${destinations}`)
             const url = `https://maps.googleapis.com/maps/api/distancematrix/json`+ `?origins=${origin}&destinations=${destinations}&units=imperial&key=${api_key}`
             const response = await fetch(url)
+            console.log(response)
             if (!response.ok) return next({status: response.status, message: "Google Maps Distance Matrix API call failed"})
             const res_json = await response.json();
             const row = res_json.rows[0]
             restaurants = restaurants.map((restaurant, ind) => ({
                 ...restaurant, 
-                distance_text: row.elements[ind].distance.text,
-                distance_value: row.elements[ind].distance.value,
+                distance_text: row.elements[ind].distance ? row.elements[ind].distance.text : null,
+                distance_value: row.elements[ind].distance ? row.elements[ind].distance.value : null,
             }))
+            console.log(restaurants)
         } else {
             restaurants = restaurants.map((restaurant) => ({
                 ...restaurant,

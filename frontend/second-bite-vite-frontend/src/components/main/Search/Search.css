@@ -122,6 +122,7 @@ input[type="text"].address_search_text {
 .restaurant_search_icon {
     position: absolute;
     left: 10px;
+    cursor: pointer;
 }
 
 .restaurant_search_input {

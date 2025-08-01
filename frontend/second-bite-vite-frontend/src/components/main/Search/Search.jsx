@@ -6,7 +6,7 @@ import SpecialSearchResults from './SpecialSearchResults'
 import { AppContext } from '../../../context/AppContext'
 import { log_error } from '../../../utils/utils'
 
-const Search = ({restaurant_search_query, setRestaurantSearchQuery}) => {
+const Search = ({setRestaurantSearchQuery}) => {
     const form_ref = useRef()
     const search_ref = useRef()
     const {setSearchedAddress} = useContext(AppContext)
@@ -55,13 +55,8 @@ const Search = ({restaurant_search_query, setRestaurantSearchQuery}) => {
         }
     }
     const handleRestaurantSearch = async () => {
-        try{
-            const address_search_query = search_ref.current.elements.address_search_query.value
-            setRestaurantSearchQuery(address_search_query)
-            await fetchRestaurants()
-        } catch (err) {
-            await log_error(err)
-        }
+        const restaurant_search_query = search_ref.current.elements.restaurant_search_query.value
+        setRestaurantSearchQuery(restaurant_search_query)
     }
 
     return (
